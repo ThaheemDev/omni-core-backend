@@ -1,17 +1,42 @@
-### Node Express template project
+### Account management API
 
-This project is based on a GitLab [Project Template](https://docs.gitlab.com/ee/gitlab-basics/create-project.html).
+##### Accounts
+API Calls:
+- GET /api/accounts
+- POST /api/accounts = new account
+- PUT /api/accounts = update account
+- DELETE /api/accounts = delete account
 
-Improvements can be proposed in the [original project](https://gitlab.com/gitlab-org/project-templates/express).
+Account object: 
+```
+{
+    name: '',
+    email: '',
+    websites: [],
+    status: <ACTIVE, BLOCKED>,
+    role: '',
+    password: 'BCRYPT SALTED 10 rounds'
+}
+```
 
-### CI/CD with Auto DevOps
+##### Website
+API Calls:
+- GET /api/websites
+- POST /api/websites = new website
+- PUT /api/websites = update website
+- DELETE /api/websites = delete website
 
-This template is compatible with [Auto DevOps](https://docs.gitlab.com/ee/topics/autodevops/).
+For POST and PUT and DELETE, you will call **the infrastructure service**, to update the infrastructure.
 
-If Auto DevOps is not already enabled for this project, you can [turn it on](https://docs.gitlab.com/ee/topics/autodevops/#enabling-auto-devops) in the project settings.
+Website object: 
+```
+{
+    name: '',
+    status: '',
+    size: <SMALL, MEDIUM, LARGE, XLARGE>,
+    domainname: '',
+}
+```
 
-### Developing with Gitpod
-
-This template has a fully-automated dev setup for [Gitpod](https://docs.gitlab.com/ee/integration/gitpod.html).
-
-If you open this project in Gitpod, you'll get all Node dependencies pre-installed and Express will open a web preview.
+Dependencies:
+- Database -> MySQL
