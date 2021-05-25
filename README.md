@@ -19,6 +19,12 @@ Account object:
 }
 ```
 
+##### Authentication
+API Calls:
+- POST /login
+- POST /logout (or GET logout maybe)
+- POST /register (can be done later - we can do this manually)
+
 ##### Website
 API Calls:
 - GET /api/websites
