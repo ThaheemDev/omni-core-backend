@@ -1,6 +1,8 @@
 const db = require("../models"); // models path depend on your structure
 const bcrypt = require('bcrypt');
 const config = require('../config/config')
+const jwt = require('jsonwebtoken');
+const passport  = require('passport');
 
 // create user
 const signUp = async (req, res, next) => {
@@ -11,10 +13,16 @@ const signUp = async (req, res, next) => {
     user.password = hash;
 
     try {
+        const existsUser = await db.user.findOne({ where: { email: user.email } })
+        if(existsUser) {
+            res.status(500).send({ message: 'User Already Exists' })
+            return false
+        }
+
         const data = await db.user.create(user)
         const dataToSend = data;
         delete dataToSend.password
-        res.send(data)
+        res.send({ message: 'User created Successfully' })
     } catch (err) {
         res.status(500).send({
             message:
@@ -25,27 +33,34 @@ const signUp = async (req, res, next) => {
 
 // login to user
 const login = async (req, res, next) => {
-    const loginDetail = req.body;
-    const user = await db.user.findOne({ where: { email: loginDetail.email } })
-    if(user) {
-        const isSame = await bcrypt.compare(loginDetail.password, user.password)
-        console.log(isSame)
-        if(isSame) {
-            delete user.password;
-            user.isLogin = true;
-            res.send(user)
-        } else {
-            res.status(204).send({
-                message:
-                    "Email and Password not match."
-            });
+    passport.authenticate('local', (error, auser) => {
+        if(error){
+            return res.status(400).send({
+                data:{}
+            })
         }
-    } else {
-        res.status(204).send({
-            message:
-                "User not found."
-        });
-    }
+        if(auser == undefined){
+            return res.status(400).send({
+                data:{}
+            })  
+
+        }else{
+            const userToSend = JSON.parse(JSON.stringify(auser))
+            delete userToSend.password;
+            userToSend.token = jwt.sign({ id: userToSend.id, role: userToSend.role }, config.jwt.secrate);
+            req.login(userToSend, (error) => {
+                return res.status(200).send({
+                    data : userToSend
+                });
+            })
+        }   
+    }, (err) => {
+            return res.status(400).send({
+                code : 2004,
+                data : {}
+            })
+        })(req, res, next)
+    // const loginDetail = req.body;
 }
 
 // update user
@@ -62,9 +77,11 @@ const updateUser = async (req, res, next) => {
                 userDetail.password = user.password
             }
             const resdata = await db.user.update(userDetail, { where: { id: userDetail.id } })
-            res.send(resdata)
+            res.send({
+                message: 'update user successfully'
+            })
         } else {
-            res.status(204).send({
+            res.status(500).send({
                 message:
                     "User not found."
             });
