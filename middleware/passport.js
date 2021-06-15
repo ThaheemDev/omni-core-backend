@@ -14,8 +14,8 @@ module.exports =  (app) => {
 		passwordField: 'password'
 	},  async (email, password, next) => {
 		const user = await db.user.findOne({ where: { email: email } })
-		if (user) {
-			const isSame = await bcrypt.compare(password, user.password)
+		if (user && user.password) {
+			const isSame = await bcrypt.compare(String(password), String(user.password))
 			if (isSame) {
 				next(null, user)
 			} else {
@@ -33,7 +33,6 @@ module.exports =  (app) => {
 	})
 	passport.deserializeUser(async (user, next) => {
 		try {
-			console.log(user)
 			next(null, user);
 		} catch(e) {
 			next(null, false);
