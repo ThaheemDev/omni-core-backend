@@ -2,7 +2,16 @@ module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define("user", {
         name: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                len: {
+                    args: [1, 255],
+                    msg: "Name can not be greater than 255"
+                },
+                notNull: {
+                    msg: 'Name is required'
+                }
+            }
         },
         email: {
             type: Sequelize.STRING,
@@ -10,32 +19,69 @@ module.exports = (sequelize, Sequelize) => {
             unique: true,
             validate: {
                 isEmail: {
-                msg: "Must be a valid email address",
+                    msg: "Must be a valid email address",
                 },
+                len: {
+                    args: [1, 255],
+                    msg: "Email can not be greater than 255"
+                },
+                notNull: {
+                    msg: 'Email is required'
+                }
             }
         },
         websites: {
             type: Sequelize.STRING,
             allowNull: false,
+            validate: {
+                len: {
+                    args: [1, 255],
+                    msg: "Websites can not be greater than 255"
+                },
+                notNull: {
+                    msg: 'Websites is required'
+                }
+            },
             get() {
-                return this.getDataValue('websites').split(';')
+                return (this.getDataValue('websites'))?this.getDataValue('websites').split(';'):''
             },
             set(val) {
-               this.setDataValue('websites',val.join(';'));
+                this.setDataValue('websites', val.join(';'));
             },
         },
         status: {
             type: Sequelize.ENUM,
             allowNull: false,
-            values: ['ACTIVE', 'BLOCKED']
+            values: ['ACTIVE', 'BLOCKED'],
+            validate: {
+                customValidator(value) {
+                    if (['ACTIVE', 'BLOCKED'].indexOf(value) <= -1) {
+                        throw new Error("Status value is incorrect");
+                    }
+                }
+            }
         },
         role: {
-            type: Sequelize.STRING,
-            allowNull: false
+            type: Sequelize.ENUM,
+            allowNull: false,
+            values:[1,2],
+            defaultValue:2,
+            validate: {
+                customValidator(value) {
+                    if ([1,2].indexOf(value) <= -1) {
+                        throw new Error("Role is incorrect");
+                    }
+                }
+            }
         },
         password: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notNull: {
+                    msg: 'Password is required'
+                }
+            },
         }
     });
     return User;
