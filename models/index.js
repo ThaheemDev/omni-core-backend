@@ -16,6 +16,7 @@ const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
 });
 const db = {};
 db.Sequelize = Sequelize;
+db.sequelize = sequelize;
 fs.readdir('./models', (err, files) => {
   files.forEach(file => {
     if (file != 'index.js') {
