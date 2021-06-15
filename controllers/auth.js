@@ -3,70 +3,72 @@ const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const jwt = require('jsonwebtoken');
 const passport  = require('passport');
+const response = require('../lib/response');
 
 // create user
 const signUp = async (req, res, next) => {
-    const user = req.body;
-    
+    const user = req.body;    
     const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
-    const hash = bcrypt.hashSync(user.password, salt);   
-    user.password = hash;
+
+    if(user.password){
+        user.password = bcrypt.hashSync(String(user.password), salt); 
+    }
 
     try {
         const existsUser = await db.user.findOne({ where: { email: user.email } })
         if(existsUser) {
-            res.status(500).send({ message: 'User Already Exists' })
-            return false
+            throw {status:422, errors:{message:'User Already Exists'}}
         }
 
-        const data = await db.user.create(user)
-        const dataToSend = data;
-        delete dataToSend.password
-        res.send({ message: 'User created Successfully' })
-    } catch (err) {
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while signUp."
-        });
+        const data = await db.user.create(user);
+        let dataToSend = data.dataValues;
+        delete dataToSend.password;
+
+        res.send(response.success('User created Successfully',dataToSend));
+
+    } catch (err) {       
+        res.status(err.status || 422).send(response.error(err.errors));
     }
 }
 
 // login to user
 const login = async (req, res, next) => {
     passport.authenticate('local', (error, auser) => {
+            
         if(error){
-            return res.status(400).send({
-                data:{}
-            })
+            return res.status(400).send(response.error({message:'Invalid username or password.'}));
         }
         if(auser == undefined){
-            return res.status(400).send({
-                data:{}
-            })  
-
+            return res.status(400).send(response.error({message:'Invalid username or password.'}));
         }else{
             const userToSend = JSON.parse(JSON.stringify(auser))
+
             delete userToSend.password;
+
             userToSend.token = jwt.sign({ id: userToSend.id, role: userToSend.role }, config.jwt.secrate);
+
             req.login(userToSend, (error) => {
-                return res.status(200).send({
-                    data : userToSend
-                });
+                if(error){
+                    return res.status(400).send(response.error(error));
+                }
+
+                return res.status(200).send(response.success('Successfully logged-in.',userToSend));
+                
             })
         }   
     }, (err) => {
-            return res.status(400).send({
-                code : 2004,
-                data : {}
-            })
+        res.status(500).send(response.error(err));
         })(req, res, next)
-    // const loginDetail = req.body;
 }
 
 // update user
 const updateUser = async (req, res, next) => {
     try {
         const userDetail = req.body;
+
+        if(!userDetail.id){
+            throw {status:500, errors:{message:'Id is required'}}
+        }
         const user = await db.user.findOne({ where: { id: userDetail.id } })
         if(user) {
             if(userDetail.password) {
@@ -77,21 +79,18 @@ const updateUser = async (req, res, next) => {
                 userDetail.password = user.password
             }
             const resdata = await db.user.update(userDetail, { where: { id: userDetail.id } })
-            res.send({
-                message: 'update user successfully'
-            })
+
+            if(resdata){
+                res.send(response.success('User has been successfully updated.',{}));
+            } else {
+                throw {status:500, errors:{message:'Some error occurred while updating the user.'}}
+            }
         } else {
-            res.status(500).send({
-                message:
-                    "User not found."
-            });
+            throw {status:500, errors:{message:'User is not found'}}
+            
         }
-    } catch (e) {
-        console.log(e)
-        res.status(500).send({
-            message:
-                e.message || "Some error occurred while update user."
-        });
+    } catch (err) {
+        res.status(err.status || 500).send(response.error(err.errors));
     }
 }
 module.exports = {
