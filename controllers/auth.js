@@ -13,6 +13,8 @@ const signUp = async (req, res, next) => {
     if(user.password){
         user.password = bcrypt.hashSync(String(user.password), salt); 
     }
+  
+
 
     try {
         const existsUser = await db.user.findOne({ where: { email: user.email } })
@@ -36,10 +38,10 @@ const login = async (req, res, next) => {
     passport.authenticate('local', (error, auser) => {
             
         if(error){
-            return res.status(400).send(response.error({message:'Invalid username or password.'}));
+            return res.status(401).send(response.error({message:'Invalid username or password.'}));
         }
         if(auser == undefined){
-            return res.status(400).send(response.error({message:'Invalid username or password.'}));
+            return res.status(401).send(response.error({message:'Invalid username or password.'}));
         }else{
             const userToSend = JSON.parse(JSON.stringify(auser))
 
@@ -49,7 +51,7 @@ const login = async (req, res, next) => {
 
             req.login(userToSend, (error) => {
                 if(error){
-                    return res.status(400).send(response.error(error));
+                    return res.status(401).send(response.error(error));
                 }
 
                 return res.status(200).send(response.success('Successfully logged-in.',userToSend));
@@ -67,8 +69,10 @@ const updateUser = async (req, res, next) => {
         const userDetail = req.body;
 
         if(!userDetail.id){
-            throw {status:500, errors:{message:'Id is required'}}
+            throw {status:422, errors:{message:'Id is required'}}
         }
+
+
         const user = await db.user.findOne({ where: { id: userDetail.id } })
         if(user) {
             if(userDetail.password) {
@@ -83,14 +87,14 @@ const updateUser = async (req, res, next) => {
             if(resdata){
                 res.send(response.success('User has been successfully updated.',{}));
             } else {
-                throw {status:500, errors:{message:'Some error occurred while updating the user.'}}
+                throw {status:422, errors:{message:'Some error occurred while updating the user.'}}
             }
         } else {
-            throw {status:500, errors:{message:'User is not found'}}
+            throw {status:422, errors:{message:'User is not found'}}
             
         }
     } catch (err) {
-        res.status(err.status || 500).send(response.error(err.errors));
+        res.status(err.status || 422).send(response.error(err.errors));
     }
 }
 module.exports = {
