@@ -2,20 +2,382 @@ var express = require('express');
 var router = express.Router();
 const authController = require('../controllers/auth');
 const userController = require('../controllers/user');
+const websiteController = require('../controllers/website');
+
+const jwtauth = require('../jwtauth.js');
+
+
+/**
+ * @swagger
+ * tags:
+ *  name: Account
+ *  description: Account management API
+*/
+
+
+/**
+ * @swagger
+ *  components:
+ *   schemas:
+ *      User:
+ *       type: object
+ *       properties:
+ *          id:
+ *           type: integer
+ *          name:
+ *           type: string
+ *          email:
+ *           type: string
+ *          role:
+ *           type: string
+ *           enum: [1,2]
+ *          websites:
+ *           type: array
+ *           items:
+ *            type: string
+ *          status:
+ *           type: string
+ *           enum: ['ACTIVE', 'BLOCKED']
+ *      EmptyResponse:
+ *       type: object
+ *      Error:
+ *       type: object
+ *       properties:
+ *          status:
+ *           type: integer
+ *           default: 2
+ *          error: 
+ *           type: object
+*/
+
+
+
 
 /* POST create user. */
+/**
+ * @swagger
+ * /accounts:
+ *   post:
+ *     summary: Signup
+ *     description:  It Can be used to register into website.
+ *     tags: [Account]
+ *     parameters:
+ *        - in: body
+ *          name: accounts
+ *          description: Create user/account
+ *          schema:
+ *              type: object
+ *              required:
+ *                  - name
+ *                  - email
+ *                  - role
+ *                  - websites
+ *                  - status
+ *                  - password
+ *              properties:
+ *                  id:
+ *                      type: integer
+ *                  name:
+ *                      type: string
+ *                  email:
+ *                      type: string
+ *                  role:
+ *                      type: string
+ *                      enum: [1,2]
+ *                  websites:
+ *                      type: array
+ *                      items:
+ *                       type: string
+ *                  status:
+ *                      type: string
+ *                      enum: ['ACTIVE', 'BLOCKED']
+ *                  
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   $ref: '#/components/schemas/User'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+*/
 router.post('/accounts', authController.signUp);
 
+
 /* GET login user. */
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Login
+ *     description:  It Can be used to login into website.
+ *     tags: [Account]
+ *     parameters:
+ *        - in: body
+ *          name: accounts
+ *          description: Login
+ *          schema:
+ *              type: object
+ *              required:
+ *                  - email
+ *                  - password
+ *              properties:
+ *                  email:
+ *                      type: string
+ *                  password:
+ *                      type: string
+ *                  
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   type: object
+ *                   properties:
+ *                      id:
+ *                          type: integer
+ *                      name:
+ *                          type: string
+ *                      email:
+ *                          type: string
+ *                      role:
+ *                          type: string
+ *                          enum: [1,2]
+ *                      websites:
+ *                          type: array
+ *                          items:
+ *                           type: string
+ *                      status:
+ *                          type: string
+ *                          enum: ['ACTIVE', 'BLOCKED']
+ *                      token:
+ *                          type: string
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+*/
 router.post('/login', authController.login);
 
 /* GET users listing. */
-router.get('/accounts', userController.getUsers);
+/**
+ * @swagger
+ * /accounts:
+ *   get:
+ *     summary: Users Listing
+ *     description:  It can be use to get the active users listing.
+ *     tags: [Account]          
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   type: array
+ *                   items:
+ *                      $ref: '#/components/schemas/User'
+ *       422:
+ *         description: Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+*/
+router.get('/accounts', jwtauth.jwtCheck, userController.getUsers);
 
-/* Change users listing. */
-router.put('/accounts', authController.updateUser);
+/* update users . */
+/**
+ * @swagger
+ * /accounts:
+ *   put:
+ *     summary: Update User
+ *     description:  It Can be used to update user/account.
+ *     tags: [Account]
+ *     parameters:
+ *        - in: body
+ *          name: accounts
+ *          description: Update user/account
+ *          schema:
+ *              type: object
+ *              required:
+ *                  - id
+ *                  - name
+ *                  - email
+ *                  - role
+ *                  - websites
+ *                  - status
+ *              properties:
+ *                  id:
+ *                      type: integer
+ *                  name:
+ *                      type: string
+ *                  email:
+ *                      type: string
+ *                  role:
+ *                      type: string
+ *                      enum: [1,2]
+ *                  websites:
+ *                      type: array
+ *                      items:
+*                       type: string
+ *                  status:
+ *                      type: string
+ *                      enum: ['ACTIVE', 'BLOCKED']
+ *                  
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   $ref: '#/components/schemas/EmptyResponse'
+ *       422:
+ *         description: Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+*/
+router.put('/accounts', jwtauth.jwtCheck, authController.updateUser);
 
-/* Change users listing. */
-router.delete('/accounts', userController.deleteUser);
+/* delete users . */
+/* POST create user. */
+/**
+ * @swagger
+ * /accounts:
+ *   delete:
+ *     summary: Account Delete
+ *     description:  It Can be used to delete the user
+ *     tags: [Account]
+ *     parameters:
+ *        - in: body
+ *          name: accounts
+ *          description: Delete Account
+ *          schema:
+ *              type: object
+ *              required:
+ *                  - id
+ *              properties:
+ *                  id:
+ *                      type: integer
+ *                  
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   $ref: '#/components/schemas/EmptyResponse'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+*/
+router.delete('/accounts', jwtauth.jwtCheck, userController.deleteUser);
+
+
+
+/**
+ * @swagger
+ * tags:
+ *  name: Website
+ *  description: Website management API
+*/
+
+/* POST create website. */
+/**
+ * @swagger
+ * /websites:
+ *   post:
+ *     summary: Create Website
+ *     description: It can be use to create website.
+ *     tags: [Website]
+*/
+router.post('/websites', jwtauth.jwtCheck, websiteController.create);
+
+/* GET website listing. */
+/**
+ * @swagger
+ * /websites:
+ *   get:
+ *     summary:  Website Listing
+ *     description: It can be use to get website list.
+ *     tags: [Website] 
+*/
+router.get('/websites', jwtauth.jwtCheck, websiteController.getAll);
+
+/* update website. */
+/**
+ * @swagger
+ * /websites:
+ *   put:
+ *     summary:  Website Update
+ *     description: It can be use to update the website.
+ *     tags: [Website]
+*/
+router.put('/websites', jwtauth.jwtCheck, websiteController.update);
+
+/* delete website listing. */
+/**
+ * @swagger
+ * /webistes:
+ *   delete:
+ *     summary:  Website Delete
+ *     description: It can be use to delete the website.
+ *     tags: [Website]
+*/
+router.delete('/websites', jwtauth.jwtCheck, websiteController.deletes);
+
 
 module.exports = router;

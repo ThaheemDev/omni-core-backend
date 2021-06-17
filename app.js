@@ -6,13 +6,49 @@ const createError = require('http-errors'),
           middleware = require('./middleware/index'),
           indexRouter = require('./routes/index'),
           bodyParser = require('body-parser'),
-          db = require("./models");
+          db = require("./models"),
+          swaggerJSDoc = require('swagger-jsdoc'),
+          swaggerUi = require('swagger-ui-express');
+       
 
 
 db.sequelize.sync();
 
 const app = express();
 
+
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Account Management API',
+    version: '1.0.0',
+    description:
+      'This is a REST API application made with Express.',
+    license: {
+      name: 'Licensed Under MIT',
+      url: 'https://spdx.org/licenses/MIT.html',
+    },
+    contact: {
+      name: 'accountmanagement',
+      url: '',
+    },
+  },
+  servers: [
+    {
+      url: 'http://localhost:3000/api',
+      description: 'Development server',
+    },
+  ],
+};
+const options = {
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ['./routes/*.js'],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(bodyParser.urlencoded({
   extended: true

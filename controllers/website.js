@@ -5,8 +5,10 @@ const response = require('../lib/response');
 const create = async (req, res, next) => {
     try {
         const websiteData = req.body;
-        await db.website.create(websiteData)
-        res.send(response.success('Website has been created successfully',{}))
+        let data = await db.website.create(websiteData)
+
+        let dataObj = data.dataValues;
+        res.send(response.success('Website has been created successfully',dataObj))
         
     } catch(err) {
         res.status(err.status || 422).send(response.error(err.errors));       
@@ -50,8 +52,7 @@ const deletes = async (req, res, next) => {
 
         const id = req.body.id;
         const website = await db.website.destroy({where: {id: id}})
-        console.log('website', website)
-
+    
         if(website){
             res.send(response.success('Website has been deleted successfully',{}))
         } else {

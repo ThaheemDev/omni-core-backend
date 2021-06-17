@@ -17,6 +17,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM,
             allowNull: false,
             values: [1,2,3],
+            defaultValue:1,
             validate: {
                 customValidator(value) {
                     if ([1,2,3].indexOf(value) <= -1) {
@@ -29,6 +30,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM,
             allowNull: false,
             values: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE'],
+            defaultValue:'SMALL',
             validate: {
                 customValidator(value) {
                     if (['SMALL', 'MEDIUM', 'LARGE', 'XLARGE'].indexOf(value) <= -1) {
