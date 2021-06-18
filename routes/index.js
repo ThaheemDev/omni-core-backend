@@ -48,6 +48,21 @@ const jwtauth = require('../jwtauth.js');
  *           default: 2
  *          error: 
  *           type: object
+ *      Website:
+ *       type: object
+ *       properties:
+ *          id:
+ *           type: integer
+ *          name:
+ *           type: string
+ *          domainname:
+ *           type: string
+ *          size:
+ *           type: string
+ *           enum: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE']
+ *          status:
+ *           type: string
+ *           enum: [1, 2, 3]
 */
 
 
@@ -75,8 +90,6 @@ const jwtauth = require('../jwtauth.js');
  *                  - status
  *                  - password
  *              properties:
- *                  id:
- *                      type: integer
  *                  name:
  *                      type: string
  *                  email:
@@ -341,8 +354,52 @@ router.delete('/accounts', jwtauth.jwtCheck, userController.deleteUser);
  * /websites:
  *   post:
  *     summary: Create Website
- *     description: It can be use to create website.
+ *     description:  It can be use to create website.
  *     tags: [Website]
+ *     parameters:
+ *        - in: body
+ *          name: websites
+ *          description: Create website
+ *          schema:
+ *              type: object
+ *              required:
+ *                  - name
+ *                  - size
+ *                  - domainname
+ *                  - status
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                  domainname:
+ *                      type: string
+ *                  size:
+ *                      type: string
+ *                      enum: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE']
+ *                  status:
+ *                      type: string
+ *                      enum: [1, 2, 3]
+ *                  
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   $ref: '#/components/schemas/Website'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
 */
 router.post('/websites', jwtauth.jwtCheck, websiteController.create);
 
@@ -351,9 +408,32 @@ router.post('/websites', jwtauth.jwtCheck, websiteController.create);
  * @swagger
  * /websites:
  *   get:
- *     summary:  Website Listing
- *     description: It can be use to get website list.
- *     tags: [Website] 
+ *     summary: List Website
+ *     description:  It can be use to list website.
+ *     tags: [Website]             
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   type: array
+ *                   items:
+ *                      $ref: '#/components/schemas/Website'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
 */
 router.get('/websites', jwtauth.jwtCheck, websiteController.getAll);
 
@@ -362,20 +442,100 @@ router.get('/websites', jwtauth.jwtCheck, websiteController.getAll);
  * @swagger
  * /websites:
  *   put:
- *     summary:  Website Update
- *     description: It can be use to update the website.
+ *     summary: Website Update
+ *     description:  It can be use to update website.
  *     tags: [Website]
+ *     parameters:
+ *        - in: body
+ *          name: websites
+ *          description: Update website
+ *          schema:
+ *              type: object
+ *              required:
+ *                  - id
+ *                  - name
+ *                  - size
+ *                  - domainname
+ *                  - status
+ *              properties:
+ *                  id:
+ *                      type: integer
+ *                  name:
+ *                      type: string
+ *                  domainname:
+ *                      type: string
+ *                  size:
+ *                      type: string
+ *                      enum: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE']
+ *                  status:
+ *                      type: string
+ *                      enum: [1, 2, 3]
+ *                  
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   $ref: '#/components/schemas/EmptyResponse'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
 */
 router.put('/websites', jwtauth.jwtCheck, websiteController.update);
 
 /* delete website listing. */
 /**
  * @swagger
- * /webistes:
+ * /websites:
  *   delete:
- *     summary:  Website Delete
- *     description: It can be use to delete the website.
+ *     summary: Website Delete
+ *     description:  It can be use to delete website.
  *     tags: [Website]
+ *     parameters:
+ *        - in: body
+ *          name: websites
+ *          description: Delete website
+ *          schema:
+ *              type: object
+ *              required:
+ *                  - id
+ *              properties:
+ *                  id:
+ *                   type: integer
+ *                  
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data: 
+ *                   $ref: '#/components/schemas/EmptyResponse'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
 */
 router.delete('/websites', jwtauth.jwtCheck, websiteController.deletes);
 
