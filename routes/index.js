@@ -127,7 +127,7 @@ const jwtauth = require('../jwtauth.js');
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.post('/accounts', authController.signUp);
+router.post('/accounts', userController.signUp);
 
 
 /* GET login user. */
@@ -292,7 +292,7 @@ router.get('/accounts', jwtauth.jwtCheck, userController.getUsers);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.put('/accounts', jwtauth.jwtCheck, authController.updateUser);
+router.put('/accounts', jwtauth.jwtCheck, userController.updateUser);
 
 /* delete users . */
 /* POST create user. */
