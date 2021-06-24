@@ -53,6 +53,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM,
             allowNull: false,
             values: ['ACTIVE', 'BLOCKED'],
+            defaultValue:"ACTIVE",
             validate: {
                 customValidator(value) {
                     if (['ACTIVE', 'BLOCKED'].indexOf(value) <= -1) {
