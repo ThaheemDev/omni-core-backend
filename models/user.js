@@ -43,11 +43,11 @@ module.exports = (sequelize, Sequelize) => {
                 }
             },
             get() {
-                return (this.getDataValue('websites'))?this.getDataValue('websites').split(';'):''
+                return (this.getDataValue('websites'))?this.getDataValue('websites').split(';'):'';
             },
             set(val) {
                 this.setDataValue('websites', val.join(';'));
-            },
+            }
         },
         status: {
             type: Sequelize.ENUM,
@@ -79,10 +79,14 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false,
             validate: {
+                len: {
+                    args: [8, 100],
+                    msg: "Passowrd range should be between 8-100 character"
+                },
                 notNull: {
                     msg: 'Password is required'
                 }
-            },
+            }
         }
     });
     return User;

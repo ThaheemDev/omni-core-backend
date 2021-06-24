@@ -63,6 +63,7 @@ const signUp = async (req, res, next) => {
         res.send(response.success('User created Successfully',dataToSend));
 
     } catch (err) {       
+        console.log('err', err)
         res.status(err.status || 422).send(response.error(err.errors));
     }
 }
