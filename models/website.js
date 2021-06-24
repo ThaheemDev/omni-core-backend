@@ -3,11 +3,11 @@ module.exports = (sequelize, Sequelize) => {
         status: {
             type: Sequelize.ENUM,
             allowNull: false,
-            values: [1,2,3],
-            defaultValue:1,
+            values: ['ACTIVE','BLOCKED'],
+            defaultValue:'ACTIVE',
             validate: {
                 customValidator(value) {
-                    if ([1,2,3].indexOf(value) <= -1) {
+                    if (['ACTIVE','BLOCKED'].indexOf(value) <= -1) {
                         throw new Error("Status value is incorrect");
                     }
                 }
