@@ -544,7 +544,7 @@ router.put('/websites/:websiteId', jwtauth.jwtCheck, websiteController.update);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.delete('/websites', jwtauth.jwtCheck, websiteController.deletes);
+router.delete('/websites/:websiteId', jwtauth.jwtCheck, websiteController.deletes);
 
 
 module.exports = router;

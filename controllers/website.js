@@ -46,13 +46,12 @@ const getAll = async (req, res, next) => {
 // delete website details
 const deletes = async (req, res, next) => {
     try {
-
-        if(!req.body.id){
+        const {websiteId} = req.params;
+        if(!websiteId){
             throw {status:422, errors:{message:'Id is required'}}
         }
 
-        const id = req.body.id;
-        const website = await db.website.destroy({where: {id: id}})
+        const website = await db.website.destroy({where: {id: websiteId}})
     
         if(website){
             res.send(response.success('Website has been deleted successfully',{}))
