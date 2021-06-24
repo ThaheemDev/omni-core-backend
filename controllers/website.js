@@ -19,11 +19,12 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
     try {
         const websiteData = req.body;
+        const {websiteId} = req.params;
 
-        if(!websiteData.id){
+        if(!websiteId){
             throw {status:422, errors:{message:'Id is required'}}
         }
-        await db.website.update(websiteData, { where: { id: websiteData.id } })
+        await db.website.update(websiteData, { where: { id: websiteId } })
        
         res.send(response.success('Website has been updated successfully',{}))
     } catch(err) {

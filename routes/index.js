@@ -500,7 +500,7 @@ router.get('/websites', jwtauth.jwtCheck, websiteController.getAll);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.put('/websites', jwtauth.jwtCheck, websiteController.update);
+router.put('/websites/:websiteId', jwtauth.jwtCheck, websiteController.update);
 
 /* delete website listing. */
 /**
