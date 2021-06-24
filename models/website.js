@@ -1,18 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
     const Website = sequelize.define("website", {
-        name: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                len: {
-                    args: [1, 255],
-                    msg: "Name can not be greater than 255"
-                },
-                notNull: {
-                    msg: 'Name is required'
-                }
-            }
-        },
         status: {
             type: Sequelize.ENUM,
             allowNull: false,
