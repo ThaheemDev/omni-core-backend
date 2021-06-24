@@ -299,7 +299,7 @@ router.get('/accounts', passport.authenticate(
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.put('/accounts', jwtauth.jwtCheck, userController.updateUser);
+router.put('/accounts/:userId', jwtauth.jwtCheck, userController.updateUser);
 
 /* delete users . */
 /* POST create user. */

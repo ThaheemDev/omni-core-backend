@@ -70,13 +70,15 @@ const signUp = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         const userDetail = req.body;
-
-        if(!userDetail.id){
+        const {userId} = req.params;
+  
+        if(!userId){
             throw {status:422, errors:{message:'Id is required'}}
         }
 
 
-        const user = await db.user.findOne({ where: { id: userDetail.id } })
+        const user = await db.user.findOne({ where: { id: userId } })
+       
         if(user) {
             if(userDetail.password) {
                 const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
@@ -85,7 +87,7 @@ const updateUser = async (req, res, next) => {
             } else {
                 userDetail.password = user.password
             }
-            const resdata = await db.user.update(userDetail, { where: { id: userDetail.id } })
+            const resdata = await db.user.update(userDetail, { where: { id: userId } })
 
             if(resdata){
                 res.send(response.success('User has been successfully updated.',{}));
