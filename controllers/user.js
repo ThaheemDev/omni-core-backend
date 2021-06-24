@@ -26,14 +26,13 @@ const getUsers = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
     try {
         const userDetail = req.body;
-        if(!userDetail.id){
+        const {userId} = req.params;
+        if(!userId){
             throw {status:422, errors:{message:'Id is required'}}
         }
 
 
-        const id = userDetail.id;
-        
-        const users = await db.user.destroy({where: {id: id}})
+        const users = await db.user.destroy({where: {id: userId}})
         res.send(response.success('User has been deleted successfully',{}))
     } catch(err) {
        res.status(err.status || 422).send(response.error(err.errors));

@@ -344,7 +344,7 @@ router.put('/accounts/:userId', jwtauth.jwtCheck, userController.updateUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.delete('/accounts', jwtauth.jwtCheck, userController.deleteUser);
+router.delete('/accounts/:userId', jwtauth.jwtCheck, userController.deleteUser);
 
 
 
