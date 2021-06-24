@@ -8,13 +8,17 @@ const createError = require('http-errors'),
           bodyParser = require('body-parser'),
           db = require("./models"),
           swaggerJSDoc = require('swagger-jsdoc'),
+          // passport = require('passport'),
           swaggerUi = require('swagger-ui-express');
+const user = require('./models/user');
        
 
 
 db.sequelize.sync();
 
 const app = express();
+// const initializePassport = require('./passport-config');
+// initializePassport(passport,email=>user.find(userObj=>userObj.email == email));
 
 
 

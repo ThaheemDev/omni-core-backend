@@ -12,30 +12,32 @@ module.exports =  (app) => {
 	var strategy = new localStrategy({
 		usernameField: 'email',
 		passwordField: 'password'
-	},  async (email, password, next) => {
-		const user = await db.user.findOne({ where: { email: email } })
-		if (user && user.password) {
+	},  async (email, password, done) => {
+		let user = await db.user.findOne({ where: { email: email } })
+		console.log('user', user)
+		if (user && user.dataValues) {
+			user = user.dataValues;
 			const isSame = await bcrypt.compare(String(password), String(user.password))
 			if (isSame) {
-				next(null, user)
+				done(null, user)
 			} else {
-				next(null, false, { message: 'Incorrect username or password' })
+				done(null, false, { message: 'Incorrect username or password' })
 			}
 		} else {
-			next(null, false, { message: 'Incorrect username or password' })
+			done(null, false, { message: 'Incorrect username or password' })
 		}
 	})
 
 	passport.use(strategy);
 
-	passport.serializeUser((user, next) => {
-		next(null, user)
+	passport.serializeUser((user, done) => {
+		done(null, user)
 	})
-	passport.deserializeUser(async (user, next) => {
+	passport.deserializeUser(async (user, done) => {
 		try {
-			next(null, user);
+			done(null, user);
 		} catch(e) {
-			next(null, false);
+			done(null, false);
 		}
 	})
 

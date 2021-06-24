@@ -3,6 +3,7 @@ var router = express.Router();
 const authController = require('../controllers/auth');
 const userController = require('../controllers/user');
 const websiteController = require('../controllers/website');
+const passport = require('passport');
 
 const jwtauth = require('../jwtauth.js');
 
@@ -195,7 +196,10 @@ router.post('/accounts', userController.signUp);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.post('/login', authController.login);
+router.post('/login', passport.authenticate(
+    'local',{  
+    }
+),authController.login);
 
 /* GET users listing. */
 /**
@@ -229,7 +233,10 @@ router.post('/login', authController.login);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.get('/accounts', jwtauth.jwtCheck, userController.getUsers);
+router.get('/accounts', passport.authenticate(
+    'local',{        
+    }
+), userController.getUsers);
 
 /* update users . */
 /**
