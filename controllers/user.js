@@ -8,13 +8,13 @@ const response = require('../lib/response');
 // get all user details
 const getUsers = async (req, res, next) => {
     const loginDetail = req.body;
-    console.log('req.user', req.user)
+    
     // if(req.user.role === 'admin') {
     //     const users = await db.user.findAll({attributes: ['id', 'name', 'email', 'websites', 'status', 'role']})
     //     res.send(users)
     // }
     try {        
-        const users = await db.user.findAll({attributes: ['id', 'name', 'email', 'websites', 'status', 'role']})
+        const users = await db.user.findAll({attributes: ['external_id','name', 'email', 'websites', 'status', 'role']})
         res.send(response.success("Account listing",users));
     } catch (error) {
         res.send(response.error(error))
@@ -32,7 +32,7 @@ const deleteUser = async (req, res, next) => {
         }
 
 
-        const users = await db.user.destroy({where: {id: userId}})
+        const users = await db.user.destroy({where: {external_id: userId}})
         res.send(response.success('User has been deleted successfully',{}))
     } catch(err) {
        res.status(err.status || 422).send(response.error(err.errors));
@@ -76,7 +76,7 @@ const updateUser = async (req, res, next) => {
         }
 
 
-        const user = await db.user.findOne({ where: { id: userId } })
+        const user = await db.user.findOne({ where: { external_id: userId } })
        
         if(user) {
             if(userDetail.password) {

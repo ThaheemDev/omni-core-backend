@@ -25,6 +25,7 @@ const login = async (req, res, next) => {
                     return res.status(401).send(response.error(error));
                 }
 
+                delete userToSend.id;
                 delete userToSend.createdAt;
                 delete userToSend.updatedAt;
                 return res.status(200).send(response.success('Successfully logged-in.',userToSend));
