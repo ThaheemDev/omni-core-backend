@@ -51,7 +51,6 @@ module.exports = (sequelize, Sequelize) => {
         },
         status: {
             type: Sequelize.ENUM,
-            allowNull: false,
             values: ['ACTIVE', 'BLOCKED'],
             defaultValue:"ACTIVE",
             validate: {
@@ -64,12 +63,11 @@ module.exports = (sequelize, Sequelize) => {
         },
         role: {
             type: Sequelize.ENUM,
-            allowNull: false,
-            values:[1,2],
-            defaultValue:2,
+            values:['1','2'],
+            defaultValue:'2',
             validate: {
                 customValidator(value) {
-                    if ([1,2].indexOf(value) <= -1) {
+                    if (['1','2'].indexOf(value) <= -1) {
                         throw new Error("Role is incorrect");
                     }
                 }
@@ -80,11 +78,8 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             validate: {
                 len: {
-                    args: [8, 100],
+                    args: [1, 100],
                     msg: "Passowrd range should be between 8-100 character"
-                },
-                notNull: {
-                    msg: 'Password is required'
                 }
             }
         }

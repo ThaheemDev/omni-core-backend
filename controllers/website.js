@@ -11,6 +11,7 @@ const create = async (req, res, next) => {
         res.send(response.success('Website has been created successfully',dataObj))
         
     } catch(err) {
+        console.log('err', err)
         res.status(err.status || 422).send(response.error(err.errors));       
     }
 }

@@ -2,7 +2,6 @@ module.exports = (sequelize, Sequelize) => {
     const Role = sequelize.define("role", {
         role: {
             type: Sequelize.ENUM,
-            allowNull: false,
             values:['EMPLOYEE','ADMIN',"MAINTAINER"],
             defaultValue:'EMPLOYEE',
             validate: {
