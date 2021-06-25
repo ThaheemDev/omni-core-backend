@@ -20,7 +20,6 @@ const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
 });
 
 
-
 const db = {};
 
 db.Sequelize = Sequelize;
