@@ -8,6 +8,9 @@ const create = async (req, res, next) => {
         let data = await db.website.create(websiteData)
 
         let dataObj = data.dataValues;
+        delete dataObj.id;
+        delete dataObj.createdAt;
+        delete dataObj.updatedAt;
         res.send(response.success('Website has been created successfully',dataObj))
         
     } catch(err) {
@@ -25,7 +28,7 @@ const update = async (req, res, next) => {
         if(!websiteId){
             throw {status:422, errors:{message:'Id is required'}}
         }
-        await db.website.update(websiteData, { where: { id: websiteId } })
+        await db.website.update(websiteData, { where: { external_id: websiteId } })
        
         res.send(response.success('Website has been updated successfully',{}))
     } catch(err) {
@@ -36,8 +39,7 @@ const update = async (req, res, next) => {
 // get all website details
 const getAll = async (req, res, next) => {
     try {
-        const websites = await db.website.findAll()
-    
+        const websites = await db.website.findAll({attributes: ['external_id', 'status','size','domainname']});    
         res.send(response.success('Websites listing',websites))
     } catch (err) {
         res.status(err.status || 422).send(response.error(err.errors)); 
@@ -52,7 +54,7 @@ const deletes = async (req, res, next) => {
             throw {status:422, errors:{message:'Id is required'}}
         }
 
-        const website = await db.website.destroy({where: {id: websiteId}})
+        const website = await db.website.destroy({where: {external_id: websiteId}})
     
         if(website){
             res.send(response.success('Website has been deleted successfully',{}))
