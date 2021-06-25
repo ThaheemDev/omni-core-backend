@@ -408,7 +408,7 @@ router.delete('/accounts/:userId', jwtauth.jwtCheck, userController.deleteUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.post('/websites', jwtauth.jwtCheck, websiteController.create);
+router.post('/websites', passport.authenticate('jwt', {session: false}), websiteController.create);
 
 /* GET website listing. */
 /**

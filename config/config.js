@@ -2,7 +2,7 @@ module.exports = {
   database: {
     host: "localhost",
     user: "root",
-    password: "password",
+    password: "",
     db: "accountManage",
     dialect: "mysql",
     pool: {
@@ -15,5 +15,8 @@ module.exports = {
   bcrypt: {
     saltRounds: 10,
     plainText: 'Account_Api'
+  },
+  jwt: {
+    secrate: 'secrateText'
   }
 };
