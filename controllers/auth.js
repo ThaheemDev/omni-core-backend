@@ -4,10 +4,6 @@ const config = require('../config/config')
 const jwt = require('jsonwebtoken');
 const passport  = require('passport');
 const response = require('../lib/response');
-
-// // create user
-
-
 // login to user
 const login = async (req, res, next) => {
     passport.authenticate('local', (error, auser) => {
@@ -29,6 +25,8 @@ const login = async (req, res, next) => {
                     return res.status(401).send(response.error(error));
                 }
 
+                delete userToSend.createdAt;
+                delete userToSend.updatedAt;
                 return res.status(200).send(response.success('Successfully logged-in.',userToSend));
                 
             })

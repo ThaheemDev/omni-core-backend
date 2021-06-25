@@ -1,5 +1,13 @@
 module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define("user", {
+        external_id: {
+            type: Sequelize.STRING,
+            defaultValue: uuidv4(),
+            set(val) {
+                let uuid = uuidv4();
+                this.setDataValue('external_id', uuid);
+            }
+        },
         name: {
             type: Sequelize.STRING,
             allowNull: false,
