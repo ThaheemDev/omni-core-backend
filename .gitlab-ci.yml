@@ -28,4 +28,4 @@ deploy:
     - doctl auth init -t f7811876afc38bfb8c721ffeb23b8ebe4073fcefedda4011fbd67ac17d04c7e7
     - doctl kubernetes cluster kubeconfig save babcd90d-ecd9-4661-aa8e-dab71c5f5c0a
     - cd helm/account-management-api
-    - helm upgrade --install business-intelligence --set image.tag=$CI_PIPELINE_IID .
+    - helm upgrade --install account-management-api --set image.tag=$CI_PIPELINE_IID .
