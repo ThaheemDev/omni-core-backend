@@ -52,9 +52,7 @@ const jwtauth = require('../jwtauth.js');
  *      Website:
  *       type: object
  *       properties:
- *          id:
- *           type: integer
- *          name:
+ *          external_id:
  *           type: string
  *          domainname:
  *           type: string
@@ -63,7 +61,7 @@ const jwtauth = require('../jwtauth.js');
  *           enum: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE']
  *          status:
  *           type: string
- *           enum: [1, 2, 3]
+ *           enum: ['ACTIVE', 'BLOCKED']
 */
 
 
@@ -196,10 +194,7 @@ router.post('/accounts', userController.signUp);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.post('/login', passport.authenticate(
-    'local',{  
-    }
-),authController.login);
+router.post('/login',authController.login);
 
 /* GET users listing. */
 /**
@@ -233,10 +228,7 @@ router.post('/login', passport.authenticate(
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.get('/accounts', passport.authenticate(
-    'local',{        
-    }
-), userController.getUsers);
+router.get('/accounts', passport.authenticate('jwt', {session: false}), userController.getUsers);
 
 /* update users . */
 /**
@@ -299,7 +291,7 @@ router.get('/accounts', passport.authenticate(
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.put('/accounts/:userId', jwtauth.jwtCheck, userController.updateUser);
+router.put('/accounts/:userId', passport.authenticate('jwt', {session: false}), userController.updateUser);
 
 /* delete users . */
 /* POST create user. */
@@ -344,7 +336,7 @@ router.put('/accounts/:userId', jwtauth.jwtCheck, userController.updateUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.delete('/accounts/:userId', jwtauth.jwtCheck, userController.deleteUser);
+router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}), userController.deleteUser);
 
 
 
@@ -417,7 +409,21 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *   get:
  *     summary: List Website
  *     description:  It can be use to list website.
- *     tags: [Website]             
+ *     tags: [Website]  
+ *     parameters:
+ *       - deprecated: false
+ *         name: page
+ *         description: next page of results to display
+ *         in: query
+ *         required: true
+ *         allowEmptyValue: true
+ *       - deprecated: false
+ *         example: '10'
+ *         name: page_size
+ *         description: Number of items per page
+ *         in: query
+ *         required: true
+ *         allowEmptyValue: false           
  *     responses:
  *       200:
  *         description: Success.
@@ -426,15 +432,14 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data: 
+ *                 result: 
  *                   type: array
  *                   items:
  *                      $ref: '#/components/schemas/Website'
+ *                 total:
+ *                   type: integer
+ *                 next:
+ *                   type: string
  *       422:
  *         description: Error.
  *         content:
@@ -442,7 +447,7 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.get('/websites', jwtauth.jwtCheck, websiteController.getAll);
+router.get('/websites', passport.authenticate('jwt', {session: false}), websiteController.getAll);
 
 /* update website. */
 /**
@@ -500,7 +505,7 @@ router.get('/websites', jwtauth.jwtCheck, websiteController.getAll);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.put('/websites/:websiteId', jwtauth.jwtCheck, websiteController.update);
+router.put('/websites/:websiteId', passport.authenticate('jwt', {session: false}), websiteController.update);
 
 /* delete website listing. */
 /**
@@ -544,7 +549,7 @@ router.put('/websites/:websiteId', jwtauth.jwtCheck, websiteController.update);
  *             schema:
  *               $ref: '#/components/schemas/Error'
 */
-router.delete('/websites/:websiteId', jwtauth.jwtCheck, websiteController.deletes);
+router.delete('/websites/:websiteId', passport.authenticate('jwt', {session: false}), websiteController.deletes);
 
 
 module.exports = router;
