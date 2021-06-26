@@ -42,7 +42,6 @@ const getAll = async (req, res, next) => {
     let {page,page_size}  = req.query;
     page = Number(page);
     page_size = Number(page_size);
-    console.log('page,page_size', page,page_size)
     try {
         // const websites = await db.website.findAll({attributes: ['external_id', 'status','size','domainname']});    
         let offset = 0;

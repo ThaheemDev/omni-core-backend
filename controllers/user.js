@@ -7,16 +7,28 @@ const response = require('../lib/response');
 
 // get all user details
 const getUsers = async (req, res, next) => {
-    const loginDetail = req.body;
-    
-    // if(req.user.role === 'admin') {
-    //     const users = await db.user.findAll({attributes: ['id', 'name', 'email', 'websites', 'status', 'role']})
-    //     res.send(users)
-    // }
-    try {        
-        const users = await db.user.findAll({attributes: ['external_id','name', 'email', 'websites', 'status', 'role']})
-        res.send(response.success("Account listing",users));
+
+    try {   
+        
+        let {page,page_size}  = req.query;
+        console.log('req.query', req.query)
+        page = Number(page);
+        page_size = Number(page_size);
+        
+        let offset = 0;
+        if(page > 1){
+            offset = ((page-1)*page_size);
+        }
+
+
+        const { count, rows }  = await db.user.findAndCountAll({ attributes: ['external_id','name', 'email', 'websites', 'status', 'role'], offset: offset, limit: page_size }
+        ); 
+        
+        let next  = ((page*page_size)<count)?true:false;        
+        res.send(response.pagination(count,rows,next))
+
     } catch (error) {
+        console.log('error', error)
         res.send(response.error(error))
     }
     
