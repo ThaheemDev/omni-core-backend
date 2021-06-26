@@ -56,6 +56,7 @@ const signUp = async (req, res, next) => {
         }
 
         const data = await db.user.create(user);
+
         let dataToSend = data.dataValues;
         delete dataToSend.password;
 
