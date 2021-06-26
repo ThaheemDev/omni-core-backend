@@ -38,9 +38,24 @@ const update = async (req, res, next) => {
 
 // get all website details
 const getAll = async (req, res, next) => {
+
+    let {page,page_size}  = req.query;
+    page = Number(page);
+    page_size = Number(page_size);
+    console.log('page,page_size', page,page_size)
     try {
-        const websites = await db.website.findAll({attributes: ['external_id', 'status','size','domainname']});    
-        res.send(response.success('Websites listing',websites))
+        // const websites = await db.website.findAll({attributes: ['external_id', 'status','size','domainname']});    
+        let offset = 0;
+        if(page > 1){
+            offset = ((page-1)*page_size);
+        }
+
+        const { count, rows }  = await db.website.findAndCountAll({ attributes: ['external_id', 'status','size','domainname'], offset: offset, limit: page_size }
+            ); 
+            
+        let next  = ((page*page_size)<count)?true:false;
+           
+        res.send(response.pagination(count,rows,next))
     } catch (err) {
         res.status(err.status || 422).send(response.error(err.errors)); 
     }
