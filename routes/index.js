@@ -213,7 +213,7 @@ router.post('/login',authController.login);
  *        name: page_size
  *        description: Number of items per page
  *        in: query
- *        required: false
+ *        required: true
  *        allowEmptyValue: false       
  *     responses:
  *       200:
@@ -243,27 +243,29 @@ router.get('/accounts', passport.authenticate('jwt', {session: false}), userCont
 /* update users . */
 /**
  * @swagger
- * /accounts:
+ * /accounts/{external_id}:
  *   put:
  *     summary: Update User
- *     description:  It Can be used to update user/account.
+ *     description:  Update user account using {external_id}
  *     tags: [Account]
  *     parameters:
+ *        - in: path
+ *          required: true
+ *          deprecated: false
+ *          example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+ *          name: external_id
  *        - in: body
  *          name: accounts
  *          description: Update user/account
  *          schema:
  *              type: object
  *              required:
- *                  - id
  *                  - name
  *                  - email
  *                  - role
  *                  - websites
  *                  - status
  *              properties:
- *                  id:
- *                      type: integer
  *                  name:
  *                      type: string
  *                  email:
@@ -307,23 +309,18 @@ router.put('/accounts/:userId', passport.authenticate('jwt', {session: false}), 
 /* POST create user. */
 /**
  * @swagger
- * /accounts:
+ * /accounts/{external_id}:
  *   delete:
- *     summary: Account Delete
- *     description:  It Can be used to delete the user
+ *     summary: Account Remove
+ *     description:  Remove account with {external_id}
  *     tags: [Account]
  *     parameters:
- *        - in: body
- *          name: accounts
- *          description: Delete Account
- *          schema:
- *              type: object
- *              required:
- *                  - id
- *              properties:
- *                  id:
- *                      type: integer
- *                  
+ *       - in: path
+ *         required: true
+ *         deprecated: false
+ *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+ *         name: external_id
+ *                   
  *     responses:
  *       200:
  *         description: Success.
@@ -462,28 +459,27 @@ router.get('/websites', passport.authenticate('jwt', {session: false}), websiteC
 /* update website. */
 /**
  * @swagger
- * /websites:
+ * /websites/{external_id}:
  *   put:
  *     summary: Website Update
- *     description:  It can be use to update website.
+ *     description:  Update existing website using {external_id}
  *     tags: [Website]
  *     parameters:
+ *        - in: path
+ *          required: true
+ *          deprecated: false
+ *          example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+ *          name: external_id
  *        - in: body
  *          name: websites
  *          description: Update website
  *          schema:
  *              type: object
  *              required:
- *                  - id
- *                  - name
  *                  - size
  *                  - domainname
  *                  - status
  *              properties:
- *                  id:
- *                      type: integer
- *                  name:
- *                      type: string
  *                  domainname:
  *                      type: string
  *                  size:
@@ -491,7 +487,7 @@ router.get('/websites', passport.authenticate('jwt', {session: false}), websiteC
  *                      enum: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE']
  *                  status:
  *                      type: string
- *                      enum: [1, 2, 3]
+ *                      enum: ['ACTIVE', 'BLOCKED']
  *                  
  *     responses:
  *       200:
@@ -520,22 +516,17 @@ router.put('/websites/:websiteId', passport.authenticate('jwt', {session: false}
 /* delete website listing. */
 /**
  * @swagger
- * /websites:
+ * /websites/{external_id}:
  *   delete:
- *     summary: Website Delete
- *     description:  It can be use to delete website.
+ *     summary: Website Remove
+ *     description:   Remove a website with `{external_id}`
  *     tags: [Website]
  *     parameters:
- *        - in: body
- *          name: websites
- *          description: Delete website
- *          schema:
- *              type: object
- *              required:
- *                  - id
- *              properties:
- *                  id:
- *                   type: integer
+ *       - in: path
+ *         required: true
+ *         deprecated: false
+ *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+ *         name: external_id
  *                  
  *     responses:
  *       200:
