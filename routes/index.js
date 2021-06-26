@@ -5,9 +5,6 @@ const userController = require('../controllers/user');
 const websiteController = require('../controllers/website');
 const passport = require('passport');
 
-const jwtauth = require('../jwtauth.js');
-
-
 /**
  * @swagger
  * tags:
@@ -23,15 +20,15 @@ const jwtauth = require('../jwtauth.js');
  *      User:
  *       type: object
  *       properties:
- *          id:
- *           type: integer
+ *          external_id:
+ *           type: string
  *          name:
  *           type: string
  *          email:
  *           type: string
  *          role:
  *           type: string
- *           enum: [1,2]
+ *           enum: ['ACTIVE', 'BLOCKED']
  *          websites:
  *           type: array
  *           items:
@@ -203,7 +200,21 @@ router.post('/login',authController.login);
  *   get:
  *     summary: Users Listing
  *     description:  It can be use to get the active users listing.
- *     tags: [Account]          
+ *     tags: [Account]   
+ *     parameters:
+ *      - deprecated: false
+ *        name: page
+ *        description: next page of results to display
+ *        in: query
+ *        required: true
+ *        allowEmptyValue: true
+ *      - deprecated: false
+ *        example: '10'
+ *        name: page_size
+ *        description: Number of items per page
+ *        in: query
+ *        required: false
+ *        allowEmptyValue: false       
  *     responses:
  *       200:
  *         description: Success
@@ -212,12 +223,11 @@ router.post('/login',authController.login);
  *             schema:
  *               type: object
  *               properties:
- *                 message:
+ *                 next:
  *                   type: string
- *                 status:
+ *                 total:
  *                   type: integer
- *                   default: 1
- *                 data: 
+ *                 results: 
  *                   type: array
  *                   items:
  *                      $ref: '#/components/schemas/User'

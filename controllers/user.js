@@ -11,7 +11,6 @@ const getUsers = async (req, res, next) => {
     try {   
         
         let {page,page_size}  = req.query;
-        console.log('req.query', req.query)
         page = Number(page);
         page_size = Number(page_size);
         
@@ -28,7 +27,6 @@ const getUsers = async (req, res, next) => {
         res.send(response.pagination(count,rows,next))
 
     } catch (error) {
-        console.log('error', error)
         res.send(response.error(error))
     }
     
