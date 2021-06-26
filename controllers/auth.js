@@ -4,9 +4,16 @@ const config = require('../config/config')
 const jwt = require('jsonwebtoken');
 const passport  = require('passport');
 const response = require('../lib/response');
+
+// // create user
+
+
 // login to user
 const login = async (req, res, next) => {
+    console.log('req.body', req.body)
     passport.authenticate('local', (error, auser) => {
+        console.log('auser', auser)
+        console.log('error', error)
             
         if(error){
             return res.status(401).send(response.error({message:'Invalid username or password.'}));
@@ -33,6 +40,7 @@ const login = async (req, res, next) => {
             })
         }   
     }, (err) => {
+        console.log('err', err)
         res.status(500).send(response.error(err));
         })(req, res, next)
 }

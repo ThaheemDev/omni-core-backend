@@ -79,11 +79,11 @@ const passport = require('passport');
  *     summary: Signup
  *     description:  It Can be used to register into website.
  *     tags: [Account]
- *     parameters:
- *        - in: body
- *          name: accounts
- *          description: Create user/account
- *          schema:
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
  *              type: object
  *              required:
  *                  - name
@@ -142,11 +142,11 @@ router.post('/accounts', userController.signUp);
  *     summary: Login
  *     description:  It Can be used to login into website.
  *     tags: [Account]
- *     parameters:
- *        - in: body
- *          name: accounts
- *          description: Login
- *          schema:
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
  *              type: object
  *              required:
  *                  - email
@@ -260,15 +260,16 @@ router.get('/accounts', passport.authenticate('jwt', {session: false}), userCont
  *     security:
  *       - BearerAuth: []
  *     parameters:
- *        - in: path
- *          required: true
- *          deprecated: false
- *          example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
- *          name: external_id
- *        - in: body
- *          name: accounts
- *          description: Update user/account
- *          schema:
+ *       - in: path
+ *         required: true
+ *         deprecated: false
+ *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+ *         name: external_id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
  *              type: object
  *              required:
  *                  - name
@@ -377,11 +378,11 @@ router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}
  *     tags: [Website]
  *     security:
  *       - BearerAuth: []
- *     parameters:
- *        - in: body
- *          name: websites
- *          description: Create website
- *          schema:
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
  *              type: object
  *              required:
  *                  - name
@@ -484,15 +485,16 @@ router.get('/websites', passport.authenticate('jwt', {session: false}), websiteC
  *     security:
  *       - BearerAuth: []
  *     parameters:
- *        - in: path
- *          required: true
- *          deprecated: false
- *          example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
- *          name: external_id
- *        - in: body
- *          name: websites
- *          description: Update website
- *          schema:
+ *       - in: path
+ *         required: true
+ *         deprecated: false
+ *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+ *         name: external_id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
  *              type: object
  *              required:
  *                  - size
