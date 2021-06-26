@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: account-management-api
+  labels:
+    {{- include "account-management-api.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  tls:
+    - hosts:
+        - backoffice.hadiethshop.nl
+      secretName: backofficehadiethshop
+  rules:
+    - host: backoffice.hadiethshop.nl
+      http:
+        paths:
+          - path: /accounts
+            backend:
+              serviceName: account-management-api
+              servicePort: 80
+          - path: /login
+            backend:
+              serviceName: account-management-api
+              servicePort: 80
+          - path: /websites
+            backend:
+              serviceName: account-management-api
+              servicePort: 80

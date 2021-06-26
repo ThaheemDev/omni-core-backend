@@ -1,0 +1,31 @@
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+
+stages:
+  - build
+  - deploy
+
+services:
+  - docker:19.03.12-dind
+
+build:
+  image: docker:19.03.12
+  stage: build
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest -t "$CI_REGISTRY_IMAGE:$CI_PIPELINE_IID" -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_PIPELINE_IID" "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_PIPELINE_IID"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+
+deploy:
+  image: henry40408/doctl-kubectl
+  stage: deploy
+  script:
+    - doctl auth init -t f7811876afc38bfb8c721ffeb23b8ebe4073fcefedda4011fbd67ac17d04c7e7
+    - doctl kubernetes cluster kubeconfig save babcd90d-ecd9-4661-aa8e-dab71c5f5c0a
+    - cd helm/business-intelligence
+    - helm upgrade --install business-intelligence --set image.tag=$CI_PIPELINE_IID .
