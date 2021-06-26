@@ -13,9 +13,16 @@ const passport = require('passport');
 */
 
 
+
+
+
 /**
  * @swagger
  *  components:
+ *   securitySchemes:
+ *    BearerAuth:
+ *     type: http
+ *     scheme: bearer
  *   schemas:
  *      User:
  *       type: object
@@ -201,6 +208,8 @@ router.post('/login',authController.login);
  *     summary: Users Listing
  *     description:  It can be use to get the active users listing.
  *     tags: [Account]   
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *      - deprecated: false
  *        name: page
@@ -248,6 +257,8 @@ router.get('/accounts', passport.authenticate('jwt', {session: false}), userCont
  *     summary: Update User
  *     description:  Update user account using {external_id}
  *     tags: [Account]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *        - in: path
  *          required: true
@@ -314,6 +325,8 @@ router.put('/accounts/:userId', passport.authenticate('jwt', {session: false}), 
  *     summary: Account Remove
  *     description:  Remove account with {external_id}
  *     tags: [Account]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         required: true
@@ -362,6 +375,8 @@ router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}
  *     summary: Create Website
  *     description:  It can be use to create website.
  *     tags: [Website]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *        - in: body
  *          name: websites
@@ -416,7 +431,9 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *   get:
  *     summary: List Website
  *     description:  It can be use to list website.
- *     tags: [Website]  
+ *     tags: [Website]
+ *     security:
+ *       - BearerAuth: []  
  *     parameters:
  *       - deprecated: false
  *         name: page
@@ -464,6 +481,8 @@ router.get('/websites', passport.authenticate('jwt', {session: false}), websiteC
  *     summary: Website Update
  *     description:  Update existing website using {external_id}
  *     tags: [Website]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *        - in: path
  *          required: true
@@ -521,6 +540,8 @@ router.put('/websites/:websiteId', passport.authenticate('jwt', {session: false}
  *     summary: Website Remove
  *     description:   Remove a website with `{external_id}`
  *     tags: [Website]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         required: true
