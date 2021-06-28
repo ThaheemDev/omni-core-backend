@@ -18,8 +18,5 @@ module.exports = {
   bcrypt: {
     saltRounds: 10,
     plainText: 'Account_Api'
-  },
-  jwt: {
-    secrate: 'secrateText'
   }
 };

@@ -1,7 +1,3 @@
-const db = require("../models"); // models path depend on your structure
-const bcrypt = require('bcrypt');
-const config = require('../config/config')
-const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const response = require('../lib/response');
 
