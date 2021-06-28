@@ -11,6 +11,14 @@ const getUsers = async (req, res, next) => {
     try {   
         
         let {page,page_size}  = req.query;
+        if(!page){
+            throw {status:422, message:'Page is required'}
+        } 
+        
+        if(!page_size){
+            throw {status:422, message:'Page size is required'}
+        } 
+
         page = Number(page);
         page_size = Number(page_size);
         
@@ -26,8 +34,8 @@ const getUsers = async (req, res, next) => {
         let next  = ((page*page_size)<count)?true:false;        
         res.send(response.pagination(count,rows,next))
 
-    } catch (error) {
-        res.send(response.error(error))
+    } catch (err) {
+        res.status(response.getStatusCode(err)).send(response.error(err));
     }
     
 }
@@ -38,14 +46,14 @@ const deleteUser = async (req, res, next) => {
         const userDetail = req.body;
         const {userId} = req.params;
         if(!userId){
-            throw {status:422, errors:{message:'Id is required'}}
+            throw {status:422, message:'Id is required'}
         }
 
 
         const users = await db.user.destroy({where: {external_id: userId}})
         res.send(response.success('User has been deleted successfully',{}))
     } catch(err) {
-       res.status(err.status || 422).send(response.error(err.errors));
+        res.status(response.getStatusCode(err)).send(response.error(err));
     }
     
 }
@@ -55,14 +63,16 @@ const signUp = async (req, res, next) => {
 
     if(user.password){
         user.password = bcrypt.hashSync(String(user.password), salt); 
-    }
-  
-
-
+    } 
     try {
+
+        if(!user.email){
+            throw {status:422, message:'Email is required'}
+        }
+
         const existsUser = await db.user.findOne({ where: { email: user.email } })
         if(existsUser) {
-            throw {status:422, errors:{message:'User Already Exists'}}
+            throw {status:422, message:'User Already Exists'}
         }
 
         const data = await db.user.create(user);
@@ -72,9 +82,8 @@ const signUp = async (req, res, next) => {
 
         res.send(response.success('User created Successfully',dataToSend));
 
-    } catch (err) {       
-        console.log('err', err)
-        res.status(err.status || 422).send(response.error(err.errors));
+    } catch (err) {  
+        res.status(response.getStatusCode(err)).send(response.error(err));
     }
 }
 const updateUser = async (req, res, next) => {
@@ -83,7 +92,7 @@ const updateUser = async (req, res, next) => {
         const {userId} = req.params;
   
         if(!userId){
-            throw {status:422, errors:{message:'Id is required'}}
+            throw {status:422, message:'Id is required'}
         }
 
 
@@ -102,14 +111,14 @@ const updateUser = async (req, res, next) => {
             if(resdata){
                 res.send(response.success('User has been successfully updated.',{}));
             } else {
-                throw {status:422, errors:{message:'Some error occurred while updating the user.'}}
+                throw {status:422, message:'Some error occurred while updating the user.'}
             }
         } else {
-            throw {status:422, errors:{message:'User is not found'}}
+            throw {status:422, message:'User is not found'}
             
         }
     } catch (err) {
-        res.status(err.status || 422).send(response.error(err.errors));
+        res.status(response.getStatusCode(err)).send(response.error(err));
     }
 }
 module.exports = {

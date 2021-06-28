@@ -14,8 +14,7 @@ const create = async (req, res, next) => {
         res.send(response.success('Website has been created successfully',dataObj))
         
     } catch(err) {
-        console.log('err', err)
-        res.status(err.status || 422).send(response.error(err.errors));       
+        res.status(response.getStatusCode(err)).send(response.error(err));      
     }
 }
 
@@ -26,13 +25,13 @@ const update = async (req, res, next) => {
         const {websiteId} = req.params;
 
         if(!websiteId){
-            throw {status:422, errors:{message:'Id is required'}}
+            throw {status:422, message:'Id is required'}
         }
         await db.website.update(websiteData, { where: { external_id: websiteId } })
        
         res.send(response.success('Website has been updated successfully',{}))
     } catch(err) {
-        res.status(err.status || 422).send(response.error(err.errors)); 
+        res.status(response.getStatusCode(err)).send(response.error(err));
     }
 }
 
@@ -40,10 +39,19 @@ const update = async (req, res, next) => {
 const getAll = async (req, res, next) => {
 
     let {page,page_size}  = req.query;
-    page = Number(page);
-    page_size = Number(page_size);
+
     try {
-        // const websites = await db.website.findAll({attributes: ['external_id', 'status','size','domainname']});    
+        if(!page){
+            throw {status:422, message:'Page is required'}
+        } 
+        
+        if(!page_size){
+            throw {status:422, message:'Page size is required'}
+        } 
+
+        page = Number(page);
+        page_size = Number(page_size);
+
         let offset = 0;
         if(page > 1){
             offset = ((page-1)*page_size);
@@ -56,7 +64,7 @@ const getAll = async (req, res, next) => {
            
         res.send(response.pagination(count,rows,next))
     } catch (err) {
-        res.status(err.status || 422).send(response.error(err.errors)); 
+        res.status(response.getStatusCode(err)).send(response.error(err));
     }
 }
 
@@ -65,7 +73,7 @@ const deletes = async (req, res, next) => {
     try {
         const {websiteId} = req.params;
         if(!websiteId){
-            throw {status:422, errors:{message:'Id is required'}}
+            throw {status:422, message:'Id is required'}
         }
 
         const website = await db.website.destroy({where: {external_id: websiteId}})
@@ -73,12 +81,12 @@ const deletes = async (req, res, next) => {
         if(website){
             res.send(response.success('Website has been deleted successfully',{}))
         } else {
-            throw {status:422, errors:{message:'Website is not found'}}
+            throw {status:422, message:'Website is not found'}
         }
      
         
     } catch(err) {
-        res.status(err.status || 422).send(response.error(err.errors)); 
+        res.status(response.getStatusCode(err)).send(response.error(err));
     }
     
 }
