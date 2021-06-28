@@ -6,6 +6,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM,
             values:['EMPLOYEE','ADMIN',"MAINTAINER"],
             defaultValue:'EMPLOYEE',
+            unique: true,
             validate: {
                 customValidator(value) {
                     if (['EMPLOYEE','MAINTAINER','ADMIN'].indexOf(value) <= -1) {
