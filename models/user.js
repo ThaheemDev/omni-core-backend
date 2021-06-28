@@ -1,10 +1,12 @@
 const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, Sequelize) => {
+    const roleModel = require('./role')(sequelize, Sequelize);
     const User = sequelize.define("user", {
         external_id: {
             type: Sequelize.STRING,
-            defaultValue: uuidv4(),
+            unique: true,
+            allowNull: false,
             set(val) {
                 let uuid = uuidv4();
                 this.setDataValue('external_id', uuid);
@@ -40,6 +42,7 @@ module.exports = (sequelize, Sequelize) => {
                 }
             }
         },
+        // TODO: convert this into an one-to-many association. This should be a list of foreign keys.
         websites: {
             type: Sequelize.STRING,
             allowNull: false,
@@ -71,28 +74,17 @@ module.exports = (sequelize, Sequelize) => {
                 }
             }
         },
-        role: {
-            type: Sequelize.ENUM,
-            values:['1','2'],
-            defaultValue:'2',
-            validate: {
-                customValidator(value) {
-                    if (['1','2'].indexOf(value) <= -1) {
-                        throw new Error("Role is incorrect");
-                    }
-                }
-            }
-        },
         password: {
             type: Sequelize.STRING,
             allowNull: false,
             validate: {
                 len: {
-                    args: [1, 100],
-                    msg: "Passowrd range should be between 8-100 character"
+                    args: [8, 64],
+                    msg: "Password range should be between 8-100 character"
                 }
             }
         }
     });
+    User.belongsTo(roleModel, {as: 'role'});
     return User;
 };
