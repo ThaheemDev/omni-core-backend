@@ -46,13 +46,15 @@ const passport = require('passport');
  *      EmptyResponse:
  *       type: object
  *      Error:
- *       type: object
- *       properties:
- *          status:
- *           type: integer
- *           default: 2
- *          error: 
- *           type: object
+ *       type: array
+ *       items:
+ *          type: object
+ *          properties:
+ *            code:
+ *              type: integer
+ *              example: 422
+ *            message: 
+ *              type: string
  *      Website:
  *       type: object
  *       properties:
