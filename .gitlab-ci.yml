@@ -13,6 +13,14 @@ services:
 test:
   image: node:12
   stage: test
+  services:
+    - name: mysql:latest
+      alias: db
+  variables:
+    DB_HOST: db
+    DB_PASS: tests
+    MYSQL_DATABASE: accountManage
+    MYSQL_ROOT_PASSWORD: tests
   before_script:
     - npm ci
   script:

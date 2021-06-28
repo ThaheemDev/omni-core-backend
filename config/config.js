@@ -3,9 +3,9 @@ let config = configFile['local'];
 
 module.exports = {
   database: {
-    host: config.host,
-    user: config.username,
-    password: config.password,
+    host: process.env.DB_HOST || config.host,
+    user: process.env.DB_USER || config.username,
+    password: process.env.DB_PASS || config.password,
     db: config.database,
     dialect: config.dialect,
     pool: {
