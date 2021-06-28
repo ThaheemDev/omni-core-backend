@@ -85,6 +85,6 @@ module.exports = (sequelize, Sequelize) => {
             }
         }
     });
-    User.belongsTo(roleModel, {as: 'role'});
+    User.belongsTo(roleModel);
     return User;
 };

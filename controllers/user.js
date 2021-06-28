@@ -3,12 +3,19 @@ const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
 
+module.exports = {
+  getUsers,
+  deleteUser,
+  signUp,
+  updateUser
+}
+
 // get all user details
-const getUsers = async (req, res, next) => {
+async function getUsers(req, res) {
   try {
     let {page, page_size} = req.query;
-    page = Number(page);
-    page_size = Number(page_size);
+    page = Number(page) || 1;
+    page_size = getValidPageSize(page_size);
 
     let offset = 0;
     if (page > 1) {
@@ -19,15 +26,14 @@ const getUsers = async (req, res, next) => {
       count,
       rows
     } = await db.user.findAndCountAll({
-        attributes: ['external_id', 'name', 'email', 'websites', 'status', 'role'],
+        attributes: ['external_id', 'name', 'email', 'websites', 'status'],
         offset: offset,
-        limit: page_size
+        limit: page_size,
+        include: db.role
       }
     );
 
-    let next = ((page * page_size) < count) ? true : false;
-    res.send(response.pagination(count, rows, next))
-
+    res.send(response.pagination(count, rows.map(response.accountViewModel), page))
   } catch (error) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -35,7 +41,7 @@ const getUsers = async (req, res, next) => {
 }
 
 // delete user details
-const deleteUser = async (req, res, next) => {
+async function deleteUser(req, res) {
   try {
     const userDetail = req.body;
     const {userId} = req.params;
@@ -51,7 +57,8 @@ const deleteUser = async (req, res, next) => {
   }
 
 }
-const signUp = async (req, res, next) => {
+
+async function signUp(req, res) {
   const user = req.body;
   const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
 
@@ -76,7 +83,8 @@ const signUp = async (req, res, next) => {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
-const updateUser = async (req, res, next) => {
+
+async function updateUser(req, res) {
   try {
     const userDetail = req.body;
     const {userId} = req.params;
@@ -111,9 +119,11 @@ const updateUser = async (req, res, next) => {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
-module.exports = {
-  getUsers,
-  deleteUser,
-  signUp,
-  updateUser
+
+function getValidPageSize(value) {
+  if ([10, 20, 50].includes(value)) {
+    return value;
+  }
+  return 10;
 }
+
