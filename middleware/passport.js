@@ -41,4 +41,4 @@ module.exports = (app) => {
       done(null, false);
     }
   })
-8}
+}

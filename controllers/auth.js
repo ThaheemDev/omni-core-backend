@@ -19,8 +19,7 @@ const login = async (req, res, next) => {
       if (err) {
         return next(err);
       }
-      // TODO: we need a start page
-      return res.redirect('/api/accounts');
+      return res.status(204).send();
     });
   }, (err) => {
     console.log('err', err)
