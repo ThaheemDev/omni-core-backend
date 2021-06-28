@@ -4,7 +4,8 @@ module.exports = (sequelize, Sequelize) => {
     const Website = sequelize.define("website", {
         external_id: {
             type: Sequelize.STRING,
-            defaultValue: uuidv4(),
+            unique: true,
+            allowNull: false,
             set(val) {
                 let uuid = uuidv4();
                 this.setDataValue('external_id', uuid);
