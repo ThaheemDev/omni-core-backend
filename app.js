@@ -1,26 +1,18 @@
 const createError = require('http-errors'),
-          express = require('express'),
-          path = require('path'),
-          cookieParser = require('cookie-parser'),
-          logger = require('morgan'),
-          middleware = require('./middleware/index'),
-          indexRouter = require('./routes/index'),
-          bodyParser = require('body-parser'),
-          db = require("./models"),
-          swaggerJSDoc = require('swagger-jsdoc'),
-          // passport = require('passport'),
-          swaggerUi = require('swagger-ui-express');
-const user = require('./models/user');
-       
-
+  express = require('express'),
+  path = require('path'),
+  cookieParser = require('cookie-parser'),
+  logger = require('morgan'),
+  middleware = require('./middleware/index'),
+  indexRouter = require('./routes/index'),
+  bodyParser = require('body-parser'),
+  db = require("./models"),
+  authController = require('./controllers/auth'),
+  swaggerJSDoc = require('swagger-jsdoc'),
+  swaggerUi = require('swagger-ui-express');
 
 db.sequelize.sync();
-
 const app = express();
-// const initializePassport = require('./passport-config');
-// initializePassport(passport,email=>user.find(userObj=>userObj.email == email));
-
-
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -65,10 +57,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 
-
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -76,6 +67,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 middleware(app)
 
 app.use('/api', indexRouter);
+app.post('/login', authController.login);
+app.post('/logout', authController.logout);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

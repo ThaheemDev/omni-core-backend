@@ -1,19 +1,22 @@
 var express = require('express');
 var router = express.Router();
-const authController = require('../controllers/auth');
 const userController = require('../controllers/user');
 const websiteController = require('../controllers/website');
-const passport = require('passport');
+
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.status(401);
+  }
+}
 
 /**
  * @swagger
  * tags:
  *  name: Account
  *  description: Account management API
-*/
-
-
-
+ */
 
 
 /**
@@ -46,15 +49,13 @@ const passport = require('passport');
  *      EmptyResponse:
  *       type: object
  *      Error:
- *       type: array
- *       items:
- *          type: object
- *          properties:
- *            code:
- *              type: integer
- *              example: 422
- *            message: 
- *              type: string
+ *       type: object
+ *       properties:
+ *          status:
+ *           type: integer
+ *           default: 2
+ *          error:
+ *           type: object
  *      Website:
  *       type: object
  *       properties:
@@ -68,9 +69,7 @@ const passport = require('passport');
  *          status:
  *           type: string
  *           enum: ['ACTIVE', 'BLOCKED']
-*/
-
-
+ */
 
 
 /* POST create user. */
@@ -109,7 +108,7 @@ const passport = require('passport');
  *                  status:
  *                      type: string
  *                      enum: ['ACTIVE', 'BLOCKED']
- *                  
+ *
  *     responses:
  *       200:
  *         description: Success.
@@ -123,7 +122,7 @@ const passport = require('passport');
  *                 status:
  *                   type: integer
  *                   default: 1
- *                 data: 
+ *                 data:
  *                   $ref: '#/components/schemas/User'
  *       422:
  *         description: Error.
@@ -131,76 +130,8 @@ const passport = require('passport');
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
+ */
 router.post('/accounts', userController.signUp);
-
-
-/* GET login user. */
-
-/**
- * @swagger
- * /login:
- *   post:
- *     summary: Login
- *     description:  It Can be used to login into website.
- *     tags: [Account]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *              type: object
- *              required:
- *                  - email
- *                  - password
- *              properties:
- *                  email:
- *                      type: string
- *                  password:
- *                      type: string
- *                  
- *     responses:
- *       200:
- *         description: Success.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data: 
- *                   type: object
- *                   properties:
- *                      id:
- *                          type: integer
- *                      name:
- *                          type: string
- *                      email:
- *                          type: string
- *                      role:
- *                          type: string
- *                          enum: [1,2]
- *                      websites:
- *                          type: array
- *                          items:
- *                           type: string
- *                      status:
- *                          type: string
- *                          enum: ['ACTIVE', 'BLOCKED']
- *                      token:
- *                          type: string
- *       422:
- *         description: Error.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
-*/
-router.post('/login',authController.login);
 
 /* GET users listing. */
 /**
@@ -209,7 +140,7 @@ router.post('/login',authController.login);
  *   get:
  *     summary: Users Listing
  *     description:  It can be use to get the active users listing.
- *     tags: [Account]   
+ *     tags: [Account]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -225,7 +156,7 @@ router.post('/login',authController.login);
  *        description: Number of items per page
  *        in: query
  *        required: true
- *        allowEmptyValue: false       
+ *        allowEmptyValue: false
  *     responses:
  *       200:
  *         description: Success
@@ -238,7 +169,7 @@ router.post('/login',authController.login);
  *                   type: string
  *                 total:
  *                   type: integer
- *                 results: 
+ *                 results:
  *                   type: array
  *                   items:
  *                      $ref: '#/components/schemas/User'
@@ -248,8 +179,8 @@ router.post('/login',authController.login);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
-router.get('/accounts', passport.authenticate('jwt', {session: false}), userController.getUsers);
+ */
+router.get('/accounts', /*isAuthenticated,*/ userController.getUsers);
 
 /* update users . */
 /**
@@ -290,11 +221,11 @@ router.get('/accounts', passport.authenticate('jwt', {session: false}), userCont
  *                  websites:
  *                      type: array
  *                      items:
-*                       type: string
+ *                       type: string
  *                  status:
  *                      type: string
  *                      enum: ['ACTIVE', 'BLOCKED']
- *                  
+ *
  *     responses:
  *       200:
  *         description: Success
@@ -308,7 +239,7 @@ router.get('/accounts', passport.authenticate('jwt', {session: false}), userCont
  *                 status:
  *                   type: integer
  *                   default: 1
- *                 data: 
+ *                 data:
  *                   $ref: '#/components/schemas/EmptyResponse'
  *       422:
  *         description: Error
@@ -316,8 +247,8 @@ router.get('/accounts', passport.authenticate('jwt', {session: false}), userCont
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
-router.put('/accounts/:userId', passport.authenticate('jwt', {session: false}), userController.updateUser);
+ */
+router.put('/accounts/:userId', isAuthenticated, userController.updateUser);
 
 /* delete users . */
 /* POST create user. */
@@ -336,7 +267,7 @@ router.put('/accounts/:userId', passport.authenticate('jwt', {session: false}), 
  *         deprecated: false
  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
  *         name: external_id
- *                   
+ *
  *     responses:
  *       200:
  *         description: Success.
@@ -350,7 +281,7 @@ router.put('/accounts/:userId', passport.authenticate('jwt', {session: false}), 
  *                 status:
  *                   type: integer
  *                   default: 1
- *                 data: 
+ *                 data:
  *                   $ref: '#/components/schemas/EmptyResponse'
  *       422:
  *         description: Error.
@@ -358,9 +289,8 @@ router.put('/accounts/:userId', passport.authenticate('jwt', {session: false}), 
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
-router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}), userController.deleteUser);
-
+ */
+router.delete('/accounts/:userId', isAuthenticated, userController.deleteUser);
 
 
 /**
@@ -368,7 +298,7 @@ router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}
  * tags:
  *  name: Website
  *  description: Website management API
-*/
+ */
 
 /* POST create website. */
 /**
@@ -402,7 +332,7 @@ router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}
  *                  status:
  *                      type: string
  *                      enum: [1, 2, 3]
- *                  
+ *
  *     responses:
  *       200:
  *         description: Success.
@@ -416,7 +346,7 @@ router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}
  *                 status:
  *                   type: integer
  *                   default: 1
- *                 data: 
+ *                 data:
  *                   $ref: '#/components/schemas/Website'
  *       422:
  *         description: Error.
@@ -424,8 +354,8 @@ router.delete('/accounts/:userId', passport.authenticate('jwt', {session: false}
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
-router.post('/websites', passport.authenticate('jwt', {session: false}), websiteController.create);
+ */
+router.post('/websites', isAuthenticated, websiteController.create);
 
 /* GET website listing. */
 /**
@@ -436,7 +366,7 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *     description:  It can be use to list website.
  *     tags: [Website]
  *     security:
- *       - BearerAuth: []  
+ *       - BearerAuth: []
  *     parameters:
  *       - deprecated: false
  *         name: page
@@ -450,7 +380,7 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *         description: Number of items per page
  *         in: query
  *         required: true
- *         allowEmptyValue: false           
+ *         allowEmptyValue: false
  *     responses:
  *       200:
  *         description: Success.
@@ -459,7 +389,7 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *             schema:
  *               type: object
  *               properties:
- *                 result: 
+ *                 result:
  *                   type: array
  *                   items:
  *                      $ref: '#/components/schemas/Website'
@@ -473,8 +403,8 @@ router.post('/websites', passport.authenticate('jwt', {session: false}), website
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
-router.get('/websites', passport.authenticate('jwt', {session: false}), websiteController.getAll);
+ */
+router.get('/websites', isAuthenticated, websiteController.getAll);
 
 /* update website. */
 /**
@@ -511,7 +441,7 @@ router.get('/websites', passport.authenticate('jwt', {session: false}), websiteC
  *                  status:
  *                      type: string
  *                      enum: ['ACTIVE', 'BLOCKED']
- *                  
+ *
  *     responses:
  *       200:
  *         description: Success.
@@ -525,7 +455,7 @@ router.get('/websites', passport.authenticate('jwt', {session: false}), websiteC
  *                 status:
  *                   type: integer
  *                   default: 1
- *                 data: 
+ *                 data:
  *                   $ref: '#/components/schemas/EmptyResponse'
  *       422:
  *         description: Error.
@@ -533,8 +463,8 @@ router.get('/websites', passport.authenticate('jwt', {session: false}), websiteC
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
-router.put('/websites/:websiteId', passport.authenticate('jwt', {session: false}), websiteController.update);
+ */
+router.put('/websites/:websiteId', isAuthenticated, websiteController.update);
 
 /* delete website listing. */
 /**
@@ -552,7 +482,7 @@ router.put('/websites/:websiteId', passport.authenticate('jwt', {session: false}
  *         deprecated: false
  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
  *         name: external_id
- *                  
+ *
  *     responses:
  *       200:
  *         description: Success.
@@ -566,7 +496,7 @@ router.put('/websites/:websiteId', passport.authenticate('jwt', {session: false}
  *                 status:
  *                   type: integer
  *                   default: 1
- *                 data: 
+ *                 data:
  *                   $ref: '#/components/schemas/EmptyResponse'
  *       422:
  *         description: Error.
@@ -574,8 +504,8 @@ router.put('/websites/:websiteId', passport.authenticate('jwt', {session: false}
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
-*/
-router.delete('/websites/:websiteId', passport.authenticate('jwt', {session: false}), websiteController.deletes);
+ */
+router.delete('/websites/:websiteId', isAuthenticated, websiteController.deletes);
 
 
 module.exports = router;

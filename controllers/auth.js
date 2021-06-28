@@ -2,66 +2,41 @@ const db = require("../models"); // models path depend on your structure
 const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const jwt = require('jsonwebtoken');
-const passport  = require('passport');
+const passport = require('passport');
 const response = require('../lib/response');
+
 // login to user
 const login = async (req, res, next) => {
+  console.log('req.body', req.body)
+  passport.authenticate('local', (error, auser) => {
+    console.log('auser', auser)
+    console.log('error', error)
 
-    try {
-
-        if(!(req.body && Object.keys(req.body).length>0)){
-            throw {status:401,message:'Information is missing'};
-        }
-
-        if(!req.body.email){
-            throw {status:401,message:'Email is required'};
-        }
-
-        if(!req.body.password){
-            throw {status:401,message:'Password is required'};
-        }
-
-        passport.authenticate('local', (error, auser) => {
-            
-            if(error){
-                throw {status:401,message:'Invalid username or password.'};
-            }
-            if(auser == undefined){
-                throw {status:401,message:'Invalid username or password.'};
-            }else{
-                const userToSend = JSON.parse(JSON.stringify(auser))
-    
-                delete userToSend.password;
-    
-                userToSend.token = jwt.sign({ id: userToSend.id, role: userToSend.role }, config.jwt.secrate);
-    
-                req.login(userToSend, (error) => {
-                    if(error){
-                        throw error
-                    }
-    
-                    delete userToSend.id;
-                    delete userToSend.createdAt;
-                    delete userToSend.updatedAt;
-                    return res.status(200).send(response.success('Successfully logged-in.',userToSend));
-                    
-                })
-            }   
-        }, (err) => {
-            res.status(response.getStatusCode(err)).send(response.error(err));
-        })(req, res, next)
-        
-    } catch (err) {
-        res.status(response.getStatusCode(err)).send(response.error(err));
+    if (error) {
+      return res.status(401).send(response.error({message: 'Invalid username or password.'}));
+    }
+    if (!auser) {
+      return res.status(401).send(response.error({message: 'Invalid username or password.'}));
     }
 
-
-
-    
+    req.logIn(auser, function (err) {
+      if (err) {
+        return next(err);
+      }
+      // TODO: we need a start page
+      return res.redirect('/api/accounts');
+    });
+  }, (err) => {
+    console.log('err', err)
+    res.status(500).send(response.error(err));
+  })(req, res, next)
 }
 
-// update user
-
+const logout = async (req, res) => {
+  req.logout();
+  return res.send();
+}
 module.exports = {
-    login,
+  login,
+  logout
 }
