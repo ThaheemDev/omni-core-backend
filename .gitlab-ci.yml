@@ -3,19 +3,25 @@ variables:
   DOCKER_TLS_CERTDIR: "/certs"
 
 stages:
-  - build
+  - test
+  - package
   - deploy
 
 services:
   - docker:19.03.12-dind
 
-build:
+test:
   image: node:12
-  stage: build
+  stage: test
+  script:
+    - npm test
+
+build:
+  image: docker:19.03.12
+  stage: package
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - npm test
     - docker pull $CI_REGISTRY_IMAGE:latest || true
     - docker build --cache-from $CI_REGISTRY_IMAGE:latest -t "$CI_REGISTRY_IMAGE:$CI_PIPELINE_IID" -t "$CI_REGISTRY_IMAGE:latest" .
     - docker tag "$CI_REGISTRY_IMAGE:$CI_PIPELINE_IID" "$CI_REGISTRY_IMAGE:latest"
