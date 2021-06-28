@@ -2,11 +2,13 @@ const db = require("../models"); // models path depend on your structure
 const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
+const {v4: uuidv4} = require('uuid');
 
+// TODO: only users with ADMIN role should be able to POST, PUT & DELETE.
 module.exports = {
   getUsers,
   deleteUser,
-  signUp,
+  createUser,
   updateUser
 }
 
@@ -33,7 +35,7 @@ async function getUsers(req, res) {
       }
     );
 
-    res.send(response.pagination(count, rows.map(response.accountViewModel), page))
+    res.send(response.pagination(count, rows.map(response.listAccountViewModel), page))
   } catch (error) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -49,7 +51,6 @@ async function deleteUser(req, res) {
       throw {status: 422, message: 'Id is required'}
     }
 
-
     const users = await db.user.destroy({where: {external_id: userId}})
     res.send(response.success('User has been deleted successfully', {}))
   } catch (err) {
@@ -58,7 +59,8 @@ async function deleteUser(req, res) {
 
 }
 
-async function signUp(req, res) {
+async function createUser(req, res) {
+  // TODO: validate role and any other data that is not covered Sequelize validations/constrains.
   const user = req.body;
   const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
 
@@ -72,13 +74,11 @@ async function signUp(req, res) {
       throw {status: 422, errors: {message: 'User Already Exists'}}
     }
 
+    user.external_id = 0;
+    user.roleId = (await db.role.findOne({where: {role: user.role}})).id;
     const data = await db.user.create(user);
 
-    let dataToSend = data.dataValues;
-    delete dataToSend.password;
-
-    res.send(response.success('User created Successfully', dataToSend));
-
+    res.send(await response.accountViewModel(data));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -104,10 +104,10 @@ async function updateUser(req, res) {
       } else {
         userDetail.password = user.password
       }
-      const resdata = await db.user.update(userDetail, {where: {id: userId}})
+      const resdata = await user.update(userDetail, {where: {id: user.id}})
 
       if (resdata) {
-        res.send(response.success('User has been successfully updated.', {}));
+        res.send(await response.accountViewModel(resdata));
       } else {
         throw {status: 422, errors: {message: 'Some error occurred while updating the user.'}}
       }

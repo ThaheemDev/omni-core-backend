@@ -131,7 +131,7 @@ function isAuthenticated(req, res, next) {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/accounts', userController.signUp);
+router.post('/accounts', isAuthenticated, userController.createUser);
 
 /* GET users listing. */
 /**
