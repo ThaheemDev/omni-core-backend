@@ -13,6 +13,8 @@ services:
 test:
   image: node:12
   stage: test
+  before_script:
+    - npm ci
   script:
     - npm test
 
