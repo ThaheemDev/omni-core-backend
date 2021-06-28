@@ -7,7 +7,7 @@ function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     next();
   } else {
-    res.status(401);
+    res.status(401).send();
   }
 }
 
@@ -180,7 +180,7 @@ router.post('/accounts', userController.signUp);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/accounts', /*isAuthenticated,*/ userController.getUsers);
+router.get('/accounts', isAuthenticated, userController.getUsers);
 
 /* update users . */
 /**

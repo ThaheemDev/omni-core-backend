@@ -1,5 +1,11 @@
 const createError = require('http-errors'),
   express = require('express'),
+  expressSession = require('express-session')({
+    secret: process.env.SESSION_SECFRET || 'aebe58c5b60a8ec05d427a40220113ea218cc46455c10c84b55ec047',
+    resave: false,
+    saveUninitialized: false
+    // TODO: save session into DB instead of MEM (Nabil)
+  }),
   path = require('path'),
   cookieParser = require('cookie-parser'),
   logger = require('morgan'),
@@ -50,7 +56,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
-
+app.use(expressSession);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
