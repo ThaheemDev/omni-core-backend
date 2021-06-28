@@ -14,19 +14,16 @@ module.exports = {
 
       await queryInterface.bulkInsert('roles', [{
         role: 'EMPLOYEE',
-        external_id:uuidv4(),
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         role: 'ADMIN',
-        external_id:uuidv4(),
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         role: 'MAINTAINER',
-        external_id:uuidv4(),
         createdAt: new Date(),
         updatedAt: new Date()
       }], {});
@@ -39,5 +36,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+    queryInterface.bulkDelete('roles');
   }
 };
