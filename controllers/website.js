@@ -1,6 +1,5 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
   create,
@@ -9,19 +8,16 @@ module.exports = {
   deletes
 }
 
+// TODO: make sure only and admin can POST, PUT and DELETE websites. Add tests for this as well.
+
+
 // create website detail
 async function create(req, res, next) {
   try {
     const websiteData = req.body;
-    websiteData.external_id = uuidv4()
-    let data = await db.website.create(websiteData)
-
-    let dataObj = data.dataValues;
-    delete dataObj.id;
-    delete dataObj.createdAt;
-    delete dataObj.updatedAt;
-    res.send(response.success('Website has been created successfully', dataObj))
-
+    websiteData.external_id = 0;
+    let data = await db.website.create(websiteData);
+    res.send(response.websiteViewModel(data));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -36,9 +32,14 @@ async function update(req, res, next) {
     if (!websiteId) {
       throw {status: 422, errors: {message: 'Id is required'}}
     }
-    await db.website.update(websiteData, {where: {external_id: websiteId}})
 
-    res.send(response.success('Website has been updated successfully', {}))
+    let website = await db.website.findOne({where: {external_id: websiteId}});
+    if (!website) {
+      return res.status(404).send();
+    }
+
+    let result = await website.update(websiteData, {where: {external_id: websiteId}});
+    res.send(response.websiteViewModel(result));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }

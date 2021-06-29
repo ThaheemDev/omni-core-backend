@@ -1,123 +1,83 @@
 const request = require('supertest'),
   app = require('../app'),
-  assert = require('assert');
-chai = require('chai');
+  assert = require('assert'),
+  chai = require('chai');
+// TODO: please keep the number of new lines (white space) to a minimum
+// TODO: using more than 1 empty line to separate code, makes files bigger and code harder to read :(
 
 
 describe('POST /websites', () => {
-
   let websiteData = {
-    "name": `Site ${new Date().getTime()}`,
-    "status": 1,
-    "domainname": "http://google.com",
-    "size": "MEDIUM"
+    status: 'ACTIVE',
+    domainname: 'http://google.com',
+    size: 'MEDIUM'
   };
+  let agent;
 
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
 
   describe('Validations check', () => {
-
-
-    it('Require(name):- It should return 422 error', (done) => {
-
-      let requestedData = { ...websiteData };
-      delete requestedData.name;
-
-      request(app)
-        .post('/api/websites')
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
-
-
     it('Require(domainname):- It should return 422 error', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
       delete requestedData.domainname;
 
-      request(app)
-        .post('/api/websites')
+      agent.post('/api/websites')
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
-
-
-    it('Maxlength(name):- It should return 422 error', (done) => {
-
-      let requestedData = { ...websiteData };
-      requestedData.name = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
-
-      request(app)
-        .post('/api/websites')
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
-
 
     it('Maxlength(domainname):- It should return 422 error', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
       requestedData.domainname = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
 
-      request(app)
-        .post('/api/websites')
+      agent.post('/api/websites')
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
 
-
     it('Type Validation(status):- It should return 422 error', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
       requestedData.status = '1000';
 
-      request(app)
-        .post('/api/websites')
+      agent.post('/api/websites')
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
 
     it('Type Validation(size):- It should return 422 error', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
       requestedData.size = "Test Data";
 
-      request(app)
-        .post('/api/websites')
+      agent.post('/api/websites')
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
 
   });
 
-
   describe('Create new website', () => {
-
     it('It should return 200', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
-      request(app)
-        .post('/api/websites')
+      agent.post('/api/websites')
         .send(requestedData)
+        .expect(200)
         .then(function (res) {
-          assert.strictEqual(res.status, 200);
+          res = res.body;
+          chai.expect(res.uid).to.be.not.undefined;
+          assert.strictEqual(res.status, requestedData.status);
+          assert.strictEqual(res.size, requestedData.size);
+          assert.strictEqual(res.domainname, requestedData.domainname);
           done();
         });
     });
@@ -126,200 +86,162 @@ describe('POST /websites', () => {
 });
 
 describe('PUT /websites', () => {
-
   let websiteData = {
-    "name": `Site ${new Date().getTime()}`,
-    "status": 1,
-    "domainname": "http://google.com",
-    "size": "MEDIUM"
+    status: 'ACTIVE',
+    domainname: "http://google.com",
+    size: "MEDIUM"
   };
+  let agent;
 
-
-  before(() => {
-    let requestedData = { ...websiteData };
-    return request(app)
-      .post('/api/websites')
-      .send(requestedData)
-      .then(function (res) {
-        if (res.status == 200) {
-          return websiteData['id'] = res.body.data.id;
-        }
-
-      });
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
   });
 
+  before((done) => {
+    let requestedData = {...websiteData};
+
+    agent.post('/api/websites')
+      .send(requestedData)
+      .expect(200)
+      .then(function (res) {
+        websiteData.uid = res.body.uid;
+        done()
+      }).catch(done);
+  });
 
   describe('Validations check', () => {
-
-
-    it('Require(id):- It should return 422 error', (done) => {
-
-      let requestedData = { ...websiteData };
-      delete requestedData.id;
-
-      request(app)
-        .put('/api/websites')
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
-
-
-    it('Maxlength(name):- It should return 422 error', (done) => {
-
-      let requestedData = { ...websiteData };
-      requestedData.name = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
-
-      request(app)
-        .put('/api/websites')
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
-
-
     it('Maxlength(domainname):- It should return 422 error', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
       requestedData.domainname = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
 
-      request(app)
-        .put('/api/websites')
+      agent.put(`/api/websites/${requestedData.uid}`)
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
 
-
     it('Type Validation(status):- It should return 422 error', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
       requestedData.status = '1000';
 
-      request(app)
-        .put('/api/websites')
+      agent.put(`/api/websites/${requestedData.uid}`)
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
 
     it('Type Validation(size):- It should return 422 error', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
       requestedData.size = "Test Data";
 
-      request(app)
-        .put('/api/websites')
+      agent.put(`/api/websites/${requestedData.uid}`)
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
-
   });
-
 
   describe('Update Website', () => {
-
     it('It should return 200', (done) => {
+      let requestedData = {...websiteData};
 
-      let requestedData = { ...websiteData };
-      request(app)
-        .put('/api/websites')
+      requestedData.size = 'LARGE';
+      requestedData.status = 'BLOCKED';
+      delete requestedData.domainname;
+
+      agent.put(`/api/websites/${requestedData.uid}`)
         .send(requestedData)
+        .expect(200)
         .then(function (res) {
-          assert.strictEqual(res.status, 200);
+          res = res.body;
+          chai.expect(res.uid).to.be.not.undefined;
+          assert.strictEqual(res.status, requestedData.status);
+          assert.strictEqual(res.size, requestedData.size);
+          assert.strictEqual(res.domainname, websiteData.domainname);
           done();
         });
     });
   });
-
 });
 
-
-
 describe('GET /websites', () => {
+  let agent;
+  let websiteData = {
+    status: 'ACTIVE',
+    domainname: "http://google.com",
+    size: "MEDIUM"
+  };
+
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
+
+  before((done) => {
+    let requestedData = {...websiteData};
+
+    agent.post('/api/websites')
+      .send(requestedData)
+      .expect(200)
+      .then(function (res) {
+        websiteData.uid = res.body.uid;
+        done()
+      }).catch(done);
+  });
 
   describe('Website Listing', () => {
     it('It should return array on objects with 200', (done) => {
-
       let requestedData = {};
-      request(app)
-        .get('/api/websites')
+
+      agent.get('/api/websites')
         .send(requestedData)
+        .expect(200)
         .then(function (res) {
-          chai.expect(res.body.data).to.be.an('array');
-          assert.strictEqual(res.status, 200);
+          chai.expect(res.body.results).to.be.an('array');
+          chai.expect(res.body.total).to.be.an('number');
           done();
         });
     });
-
   });
-
 });
 
-
 describe('Delete /websites', () => {
-
+  let agent;
   let websiteData = {
-    "name": `Site ${new Date().getTime()}`,
-    "status": 1,
-    "domainname": "http://google.com",
-    "size": "MEDIUM"
+    status: 'ACTIVE',
+    domainname: "http://google.com",
+    size: "MEDIUM"
   };
 
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
 
-  before(() => {
-    let requestedData = { ...websiteData };
-    return request(app)
-      .post('/api/websites')
-      .send(requestedData)
+  before((done) => {
+    agent.post('/api/websites')
+      .send(websiteData)
+      .expect(200)
       .then(function (res) {
-        if (res.status == 200) {
-          return websiteData['id'] = res.body.data.id;
-        }
-
-      });
+        websiteData.uid = res.body.uid;
+        done()
+      }).catch(done);
   });
-
-
-  describe('Validations check', () => {
-
-
-    it('Require(id):- It should return 422 error', (done) => {
-
-      let requestedData = {};
-
-      request(app)
-        .delete('/api/websites')
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
-
-
-  });
-
 
   describe('Delete Website', () => {
-
     it('It should return 200', (done) => {
-
-      let requestedData = { id: websiteData.id };
-      request(app)
-        .delete('/api/websites')
-        .send(requestedData)
+      agent.delete(`/api/websites/${websiteData.uid}`)
+        .send()
         .then(function (res) {
           assert.strictEqual(res.status, 200);
           done();
@@ -327,4 +249,14 @@ describe('Delete /websites', () => {
     });
   });
 
+  describe('Delete non-existing website', () => {
+    it('It should return 200', (done) => {
+      agent.delete('/api/websites/8fa29de4-d911-11eb-a587-93dc4ed1ca81')
+        .send()
+        .then(function (res) {
+          assert.strictEqual(res.status, 422);
+          done();
+        });
+    });
+  });
 });

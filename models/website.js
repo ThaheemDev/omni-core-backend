@@ -39,6 +39,7 @@ module.exports = (sequelize, Sequelize) => {
         domainname: {
             type: Sequelize.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 len: {
                     args: [1, 255],

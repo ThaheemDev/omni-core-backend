@@ -4,7 +4,7 @@ const config = require('../config/config')
 const response = require('../lib/response');
 const {v4: uuidv4} = require('uuid');
 
-// TODO: only users with ADMIN role should be able to POST, PUT & DELETE.
+// TODO: only users with ADMIN role should be able to POST, PUT & DELETE. Add tests for this as well.
 module.exports = {
   getUsers,
   deleteUser,
