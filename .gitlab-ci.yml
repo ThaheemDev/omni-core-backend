@@ -23,6 +23,7 @@ test:
     MYSQL_ROOT_PASSWORD: tests
   before_script:
     - npm ci
+    - npm run seed
   script:
     - npm test
 
