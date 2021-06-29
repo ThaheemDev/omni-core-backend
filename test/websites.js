@@ -9,7 +9,7 @@ const request = require('supertest'),
 describe('POST /websites', () => {
   let websiteData = {
     status: 'ACTIVE',
-    domainname: 'http://google.com',
+    domainname: `http://${Date.now()}.google.com`,
     size: 'MEDIUM'
   };
   let agent;
@@ -69,6 +69,8 @@ describe('POST /websites', () => {
     it('It should return 200', (done) => {
       let requestedData = {...websiteData};
 
+      requestedData.domainname = `http://${Date.now()}.google.com`;
+
       agent.post('/api/websites')
         .send(requestedData)
         .expect(200)
@@ -88,7 +90,7 @@ describe('POST /websites', () => {
 describe('PUT /websites', () => {
   let websiteData = {
     status: 'ACTIVE',
-    domainname: "http://google.com",
+    domainname: `http://${Date.now()}.google.com`,
     size: "MEDIUM"
   };
   let agent;
@@ -170,12 +172,6 @@ describe('PUT /websites', () => {
 
 describe('GET /websites', () => {
   let agent;
-  let websiteData = {
-    status: 'ACTIVE',
-    domainname: "http://google.com",
-    size: "MEDIUM"
-  };
-
   before((done) => {
     // Login
     agent = request.agent(app);
@@ -185,13 +181,16 @@ describe('GET /websites', () => {
   });
 
   before((done) => {
-    let requestedData = {...websiteData};
+    let requestedData = {
+      status: 'ACTIVE',
+      domainname: `http://${Date.now()}.google.com`,
+      size: "MEDIUM"
+    };
 
     agent.post('/api/websites')
       .send(requestedData)
       .expect(200)
       .then(function (res) {
-        websiteData.uid = res.body.uid;
         done()
       }).catch(done);
   });
@@ -216,7 +215,7 @@ describe('Delete /websites', () => {
   let agent;
   let websiteData = {
     status: 'ACTIVE',
-    domainname: "http://google.com",
+    domainname: `http://${Date.now()}.bing.com`,
     size: "MEDIUM"
   };
 
