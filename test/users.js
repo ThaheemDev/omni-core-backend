@@ -8,25 +8,24 @@ let loginRequestedData = {
   password: "111111"
 };
 
-let agent;
-
-before((done) => {
-  // Login
-  agent = request.agent(app);
-  agent.post('/login')
-    .send('email=superadmin@local&password=supertest')
-    .expect(204, done);
-});
-
 describe('POST /accounts', () => {
+  let agent;
   let userData = {
-    email: `test.${new Date().getTime()}@yopmail.com`,
+    email: `test-post.${new Date().getTime()}@yopmail.com`,
     password: '111111',
     websites: ['https://google.com'],
     status: 'ACTIVE',
     role: 'ADMIN',
     name: 'test data'
   };
+
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
 
   describe('Validations check', () => {
     it('Require(name):- It should return 422 error', (done) => {
@@ -171,14 +170,23 @@ describe('POST /accounts', () => {
 });
 
 describe('PUT /accounts', () => {
+  let agent;
   let userData = {
-    "email": `test.${new Date().getTime()}@yopmail.com`,
+    "email": `test-put.${new Date().getTime()}@yopmail.com`,
     "websites": ["https://google.com"],
     "status": "ACTIVE",
     "role": 'EMPLOYEE',
     "name": "test data",
     "password": 111111
   };
+
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
 
   before((done) => {
     let requestedData = {...userData};
@@ -323,6 +331,15 @@ describe('PUT /accounts', () => {
 });
 
 describe('GET /accounts', () => {
+  let agent;
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
+
   describe('Account Listing', () => {
     it('It should return array on objects with 200', (done) => {
       let requestedData = {...loginRequestedData};
@@ -342,6 +359,7 @@ describe('GET /accounts', () => {
 });
 
 describe('DELETE /accounts', () => {
+  let agent;
   let userData = {
     "email": `test-del.${new Date().getTime()}@yopmail.com`,
     "websites": ["https://google.com"],
@@ -350,6 +368,14 @@ describe('DELETE /accounts', () => {
     "name": "test data",
     "password": 111111
   };
+
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
 
   before((done) => {
     let requestedData = {...userData};
