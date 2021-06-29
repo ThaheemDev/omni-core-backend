@@ -23,6 +23,18 @@ test:
     MYSQL_ROOT_PASSWORD: tests
   before_script:
     - npm ci
+    - |
+      cat <<EOD > config/config.json
+      {
+        "local": {
+          "username": "root",
+          "password": "${DB_PASS}",
+          "database": "${MYSQL_DATABASE}",
+          "host": "${DB_HOST}",
+          "dialect": "mysql"
+        }
+      }
+      EOD
     - npm run seed
   script:
     - npm test
