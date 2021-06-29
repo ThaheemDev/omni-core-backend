@@ -175,19 +175,34 @@ describe('PUT /accounts', () => {
     "email": `test.${new Date().getTime()}@yopmail.com`,
     "websites": ["https://google.com"],
     "status": "ACTIVE",
-    "role": 1,
+    "role": 'EMPLOYEE',
     "name": "test data",
     "password": 111111
   };
 
-  before(() => {
+  before((done) => {
     let requestedData = {...userData};
-    return agent.post('/api/accounts')
+    agent.post('/api/accounts')
       .send(requestedData)
       .then(function (res) {
         if (res.status == 200) {
-          return userData['uid'] = res.body.uid;
+          userData['uid'] = res.body.uid;
         }
+        done();
+      }).catch((err) => done(err));
+  });
+
+  afterEach(function (done) {
+    if (this.currentTest.state == 'failed') {
+      return done();
+    }
+    agent.delete(`/api/accounts${userData.uid}`)
+      .send()
+      .then((res) => {
+        done()
+      })
+      .catch((err) => {
+        done()
       });
   });
 
@@ -263,17 +278,14 @@ describe('PUT /accounts', () => {
     });
 
     it('Type Validation(role):- It should return 422 error', (done) => {
-
       let requestedData = {...userData};
-      requestedData.role = 3;
+
+      requestedData.role = 'not-a-real-role';
       delete requestedData.password;
 
       agent.put(`/api/accounts/${userData.uid}`)
         .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
+        .expect(422, done);
     });
   });
 

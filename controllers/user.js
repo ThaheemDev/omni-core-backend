@@ -85,6 +85,8 @@ async function createUser(req, res) {
 }
 
 async function updateUser(req, res) {
+  // TODO: validate role and any other data that is not covered Sequelize validations/constrains.
+  // TODO: user not allowed to change his own role
   try {
     const userDetail = req.body;
     const {userId} = req.params;
@@ -104,6 +106,7 @@ async function updateUser(req, res) {
       } else {
         userDetail.password = user.password
       }
+      userDetail.roleId = (await db.role.findOne({where: {role: userDetail.role}})).id;
       const resdata = await user.update(userDetail, {where: {id: user.id}})
 
       if (resdata) {
