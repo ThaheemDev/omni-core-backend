@@ -8,7 +8,8 @@
     "test": "mocha --exit",
     "migrate": "npx sequelize-cli db:migrate",
     "seed": "npx sequelize-cli db:seed:all --config 'config/config.json' --env local --debug",
-    "clear-seed": "npx sequelize-cli db:seed:undo:all --config 'config/config.json' --env local"
+    "clear-seed": "npx sequelize-cli db:seed:undo:all --config 'config/config.json' --env local",
+    "init-db": "node -e 'require(\"./models\").sequelize.sync();'"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

@@ -35,6 +35,7 @@ test:
         }
       }
       EOD
+    - npm run init-db
     - npm run seed
   script:
     - npm test
