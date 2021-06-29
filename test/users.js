@@ -184,10 +184,9 @@ describe('PUT /accounts', () => {
     let requestedData = {...userData};
     agent.post('/api/accounts')
       .send(requestedData)
+      .expect(200)
       .then(function (res) {
-        if (res.status == 200) {
-          userData['uid'] = res.body.uid;
-        }
+        userData.uid = res.body.uid;
         done();
       }).catch((err) => done(err));
   });
@@ -295,15 +294,27 @@ describe('PUT /accounts', () => {
       let requestedData = {...userData};
 
       delete requestedData.password;
+      requestedData.role = 'MAINTAINER';
+      requestedData.name = 'new name';
+      requestedData.status = 'BLOCKED';
 
       agent.put(`/api/accounts/${userData.uid}`)
         .send(requestedData)
+        .expect(200)
         .then(function (res) {
-          if (res.stauts == 200) {
-            loginRequestedData['email'] = requestedData.email;
+          res = res.body;
+          assert.strictEqual(res.email, userData.email)
+          assert.strictEqual(res.role, requestedData.role)
+          assert.strictEqual(res.status, requestedData.status)
+          assert.strictEqual(res.name, requestedData.name)
+          chai.expect(res.uid).to.be.not.undefined;
+          assert.strictEqual(res.websites.length, userData.websites.length);
+          for (const site of res.websites) {
+            chai.expect(site.uid).to.be.not.undefined;
+            // TODO: enable once website is properly implemented
+            // assert.ok(userData.websites.includes(site.domainname));
           }
-          assert.strictEqual(res.status, 200);
-          done();
+          done()
         });
     });
   });
@@ -316,12 +327,12 @@ describe('GET /accounts', () => {
     it('It should return array on objects with 200', (done) => {
       let requestedData = {...loginRequestedData};
 
-      request(app)
-        .get('/api/accounts')
-        .send(requestedData)
+      agent.get('/api/accounts')
+        .send()
+        .expect(200)
         .then(function (res) {
-          chai.expect(res.body.data).to.be.an('array');
-          assert.strictEqual(res.status, 200);
+          chai.expect(res.body.results).to.be.an('array');
+          chai.expect(res.body.total).to.be.an('number');
           done();
         });
     });
@@ -332,56 +343,48 @@ describe('GET /accounts', () => {
 
 describe('DELETE /accounts', () => {
   let userData = {
-    "email": `test.${new Date().getTime()}@yopmail.com`,
+    "email": `test-del.${new Date().getTime()}@yopmail.com`,
     "websites": ["https://google.com"],
     "status": "ACTIVE",
-    "role": 1,
+    "role": 'EMPLOYEE',
     "name": "test data",
     "password": 111111
   };
 
-  before(() => {
+  before((done) => {
     let requestedData = {...userData};
-    return request(app)
-      .post('/api/accounts')
+    agent.post('/api/accounts')
       .send(requestedData)
+      .expect(200)
       .then(function (res) {
-        if (res.status == 200) {
-          return userData['id'] = res.body.data.id;
-        }
-
-      });
-  });
-
-  describe('Validations check', () => {
-    it('Require(id):- It should return 422 error', (done) => {
-      let requestedData = {...userData};
-
-      delete requestedData.id;
-      delete requestedData.password;
-
-      request(app)
-        .delete('/api/accounts')
-        .send(requestedData)
-        .then(function (res) {
-          assert.strictEqual(res.status, 422);
-          done();
-        });
-    });
-
+        userData.uid = res.body.uid;
+        done();
+      }).catch((err) => done(err));
   });
 
   describe('Delete Account', () => {
     it('It should return 200', (done) => {
       let requestedData = {id: userData.id};
 
-      request(app)
-        .delete('/api/accounts')
+      agent.delete(`/api/accounts/${userData.uid}`)
         .send(requestedData)
-        .then(function (res) {
-          assert.strictEqual(res.status, 200);
-          done();
-        });
+        .expect(204)
+        .end(done);
     });
+  });
+
+  describe('Delete non-existing account', () => {
+    it('It should return 422 error', (done) => {
+      let requestedData = {...userData};
+
+      delete requestedData.id;
+      delete requestedData.password;
+
+      agent.delete(`/api/accounts/2c60f40c-d8f2-11eb-864d-0b6e9170bbdf`)
+        .send(requestedData)
+        .expect(404)
+        .end(done);
+    });
+
   });
 });

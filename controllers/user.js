@@ -44,6 +44,7 @@ async function getUsers(req, res) {
 
 // delete user details
 async function deleteUser(req, res) {
+  // TODO: should not be able to remove himself
   try {
     const userDetail = req.body;
     const {userId} = req.params;
@@ -51,8 +52,8 @@ async function deleteUser(req, res) {
       throw {status: 422, message: 'Id is required'}
     }
 
-    const users = await db.user.destroy({where: {external_id: userId}})
-    res.send(response.success('User has been deleted successfully', {}))
+    const deleteCount = await db.user.destroy({where: {external_id: userId}})
+    res.status(deleteCount > 0 ? 204 : 404).send();
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -87,6 +88,7 @@ async function createUser(req, res) {
 async function updateUser(req, res) {
   // TODO: validate role and any other data that is not covered Sequelize validations/constrains.
   // TODO: user not allowed to change his own role
+  // TODO: should not be able to change email
   try {
     const userDetail = req.body;
     const {userId} = req.params;
