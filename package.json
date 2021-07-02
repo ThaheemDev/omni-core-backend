@@ -6,11 +6,11 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "test": "mocha --exit",
-    "migrate": "npx sequelize-cli db:migrate",
+    "migrate": "npx sequelize-cli db:migrate --config 'config/config.json' --env local --debug",
     "seed": "npx sequelize-cli db:seed:all --config 'config/config.json' --env local --debug",
     "clear-seed": "npx sequelize-cli db:seed:undo:all --config 'config/config.json' --env local",
-    "init-db": "node -e 'require(\"./models\").sequelize.sync();'",
-    "drop-db": "node -e 'require(\"./models\").sequelize.drop();'",
+    "init-db": "node -e '(async () => {await require(\"./models\").sequelize.sync({})})()'",
+    "drop-db": "node -e '(async () => await require(\"./models\").sequelize.drop())()'",
     "reset-db": "npm run drop-db && npm run init-db && npm run seed"
   },
   "dependencies": {
@@ -36,9 +36,10 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "mocha": "^5.1.1",
-    "supertest": "^3.0.0",
     "chai": "^4.3.4",
-    "mariadb": "^2.5.4"
+    "mariadb": "^2.5.4",
+    "mocha": "^5.1.1",
+    "sqlite3": "^4.2.0",
+    "supertest": "^3.0.0"
   }
 }

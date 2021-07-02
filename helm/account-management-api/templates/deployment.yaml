@@ -51,6 +51,15 @@ spec:
               subPath: "config.json"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.resetDb }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - npm
+                  - run
+                  - reset-db
+          {{- end }}
       volumes:
         - name: "account-management-config"
           configMap:

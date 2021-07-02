@@ -62,6 +62,8 @@ database:
   host: mag-mariadb-primary
   dialect: mysql
 
+resetDb: false
+
 autoscaling:
   enabled: false
   minReplicas: 1

@@ -5,8 +5,7 @@ const { resolve } = require("path");
 
 const dbConfig = config.database;
 
-const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
-
+let dbOps = {
   host: dbConfig.host,
   dialect: dbConfig.dialect,
   operatorsAliases: false,
@@ -17,7 +16,12 @@ const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
     acquire: dbConfig.pool.acquire,
     idle: dbConfig.pool.idle
   }
-});
+};
+
+if (dbConfig.storage) {
+  dbOps.storage = dbConfig.storage;
+}
+const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, dbOps);
 
 
 const db = {};

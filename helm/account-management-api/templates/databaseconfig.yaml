@@ -2,13 +2,7 @@ apiVersion: v1
 data:
   config.json: |
     {
-      "local": {
-        "username": "{{ .Values.database.username }}",
-        "password": "{{ .Values.database.password }}",
-        "database": "{{ .Values.database.database }}",
-        "host": "{{ .Values.database.host }}",
-        "dialect": "{{ .Values.database.dialect }}"
-      }
+      "local": {{ .Values.database | toJson }}
     }
 kind: ConfigMap
 metadata:
