@@ -39,11 +39,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /logout
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /logout
               port: http
           volumeMounts:
             - name: "account-management-config"
