@@ -3,16 +3,27 @@ var router = express.Router();
 const userController = require('../controllers/user');
 const websiteController = require('../controllers/website');
 
-function isAuthenticated(req, res, next) {
+async function isAuthenticated(req, res, next) {
+
   if (req.isAuthenticated()) {
     next();
   } else {
     res.status(401).send();
   }
 }
-function isAdmin(req, res, next) {
-  if (req && req.user && req.user.getRole() == 'ADMIN') {
-    next();
+
+
+async function isAdmin(req, res, next) {
+
+  if (req && req.user) {
+    let getUser = await req.user.getRole();
+
+    if(getUser.dataValues.role == 'ADMIN'){
+      next();
+    } else {
+      res.status(401).send();
+    }
+
   } else {
     res.status(401).send();
   }
@@ -411,7 +422,7 @@ router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/websites', isAuthenticated, websiteController.getAll);
+router.get('/websites', isAuthenticated,  websiteController.getAll);
 
 /* update website. */
 /**
