@@ -103,6 +103,13 @@ async function updateUser(req, res) {
     const user = await db.user.findOne({where: {external_id: userId}})
 
     if (user) {
+      if (req && req.user && req.user.dataValues.external_id == userId) {      
+        let getUserRole = (await db.role.findOne({where: {external_id: userId}})).roleId;
+        if(userDetail.roleId != getUserRole){
+          throw {status: 422, message: 'You cannot change role'}
+        }
+      }
+
       if (userDetail.password) {
         const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
         const hash = bcrypt.hashSync(userDetail.password, salt);
