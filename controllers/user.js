@@ -51,9 +51,11 @@ async function deleteUser(req, res) {
     if (!userId) {
       throw {status: 422, message: 'Id is required'}
     }
+
     if (req && req.user && req.user.dataValues.external_id == userId) {
       throw {status: 422, message: 'You cannot delete yourself'}
     }
+
     const deleteCount = await db.user.destroy({where: {external_id: userId}})
     res.status(deleteCount > 0 ? 204 : 404).send();
   } catch (err) {
@@ -103,11 +105,18 @@ async function updateUser(req, res) {
     const user = await db.user.findOne({where: {external_id: userId}})
 
     if (user) {
-      if (req && req.user && req.user.dataValues.external_id == userId) {      
-        let getUserRole = (await db.role.findOne({where: {external_id: userId}})).roleId;
-        if(userDetail.roleId != getUserRole){
+      let getUser = (await db.role.findOne({where: {external_id: userId}})); 
+
+      /* Check user role */
+      if (req && req.user && req.user.dataValues.external_id == userId) {  
+        if(userDetail.roleId != getUser.roleId){
           throw {status: 422, message: 'You cannot change role'}
         }
+      }
+
+      /* Check user email */
+      if(userDetail.email != getUser.email){
+        throw {status: 422, message: 'You cannot change email'}
       }
 
       if (userDetail.password) {
@@ -140,4 +149,3 @@ function getValidPageSize(value) {
   }
   return 10;
 }
-
