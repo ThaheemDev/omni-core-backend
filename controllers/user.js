@@ -80,7 +80,15 @@ async function createUser(req, res) {
     }
 
     user.external_id = 0;
-    user.roleId = (await db.role.findOne({where: {role: user.role}})).id;
+
+    let getRole = (await db.role.findOne({where: {role: user.role}}));
+
+    if(getRole && getRole.id){
+      user.roleId = getRole.id;
+    } else {
+      throw {status: 422, errors: {message: 'Invalid role'}}
+    }
+    
     const data = await db.user.create(user);
 
     res.send(await response.accountViewModel(data));
