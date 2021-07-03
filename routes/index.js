@@ -10,6 +10,13 @@ function isAuthenticated(req, res, next) {
     res.status(401).send();
   }
 }
+function isAdmin(req, res, next) {
+  if (req && req.user && req.user.getRole() == 'ADMIN') {
+    next();
+  } else {
+    res.status(401).send();
+  }
+}
 
 /**
  * @swagger
@@ -131,7 +138,7 @@ function isAuthenticated(req, res, next) {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/accounts', isAuthenticated, userController.createUser);
+router.post('/accounts', isAuthenticated, isAdmin, userController.createUser);
 
 /* GET users listing. */
 /**
@@ -248,7 +255,7 @@ router.get('/accounts', isAuthenticated, userController.getUsers);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/accounts/:userId', isAuthenticated, userController.updateUser);
+router.put('/accounts/:userId', isAuthenticated, isAdmin, userController.updateUser);
 
 /* delete users . */
 /* POST create user. */
@@ -290,7 +297,7 @@ router.put('/accounts/:userId', isAuthenticated, userController.updateUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/accounts/:userId', isAuthenticated, userController.deleteUser);
+router.delete('/accounts/:userId', isAuthenticated, isAdmin, userController.deleteUser);
 
 
 /**
@@ -355,7 +362,7 @@ router.delete('/accounts/:userId', isAuthenticated, userController.deleteUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/websites', isAuthenticated, websiteController.create);
+router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
 
 /* GET website listing. */
 /**
@@ -464,7 +471,7 @@ router.get('/websites', isAuthenticated, websiteController.getAll);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/websites/:websiteId', isAuthenticated, websiteController.update);
+router.put('/websites/:websiteId', isAuthenticated, isAdmin, websiteController.update);
 
 /* delete website listing. */
 /**
@@ -505,7 +512,7 @@ router.put('/websites/:websiteId', isAuthenticated, websiteController.update);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/websites/:websiteId', isAuthenticated, websiteController.deletes);
+router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteController.deletes);
 
 
 module.exports = router;
