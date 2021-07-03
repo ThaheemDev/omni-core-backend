@@ -2,6 +2,8 @@ const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize, Sequelize) => {
     const roleModel = require('./role')(sequelize, Sequelize);
+    const WebsiteModel = require('./website')(sequelize, Sequelize);
+
     const User = sequelize.define("user", {
         external_id: {
             type: Sequelize.STRING,
@@ -42,26 +44,7 @@ module.exports = (sequelize, Sequelize) => {
                 }
             }
         },
-        // TODO: convert this into an one-to-many association. This should be a list of foreign keys.
-        websites: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                len: {
-                    args: [1, 255],
-                    msg: "Websites can not be greater than 255"
-                },
-                notNull: {
-                    msg: 'Websites is required'
-                }
-            },
-            get() {
-                return (this.getDataValue('websites'))?this.getDataValue('websites').split(';'):'';
-            },
-            set(val) {
-                this.setDataValue('websites', val.join(';'));
-            }
-        },
+    
         status: {
             type: Sequelize.ENUM,
             values: ['ACTIVE', 'BLOCKED'],
@@ -86,5 +69,13 @@ module.exports = (sequelize, Sequelize) => {
         }
     });
     User.belongsTo(roleModel);
+ 
+      User.associate = function (models) {
+        User.hasMany(WebsiteModel, { 
+          foreignKey: 'userId', 
+          as: 'websites' 
+        });
+      };
+
     return User;
 };

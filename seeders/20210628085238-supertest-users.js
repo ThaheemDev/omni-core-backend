@@ -17,8 +17,6 @@ module.exports = {
       external_id: 'acc2baec-d7f6-11eb-91bc-d7c92cdd4004',
       status: 'ACTIVE',
       roleId: adminRole,
-      // TODO: fix this once website is converted into one-to-many association
-      websites: '',
       password: password,
       createdAt: new Date(),
       updatedAt: new Date()

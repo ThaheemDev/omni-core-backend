@@ -28,15 +28,22 @@ async function getUsers(req, res) {
       count,
       rows
     } = await db.user.findAndCountAll({
-        attributes: ['external_id', 'name', 'email', 'websites', 'status'],
+        attributes: ['external_id', 'name', 'email', 'status'],
         offset: offset,
         limit: page_size,
-        include: db.role
+        include: [
+          db.role,
+          db.website
+        ]
       }
     );
 
-    res.send(response.pagination(count, rows.map(response.listAccountViewModel), page))
-  } catch (error) {
+
+    console.log('rows', rows)
+
+    res.send(rows)
+    // res.send(response.pagination(count, rows.map(response.listAccountViewModel), page))
+  } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 

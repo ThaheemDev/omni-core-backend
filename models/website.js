@@ -1,6 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 
+
 module.exports = (sequelize, Sequelize) => {
+
     const Website = sequelize.define("website", {
         external_id: {
             type: Sequelize.STRING,
@@ -49,7 +51,20 @@ module.exports = (sequelize, Sequelize) => {
                     msg: 'Domain name is required'
                 }
             }
-        }
+        },
+
+        userId: {
+            type: Sequelize.STRING,
+            references: { model: 'users', key: 'external_id' },
+            onDelete: 'CASCADE',
+          }
     });
+    Website.associate = (models) => {
+        Website.belongsTo(models.users, { 
+          foreignKey: 'userId', 
+          as: 'users'
+        });
+      };
+
     return Website;
 };
