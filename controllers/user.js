@@ -51,7 +51,7 @@ async function deleteUser(req, res) {
     if (!userId) {
       throw {status: 422, message: 'Id is required'}
     }
-    if (req && req.user && req.user.external_id == userId) {
+    if (req && req.user && req.user.dataValues.external_id == userId) {
       throw {status: 422, message: 'You cannot delete yourself'}
     }
     const deleteCount = await db.user.destroy({where: {external_id: userId}})
