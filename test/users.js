@@ -47,15 +47,15 @@ describe('POST /accounts', () => {
         .expect(422, done);
     });
 
-    it('Require(websites):- It should return 422 error', (done) => {
-      let requestedData = {...userData};
-      requestedData.email="test@email.com"
-      delete requestedData.websites;
+    // it('Require(websites):- It should return 422 error', (done) => {
+    //   let requestedData = {...userData};
+    //   requestedData.email="test@email.com"
+    //   delete requestedData.websites;
 
-      agent.post('/api/accounts')
-        .send(requestedData)
-        .expect(422, done);
-    });
+    //   agent.post('/api/accounts')
+    //     .send(requestedData)
+    //     .expect(422, done);
+    // });
 
     it('Optional(status):- It should return 200 ok', (done) => {
       let requestedData = {...userData};
