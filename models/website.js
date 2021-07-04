@@ -51,20 +51,14 @@ module.exports = (sequelize, Sequelize) => {
                     msg: 'Domain name is required'
                 }
             }
-        },
-
-        userId: {
-            type: Sequelize.STRING,
-            references: { model: 'users', key: 'external_id' },
-            onDelete: 'CASCADE',
-          }
+        }
     });
-    Website.associate = (models) => {
-        Website.belongsTo(models.users, { 
-          foreignKey: 'userId', 
-          as: 'users'
-        });
-      };
+    // Website.associate = (models) => {
+    //     Website.belongsTo(models.users, { 
+    //       foreignKey: 'userId', 
+    //       as: 'users'
+    //     });
+    //   };
 
     return Website;
 };

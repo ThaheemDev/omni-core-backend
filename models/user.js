@@ -69,13 +69,17 @@ module.exports = (sequelize, Sequelize) => {
         }
     });
     User.belongsTo(roleModel);
+
+    User.belongsToMany(WebsiteModel,{ through: 'User_Websites' });
+    WebsiteModel.belongsToMany(User,{ through: 'User_Websites' });
+
  
-      User.associate = function (models) {
-        User.hasMany(WebsiteModel, { 
-          foreignKey: 'userId', 
-          as: 'websites' 
-        });
-      };
+    //   User.associate = function (models) {
+    //     User.hasMany(WebsiteModel, { 
+    //       foreignKey: 'userId', 
+    //       as: 'websites' 
+    //     });
+    //   };
 
     return User;
 };
