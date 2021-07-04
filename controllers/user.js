@@ -39,7 +39,6 @@ async function getUsers(req, res) {
     );
 
 
-    console.log('rows', rows)
 
     res.send(rows)
     // res.send(response.pagination(count, rows.map(response.listAccountViewModel), page))
@@ -81,7 +80,9 @@ async function createUser(req, res) {
   }
 
   try {
-    const existsUser = await db.user.findOne({where: {email: user.email}})
+    
+    const existsUser = await db.user.findOne({where: {email: user.email}});
+    // console.log("existsUser",existsUser);
     if (existsUser) {
       throw {status: 422, errors: {message: 'User Already Exists'}}
     }
