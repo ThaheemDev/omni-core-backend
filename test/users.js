@@ -172,13 +172,13 @@ describe('POST /accounts', () => {
 describe('PUT /accounts', () => {
   let agent;
   let userData = {
-    "email": `test-put.${new Date().getTime()}@yopmail.com`,
-    "websites": ["https://google.com"],
-    "status": "ACTIVE",
-    "role": 'EMPLOYEE',
-    "name": "test data",
-    "password": 111111
-  };
+
+    "email":`test.${new Date().getTime()}@yopmail.com`,
+    "password":111111,
+    "status":"ACTIVE",
+    "role":"ADMIN",
+    "name":"john10"
+}
 
   before((done) => {
     // Login
@@ -199,25 +199,25 @@ describe('PUT /accounts', () => {
       }).catch((err) => done(err));
   });
 
-  afterEach(function (done) {
-    if (this.currentTest.state == 'failed') {
-      return done();
-    }
-    agent.delete(`/api/accounts${userData.uid}`)
-      .send()
-      .then((res) => {
-        done()
-      })
-      .catch((err) => {
-        done()
-      });
-  });
+  // afterEach(function (done) {
+  //   if (this.currentTest.state == 'failed') {
+  //     return done();
+  //   }
+  //   agent.delete(`/api/accounts/${userData.uid}`)
+  //     .send()
+  //     .then((res) => {
+  //       done()
+  //     })
+  //     .catch((err) => {
+  //       done()
+  //     });
+  // });
 
   describe('Validations check', () => {
     it('Maxlength(name):- It should return 422 error', (done) => {
       let requestedData = {...userData};
 
-      delete requestedData.password;
+      delete requestedData.email;
       requestedData.name = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
 
       agent.put(`/api/accounts/${userData.uid}`)
@@ -228,53 +228,12 @@ describe('PUT /accounts', () => {
         });
     });
 
-    it('Maxlength(email):- It should return 422 error', (done) => {
-      let requestedData = {...userData};
-
-      requestedData.email = 'loremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytextloremipsumdummytext@yopmail.com';
-      delete requestedData.password;
-
-      agent.put(`/api/accounts/${userData.uid}`)
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
-
-    it('Maxlength(websites):- It should return 422 error', (done) => {
-      let requestedData = {...userData};
-
-      requestedData.websites = ['Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name'];
-      delete requestedData.password;
-
-      agent.put(`/api/accounts/${userData.uid}`)
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
-
-    it('Email validate(email):- It should return 422 error', (done) => {
-      let requestedData = {...userData};
-
-      requestedData.email = 'testmail.com';
-      delete requestedData.password;
-
-      agent.put(`/api/accounts/${userData.uid}`)
-        .send(requestedData)
-        .then(function (err, res) {
-          assert.strictEqual(err.status, 422);
-          done();
-        });
-    });
 
     it('Type Validation(status):- It should return 422 error', (done) => {
       let requestedData = {...userData};
 
       requestedData.status = 'ACTIVE1';
-      delete requestedData.password;
+      delete requestedData.email;
 
       agent.put(`/api/accounts/${userData.uid}`)
         .send(requestedData)
@@ -288,7 +247,7 @@ describe('PUT /accounts', () => {
       let requestedData = {...userData};
 
       requestedData.role = 'not-a-real-role';
-      delete requestedData.password;
+      delete requestedData.email;
 
       agent.put(`/api/accounts/${userData.uid}`)
         .send(requestedData)
@@ -301,7 +260,7 @@ describe('PUT /accounts', () => {
     it('It should return 200', (done) => {
       let requestedData = {...userData};
 
-      delete requestedData.password;
+      delete requestedData.email;
       requestedData.role = 'MAINTAINER';
       requestedData.name = 'new name';
       requestedData.status = 'BLOCKED';
@@ -311,17 +270,16 @@ describe('PUT /accounts', () => {
         .expect(200)
         .then(function (res) {
           res = res.body;
-          // assert.strictEqual(res.email, userData.email)
           assert.strictEqual(res.role, requestedData.role)
           assert.strictEqual(res.status, requestedData.status)
           assert.strictEqual(res.name, requestedData.name)
           chai.expect(res.uid).to.be.not.undefined;
-          assert.strictEqual(res.websites.length, userData.websites.length);
-          for (const site of res.websites) {
-            chai.expect(site.uid).to.be.not.undefined;
-            // TODO: enable once website is properly implemented
-            // assert.ok(userData.websites.includes(site.domainname));
-          }
+          // assert.strictEqual(res.websites.length, userData.websites.length);
+          // for (const site of res.websites) {
+          //   chai.expect(site.uid).to.be.not.undefined;
+          //   // TODO: enable once website is properly implemented
+          //   // assert.ok(userData.websites.includes(site.domainname));
+          // }
           done()
         });
     });

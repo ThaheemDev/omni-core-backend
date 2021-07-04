@@ -23,7 +23,6 @@ async function getUsers(req, res) {
     if (page > 1) {
       offset = ((page - 1) * page_size);
     }
-
     const {
       count,
       rows
@@ -32,16 +31,12 @@ async function getUsers(req, res) {
         offset: offset,
         limit: page_size,
         include: [
-          db.role,
-          db.website
+          db.role
         ]
       }
     );
-
-
-
-    res.send(rows)
-    // res.send(response.pagination(count, rows.map(response.listAccountViewModel), page))
+    // res.send(rows)
+    res.send(response.pagination(count, rows.map(response.listAccountViewModel), page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -80,9 +75,7 @@ async function createUser(req, res) {
   }
 
   try {
-    
     const existsUser = await db.user.findOne({where: {email: user.email}});
-    // console.log("existsUser",existsUser);
     if (existsUser) {
       throw {status: 422, errors: {message: 'User Already Exists'}}
     }
@@ -90,7 +83,6 @@ async function createUser(req, res) {
     user.external_id = 0;
 
     let getRole = (await db.role.findOne({where: {role: user.role}}));
-
     if(getRole && getRole.id){
       user.roleId = getRole.id;
     } else {
@@ -121,23 +113,22 @@ async function updateUser(req, res) {
     const user = await db.user.findOne({where: {external_id: userId}})
 
     if (user) {
-      let getUser = (await db.role.findOne({where: {external_id: userId}})); 
-
+      // let getRole = (await db.role.findOne({where: {external_id: user.roleId}})); 
       /* Check user role */
       if (req && req.user && req.user.dataValues.external_id == userId) {  
-        if(userDetail.roleId != getUser.roleId){
+        if(userDetail.roleId != user.roleId){
           throw {status: 422, message: 'You cannot change role'}
         }
       }
 
       /* Check user email */
-      if(userDetail.email != getUser.email){
+      if(userDetail.email && userDetail.email != user.email){
         throw {status: 422, message: 'You cannot change email'}
       }
 
       if (userDetail.password) {
         const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
-        const hash = bcrypt.hashSync(userDetail.password, salt);
+        const hash = bcrypt.hashSync(String(userDetail.password), salt);
         userDetail.password = hash;
       } else {
         userDetail.password = user.password
