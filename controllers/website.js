@@ -5,7 +5,8 @@ module.exports = {
   create,
   getAll,
   update,
-  deletes
+  deletes,
+  getWebsitesByUID
 }
 
 // TODO: make sure only and admin can POST, PUT and DELETE websites. Add tests for this as well.
@@ -91,6 +92,17 @@ async function deletes(req, res, next) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 
+}
+
+
+async function getWebsitesByUID(attributes,externalId){
+
+  let websiteArr = await db.website.findAll({
+      attributes: attributes,
+      where: {'external_id': externalId },
+      raw : true
+    });
+    return websiteArr; 
 }
 
 function getValidPageSize(value) {

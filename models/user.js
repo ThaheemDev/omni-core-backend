@@ -69,20 +69,11 @@ module.exports = (sequelize, Sequelize) => {
         },
         websites: {
             type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                len: {
-                    args: [1, 255],
-                    msg: "Websites can not be greater than 255"
-                },
-                notNull: {
-                    msg: 'Websites is required'
-                }
-            },
             get() {
                 return (this.getDataValue('websites'))?this.getDataValue('websites').split(';'):'';
             },
             set(val) {
+                console.log('val', val)
                 this.setDataValue('websites', val.join(';'));
             }
         },
