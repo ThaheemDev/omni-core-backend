@@ -66,12 +66,32 @@ module.exports = (sequelize, Sequelize) => {
                     msg: "Password range should be between 8-100 character"
                 }
             }
-        }
+        },
+        websites: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            validate: {
+                len: {
+                    args: [1, 255],
+                    msg: "Websites can not be greater than 255"
+                },
+                notNull: {
+                    msg: 'Websites is required'
+                }
+            },
+            get() {
+                return (this.getDataValue('websites'))?this.getDataValue('websites').split(';'):'';
+            },
+            set(val) {
+                this.setDataValue('websites', val.join(';'));
+            }
+        },
     });
     User.belongsTo(roleModel);
 
-    User.belongsToMany(WebsiteModel,{ through: 'User_Websites' });
-    WebsiteModel.belongsToMany(User,{ through: 'User_Websites' });
+    
+    // User.belongsToMany(WebsiteModel,{ through: 'User_Websites' });
+    // WebsiteModel.belongsToMany(User,{ through: 'User_Websites' });
 
  
     //   User.associate = function (models) {

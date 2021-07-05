@@ -63,7 +63,7 @@ async function getAll(req, res, next) {
         limit: page_size
       }
     );
-
+console.log("rows",rows);
     res.send(response.pagination(count, rows, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
