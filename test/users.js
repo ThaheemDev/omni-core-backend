@@ -13,10 +13,10 @@ describe('POST /accounts', () => {
   let userData = {
     email: `test-post.${new Date().getTime()}@yopmail.com`,
     password: '111111',
-    websites: ['https://google.com'],
     status: 'ACTIVE',
     role: 'ADMIN',
-    name: 'test data'
+    name: 'test data',
+    websites:[]
   };
 
   before((done) => {
@@ -96,16 +96,6 @@ describe('POST /accounts', () => {
         .expect(422, done);
     });
 
-    it('Maxlength(websites):- It should return 422 error', (done) => {
-      let requestedData = {...userData};
-
-      requestedData.websites = ['Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name'];
-
-      agent.post('/api/accounts')
-        .send(requestedData)
-        .expect(422, done);
-    });
-
     it('Email validate(email):- It should return 422 error', (done) => {
       let requestedData = {...userData};
       requestedData.email = 'testmail.com';
@@ -157,7 +147,7 @@ describe('POST /accounts', () => {
           for (const site of res.websites) {
             chai.expect(site.uid).to.be.not.undefined;
             // TODO: enable once website is properly implemented
-            // assert.ok(requestedData.websites.includes(site.domainname));
+            assert.ok(requestedData.websites.includes(site.domainname));
           }
           done();
         })

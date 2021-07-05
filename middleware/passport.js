@@ -12,7 +12,7 @@ module.exports = (app) => {
     usernameField: 'email',
     passwordField: 'password'
   }, async (email, password, done) => {
-    console.log('email, password', email, password)
+
     let user = await db.user.findOne({where: {email: email, status: 'ACTIVE'}})
 
     if (user && user.dataValues) {
