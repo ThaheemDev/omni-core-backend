@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
 const { v4: uuidv4 } = require('uuid');
-const {addWebsite} = require('../lib/utility');
+const {  addUserWebsitesAccociation,  updateUserWebsitesAccociation} = require('../lib/utility');
 
 // TODO: only users with ADMIN role should be able to POST, PUT & DELETE. Add tests for this as well.
 module.exports = {
@@ -96,9 +96,9 @@ async function createUser(req, res) {
 
     let data = await db.user.create(user);
 
-    // if(user.websites && user.websites.length>0){
-    //    await Promise.all(user.websites.map(async (item) => await data.addWebsite(data.id, Number(item))));         
-    // }
+    if(user.websites && user.websites.length>0){
+      await addUserWebsitesAccociation(data.id,user.websites);        
+    }
 
     res.send(await response.accountViewModel(data));
   } catch (err) {
@@ -109,9 +109,6 @@ async function createUser(req, res) {
 }
 
 async function updateUser(req, res) {
-  // TODO: validate role and any other data that is not covered Sequelize validations/constrains.
-  // TODO: user not allowed to change his own role
-  // TODO: should not be able to change email
   try {
     const userDetail = req.body;
     const { userId } = req.params;
@@ -146,6 +143,10 @@ async function updateUser(req, res) {
       }
       userDetail.roleId = (await db.role.findOne({ where: { role: userDetail.role } })).id;
       const resdata = await user.update(userDetail, { where: { id: user.id } })
+
+      if(userDetail.websites && typeof userDetail.websites == 'object'){
+        await updateUserWebsitesAccociation( user.id, userDetail.websites);        
+      }
 
       if (resdata) {
         res.send(await response.accountViewModel(resdata));

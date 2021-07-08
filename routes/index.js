@@ -149,7 +149,7 @@ async function isAdmin(req, res, next) {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/accounts', userController.createUser);
+router.post('/accounts', isAuthenticated, isAdmin, userController.createUser);
 
 /* GET users listing. */
 /**
@@ -373,7 +373,7 @@ router.delete('/accounts/:userId', isAuthenticated, isAdmin, userController.dele
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/websites', websiteController.create);
+router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
 
 /* GET website listing. */
 /**
