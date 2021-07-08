@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
 const { v4: uuidv4 } = require('uuid');
-const {  addUserWebsitesAccociation,  updateUserWebsitesAccociation} = require('../lib/utility');
 
 // TODO: only users with ADMIN role should be able to POST, PUT & DELETE. Add tests for this as well.
 module.exports = {
@@ -28,20 +27,31 @@ async function getUsers(req, res) {
       count,
       rows
     } = await db.user.findAndCountAll({
-      attributes: ['external_id', 'name', 'email', 'status', 'websites'],
+      attributes: ['external_id', 'name', 'email', 'status'],
       offset: offset,
       limit: page_size,
       include: [
-        db.role
+        
+          db.role,
+           {
+            model: db.website,
+            required: false,
+            attributes: ['external_id', 'status', 'size', 'domainname'],
+            as: 'websites',
+            through: {
+              attributes: []
+            }
+          }
+                
       ]
     }
     );
 
     let promises =  rows.map(response.listAccountViewModel);
     const results = await Promise.all(promises)
-
     res.send(await response.pagination(count, results, page))
   } catch (err) {
+
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 
@@ -96,9 +106,15 @@ async function createUser(req, res) {
 
     let data = await db.user.create(user);
 
-    if(user.websites && user.websites.length>0){
-      await addUserWebsitesAccociation(data.id,user.websites);        
+    if(user.websites && user.websites.length>0){     
+      await data.setWebsites(user.websites);        
     }
+
+    let websiteData = await data.getWebsites(
+      { 
+      attributes: ['external_id', 'status', 'size', 'domainname']      
+    });
+    data.websites = websiteData;
 
     res.send(await response.accountViewModel(data));
   } catch (err) {
@@ -145,9 +161,14 @@ async function updateUser(req, res) {
       const resdata = await user.update(userDetail, { where: { id: user.id } })
 
       if(userDetail.websites && typeof userDetail.websites == 'object'){
-        await updateUserWebsitesAccociation( user.id, userDetail.websites);        
+        await resdata.setWebsites(userDetail.websites);      
+        
       }
-
+      let websiteData = await resdata.getWebsites(
+        { 
+        attributes: ['external_id', 'status', 'size', 'domainname']      
+      });
+      resdata.websites = websiteData;
       if (resdata) {
         res.send(await response.accountViewModel(resdata));
       } else {

@@ -1,11 +1,11 @@
 const config = require("../config/config.js");
 const Sequelize = require("sequelize");
 const fs = require('fs');
-const { resolve } = require("path");
 
 const dbConfig = config.database;
 
-let dbOps = {
+const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, {
+
   host: dbConfig.host,
   dialect: dbConfig.dialect,
   operatorsAliases: false,
@@ -16,12 +16,7 @@ let dbOps = {
     acquire: dbConfig.pool.acquire,
     idle: dbConfig.pool.idle
   }
-};
-
-if (dbConfig.storage) {
-  dbOps.storage = dbConfig.storage;
-}
-const sequelize = new Sequelize(dbConfig.db, dbConfig.user, dbConfig.password, dbOps);
+});
 
 
 const db = {};
@@ -38,6 +33,5 @@ files.forEach(function (file) {
     db[name] = require(filePath)(sequelize, Sequelize);
   }
 });
-
 
 module.exports = db;

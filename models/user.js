@@ -3,9 +3,16 @@ const db = require('.');
 
 module.exports = (sequelize, Sequelize) => {
     const roleModel = require('./role')(sequelize, Sequelize);
-
+    const WebsiteModel = require('./website')(sequelize, Sequelize);
+    const userwebsite = require('./userwebsite')(sequelize, Sequelize);
 
     const User = sequelize.define("user", {
+        id: {
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true,
+            type: Sequelize.INTEGER
+          },
         external_id: {
             type: Sequelize.STRING,
             unique: true,
@@ -70,5 +77,16 @@ module.exports = (sequelize, Sequelize) => {
         }
     });
     User.belongsTo(roleModel);
+
+    User.belongsToMany(WebsiteModel, {
+        through: userwebsite,
+        foreignKey: 'userId',
+        uniqueKey: 'my_custom_unique'
+    });
+    WebsiteModel.belongsToMany(User, {
+        through: userwebsite,
+        foreignKey: 'websiteId',
+        uniqueKey: 'my_custom_unique'
+    });
     return User;
 };

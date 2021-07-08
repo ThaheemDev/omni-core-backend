@@ -4,6 +4,12 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = (sequelize, Sequelize) => {
 
     const Website = sequelize.define("website", {
+        id: {
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true,
+            type: Sequelize.INTEGER
+          },
         external_id: {
             type: Sequelize.STRING,
             unique: true,
@@ -53,5 +59,6 @@ module.exports = (sequelize, Sequelize) => {
             }
         }
     });
+
     return Website;
 };

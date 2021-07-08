@@ -3,6 +3,12 @@ const db = require('.');
 
 module.exports = (sequelize, Sequelize) => {
     const Product = sequelize.define("product", {
+        id: {
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true,
+            type: Sequelize.INTEGER
+          },
         external_id: {
             type: Sequelize.STRING,
             unique: true,
