@@ -4,7 +4,6 @@ const config = require('../config/config')
 const response = require('../lib/response');
 const { v4: uuidv4 } = require('uuid');
 
-// TODO: only users with ADMIN role should be able to POST, PUT & DELETE. Add tests for this as well.
 module.exports = {
   getUsers,
   deleteUser,
@@ -51,7 +50,6 @@ async function getUsers(req, res) {
     const results = await Promise.all(promises)
     res.send(await response.pagination(count, results, page))
   } catch (err) {
-
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 
@@ -59,7 +57,6 @@ async function getUsers(req, res) {
 
 // delete user details
 async function deleteUser(req, res) {
-  // TODO: should not be able to remove himself
   try {
     const userDetail = req.body;
     const { userId } = req.params;
@@ -106,13 +103,16 @@ async function createUser(req, res) {
 
     let data = await db.user.create(user);
 
-    if(user.websites && user.websites.length>0){     
-      await data.setWebsites(user.websites);        
+    if(user.websites && user.websites.length>0){
+      // TODO: not going to work. The FE send an external_id (uid), not the primary key needed to create the n-to-m rel.
+      await data.setWebsites(user.websites);
     }
 
+    // TODO: stick to what is document in openapi. https://gitlab.com/hadiethshop/account-api-mock/-/blob/master/openapi.yaml
+    // TODO: response should only include a list if ids, not the whole model.
     let websiteData = await data.getWebsites(
-      { 
-      attributes: ['external_id', 'status', 'size', 'domainname']      
+      {
+      attributes: ['external_id', 'status', 'size', 'domainname']
     });
     data.websites = websiteData;
 
@@ -125,6 +125,8 @@ async function createUser(req, res) {
 }
 
 async function updateUser(req, res) {
+  // TODO: Map external_id in websites property to their primary keys.
+  // TODO: FE sends external_id just like in POST, which have to be mapped to satisfy the n-to-m relation.
   try {
     const userDetail = req.body;
     const { userId } = req.params;
@@ -161,12 +163,12 @@ async function updateUser(req, res) {
       const resdata = await user.update(userDetail, { where: { id: user.id } })
 
       if(userDetail.websites && typeof userDetail.websites == 'object'){
-        await resdata.setWebsites(userDetail.websites);      
-        
+        await resdata.setWebsites(userDetail.websites);
+
       }
       let websiteData = await resdata.getWebsites(
-        { 
-        attributes: ['external_id', 'status', 'size', 'domainname']      
+        {
+        attributes: ['external_id', 'status', 'size', 'domainname']
       });
       resdata.websites = websiteData;
       if (resdata) {

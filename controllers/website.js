@@ -8,12 +8,8 @@ module.exports = {
   deletes
 }
 
-// TODO: make sure only and admin can POST, PUT and DELETE websites. Add tests for this as well.
-
-
 // create website detail
 async function create(req, res, next) {
-
   try {
     const websiteData = req.body;
     websiteData.external_id = 0;

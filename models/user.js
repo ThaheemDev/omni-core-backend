@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+// TODO: not used. please remove it.
 const db = require('.');
 
 module.exports = (sequelize, Sequelize) => {
