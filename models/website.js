@@ -53,12 +53,5 @@ module.exports = (sequelize, Sequelize) => {
             }
         }
     });
-    // Website.associate = (models) => {
-    //     Website.belongsTo(models.users, { 
-    //       foreignKey: 'userId', 
-    //       as: 'users'
-    //     });
-    //   };
-
     return Website;
 };

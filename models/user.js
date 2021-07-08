@@ -1,8 +1,9 @@
 const { v4: uuidv4 } = require('uuid');
+const db = require('.');
 
 module.exports = (sequelize, Sequelize) => {
     const roleModel = require('./role')(sequelize, Sequelize);
-    const WebsiteModel = require('./website')(sequelize, Sequelize);
+
 
     const User = sequelize.define("user", {
         external_id: {
@@ -44,11 +45,11 @@ module.exports = (sequelize, Sequelize) => {
                 }
             }
         },
-    
+
         status: {
             type: Sequelize.ENUM,
             values: ['ACTIVE', 'BLOCKED'],
-            defaultValue:"ACTIVE",
+            defaultValue: "ACTIVE",
             validate: {
                 customValidator(value) {
                     if (['ACTIVE', 'BLOCKED'].indexOf(value) <= -1) {
@@ -66,31 +67,8 @@ module.exports = (sequelize, Sequelize) => {
                     msg: "Password range should be between 8-100 character"
                 }
             }
-        },
-        websites: {
-            type: Sequelize.STRING,
-            get() {
-                return (this.getDataValue('websites'))?this.getDataValue('websites').split(';'):'';
-            },
-            set(val) {
-                console.log('val', val)
-                this.setDataValue('websites', val.join(';'));
-            }
-        },
+        }
     });
     User.belongsTo(roleModel);
-
-    
-    // User.belongsToMany(WebsiteModel,{ through: 'User_Websites' });
-    // WebsiteModel.belongsToMany(User,{ through: 'User_Websites' });
-
- 
-    //   User.associate = function (models) {
-    //     User.hasMany(WebsiteModel, { 
-    //       foreignKey: 'userId', 
-    //       as: 'websites' 
-    //     });
-    //   };
-
     return User;
 };

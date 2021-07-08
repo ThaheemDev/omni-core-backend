@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
 const { v4: uuidv4 } = require('uuid');
+const {addWebsite} = require('../lib/utility');
 
 // TODO: only users with ADMIN role should be able to POST, PUT & DELETE. Add tests for this as well.
 module.exports = {
@@ -91,10 +92,18 @@ async function createUser(req, res) {
     } else {
       throw { status: 422, errors: { message: 'Invalid role' } }
     }
+   
 
     let data = await db.user.create(user);
+
+    // if(user.websites && user.websites.length>0){
+    //    await Promise.all(user.websites.map(async (item) => await data.addWebsite(data.id, Number(item))));         
+    // }
+
     res.send(await response.accountViewModel(data));
   } catch (err) {
+    
+    console.log('err', err)
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
