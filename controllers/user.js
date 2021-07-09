@@ -2,7 +2,7 @@ const db = require("../models"); // models path depend on your structure
 const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
-const { v4: uuidv4 } = require('uuid');
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 module.exports = {
   getUsers,
@@ -30,23 +30,23 @@ async function getUsers(req, res) {
       offset: offset,
       limit: page_size,
       include: [
-        
-          db.role,
-           {
-            model: db.website,
-            required: false,
-            attributes: ['external_id', 'status', 'size', 'domainname'],
-            as: 'websites',
-            through: {
-              attributes: []
-            }
+
+        db.role,
+        {
+          model: db.website,
+          required: false,
+          attributes: ['external_id', 'status', 'size', 'domainname'],
+          as: 'websites',
+          through: {
+            attributes: []
           }
-                
+        }
+
       ]
     }
     );
 
-    let promises =  rows.map(response.listAccountViewModel);
+    let promises = rows.map(response.listAccountViewModel);
     const results = await Promise.all(promises)
     res.send(await response.pagination(count, results, page))
   } catch (err) {
@@ -99,34 +99,32 @@ async function createUser(req, res) {
     } else {
       throw { status: 422, errors: { message: 'Invalid role' } }
     }
-   
 
     let data = await db.user.create(user);
+    let checkWebsites;
+    if (user.websites && user.websites.length > 0) {
 
-    if(user.websites && user.websites.length>0){
-      // TODO: not going to work. The FE send an external_id (uid), not the primary key needed to create the n-to-m rel.
-      await data.setWebsites(user.websites);
+      checkWebsites = await db.website.findAll({ where: { external_id: user.websites }, attributes: ['id',['external_id','uid']] });
+      let getWebsitesID = checkWebsites.map((o) => o.id);
+
+      await data.setWebsites(getWebsitesID);
     }
 
-    // TODO: stick to what is document in openapi. https://gitlab.com/hadiethshop/account-api-mock/-/blob/master/openapi.yaml
-    // TODO: response should only include a list if ids, not the whole model.
-    let websiteData = await data.getWebsites(
-      {
-      attributes: ['external_id', 'status', 'size', 'domainname']
-    });
-    data.websites = websiteData;
+  const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
+    await await delay(10);
+    return {uid:obj.dataValues.uid};
+  }));
+    data.websites = getWebsitesUid;
 
     res.send(await response.accountViewModel(data));
   } catch (err) {
-    
     console.log('err', err)
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
 
 async function updateUser(req, res) {
-  // TODO: Map external_id in websites property to their primary keys.
-  // TODO: FE sends external_id just like in POST, which have to be mapped to satisfy the n-to-m relation.
+
   try {
     const userDetail = req.body;
     const { userId } = req.params;
@@ -139,7 +137,7 @@ async function updateUser(req, res) {
     const user = await db.user.findOne({ where: { external_id: userId } })
 
     if (user) {
-      // let getRole = (await db.role.findOne({where: {external_id: user.roleId}})); 
+
       /* Check user role */
       if (req && req.user && req.user.dataValues.external_id == userId) {
         if (userDetail.roleId != user.roleId) {
@@ -161,16 +159,20 @@ async function updateUser(req, res) {
       }
       userDetail.roleId = (await db.role.findOne({ where: { role: userDetail.role } })).id;
       const resdata = await user.update(userDetail, { where: { id: user.id } })
+      let checkWebsites;
+      if (userDetail.websites && typeof userDetail.websites == 'object') {
 
-      if(userDetail.websites && typeof userDetail.websites == 'object'){
-        await resdata.setWebsites(userDetail.websites);
+        checkWebsites = await db.website.findAll({ where: { external_id: userDetail.websites }, attributes: ['id',['external_id','uid']] });
+        let getWebsitesID = checkWebsites.map((o) => o.id);
+
+        await resdata.setWebsites(getWebsitesID);
 
       }
-      let websiteData = await resdata.getWebsites(
-        {
-        attributes: ['external_id', 'status', 'size', 'domainname']
-      });
-      resdata.websites = websiteData;
+      const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
+        await await delay(10);
+        return {uid:obj.dataValues.uid};
+      }));
+      resdata.websites = getWebsitesUid;
       if (resdata) {
         res.send(await response.accountViewModel(resdata));
       } else {

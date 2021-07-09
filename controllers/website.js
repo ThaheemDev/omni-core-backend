@@ -49,7 +49,7 @@ async function getAll(req, res, next) {
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
   try {
-    // const websites = await db.website.findAll({attributes: ['external_id', 'status','size','domainname']});
+  
     let offset = 0;
     if (page > 1) {
       offset = ((page - 1) * page_size);
@@ -61,7 +61,6 @@ async function getAll(req, res, next) {
         limit: page_size
       }
     );
-console.log("rows",rows);
     res.send(response.pagination(count, rows, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
