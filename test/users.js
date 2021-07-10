@@ -146,8 +146,6 @@ describe('POST /accounts', () => {
         });
     });
   });
-  // TODO: add test to make sure only users with ADMIN role can create new users
-
  
 
   describe('Create new account with other role', () => {
@@ -200,7 +198,8 @@ describe('PUT /accounts', () => {
     "password":111111,
     "status":"ACTIVE",
     "role":"ADMIN",
-    "name":"john10"
+    "name":"john10",
+    "websites":[]
 }
 
   before((done) => {
@@ -221,20 +220,6 @@ describe('PUT /accounts', () => {
         done();
       }).catch((err) => done(err));
   });
-
-  // afterEach(function (done) {
-  //   if (this.currentTest.state == 'failed') {
-  //     return done();
-  //   }
-  //   agent.delete(`/api/accounts/${userData.uid}`)
-  //     .send()
-  //     .then((res) => {
-  //       done()
-  //     })
-  //     .catch((err) => {
-  //       done()
-  //     });
-  // });
 
   describe('Validations check', () => {
     it('Maxlength(name):- It should return 422 error', (done) => {
@@ -297,18 +282,16 @@ describe('PUT /accounts', () => {
           assert.strictEqual(res.status, requestedData.status)
           assert.strictEqual(res.name, requestedData.name)
           chai.expect(res.uid).to.be.not.undefined;
-          // assert.strictEqual(res.websites.length, userData.websites.length);
-          // for (const site of res.websites) {
-          //   chai.expect(site.uid).to.be.not.undefined;
-          //   // TODO: enable once website is properly implemented
-          //   // assert.ok(userData.websites.includes(site.domainname));
-          // }
+          assert.strictEqual(res.websites.length, userData.websites.length);
+          for (const site of res.websites) {
+            chai.expect(site.uid).to.be.not.undefined;
+            assert.ok(userData.websites.includes(site.uid));
+          }
           done()
         });
     });
   });
 
-  // TODO: add test to make sure only users with ADMIN role can create new users
 });
 
 describe('GET /accounts', () => {
