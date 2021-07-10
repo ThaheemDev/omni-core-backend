@@ -143,11 +143,11 @@ describe('POST /accounts', () => {
           assert.strictEqual(res.status, requestedData.status)
           assert.strictEqual(res.name, requestedData.name)
           chai.expect(res.uid).to.be.not.undefined;
+
           assert.strictEqual(res.websites.length, requestedData.websites.length);
           for (const site of res.websites) {
             chai.expect(site.uid).to.be.not.undefined;
-            // TODO: enable once website is properly implemented
-            assert.ok(requestedData.websites.includes(site.domainname));
+            assert.ok(requestedData.websites.includes(site.uuid));
           }
           done();
         })

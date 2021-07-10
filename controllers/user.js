@@ -101,20 +101,23 @@ async function createUser(req, res) {
     }
 
     let data = await db.user.create(user);
-    let checkWebsites;
+    let checkWebsites = [];
     if (user.websites && user.websites.length > 0) {
 
       checkWebsites = await db.website.findAll({ where: { external_id: user.websites }, attributes: ['id',['external_id','uid']] });
       let getWebsitesID = checkWebsites.map((o) => o.id);
 
       await data.setWebsites(getWebsitesID);
-    }
 
-  const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
-    await await delay(10);
-    return {uid:obj.dataValues.uid};
-  }));
-    data.websites = getWebsitesUid;
+
+      const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
+        await await delay(10);
+        return {uid:obj.dataValues.uid};
+      }));
+        data.websites = getWebsitesUid;
+    }  else {
+      data.websites = [];
+    }
 
     res.send(await response.accountViewModel(data));
   } catch (err) {
@@ -167,12 +170,16 @@ async function updateUser(req, res) {
 
         await resdata.setWebsites(getWebsitesID);
 
+        const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
+          await await delay(10);
+          return {uid:obj.dataValues.uid};
+        }));
+        resdata.websites = getWebsitesUid;
+
+      } else {
+        resdata.websites = [];
       }
-      const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
-        await await delay(10);
-        return {uid:obj.dataValues.uid};
-      }));
-      resdata.websites = getWebsitesUid;
+     
       if (resdata) {
         res.send(await response.accountViewModel(resdata));
       } else {
