@@ -4,6 +4,8 @@ const db = require('.');
 // TODO: this is not a product, but that an override of the original product.
 // TODO: see https://gitlab.com/hadiethshop/product-api-mock/-/blob/master/openapi.yaml
 module.exports = (sequelize, Sequelize) => {
+    const productGroup = require('./product_group')(sequelize, Sequelize);
+
     const Product = sequelize.define("product", {
         id: {
             allowNull: false,
@@ -33,60 +35,68 @@ module.exports = (sequelize, Sequelize) => {
                 }
             }
         },
-        // TODO: update your err msg, please.
         short_description: {
             type: Sequelize.STRING,
-            allowNull: false,
             validate: {
                 len: {
                     args: [1, 255],
-                    msg: "Name can not be greater than 255"
-                },
-                notNull: {
-                    msg: 'Name is required'
+                    msg: "Short description can not be greater than 255"
                 }
             }
         },
-        // TODO: update your err msg, please.
         description: {
             type: Sequelize.STRING,
-            allowNull: false,
             validate: {
                 len: {
                     args: [1, 255],
-                    msg: "Name can not be greater than 255"
-                },
-                notNull: {
-                    msg: 'Name is required'
+                    msg: "Description can not be greater than 255"
                 }
             }
         },
 
-        language: {
-            type: Sequelize.STRING,
-            allowNull: false
+        buy_price: {
+            type: Sequelize.FLOAT,
+            allowNull: false,
+             validate: {
+                notNull: {
+                    msg: 'Buy price is required'
+                }
+            }
         },
-
-        price: {
-            type: Sequelize.INTEGER,
-            allowNull: false
+        recommended_retail_price: {
+            type: Sequelize.FLOAT,
+            allowNull: false,
+             validate: {
+                notNull: {
+                    msg: 'Recommended retail price is required'
+                }
+            }
         },
 
         active: {
-            type: Sequelize.BOOLEAN
+            type: Sequelize.BOOLEAN,
+            defaultValue: false,
         },
         category: {
-            type: Sequelize.STRING,
-            allowNull: false
+            type: Sequelize.STRING
         },
         sub_category: {
-            type: Sequelize.STRING,
-            allowNull: false
+            type: Sequelize.STRING
+        },
+        supplier: {
+            type: Sequelize.STRING
+        },
+        url: {
+            type: Sequelize.STRING
         },
         brand: {
-            type: Sequelize.STRING,
-            allowNull: false
+            type: Sequelize.STRING
+        },
+        images: {
+            type: Sequelize.STRING
         }
     });
+
+    Product.belongsTo(productGroup);
     return Product;
 };
