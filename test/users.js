@@ -14,7 +14,7 @@ describe('POST /accounts', () => {
     email: `test-post.${new Date().getTime()}@yopmail.com`,
     password: '111111',
     status: 'ACTIVE',
-    role: 'ADMIN',
+    role: 'EMPLOYEE',
     name: 'test data',
     websites:[]
   };
@@ -46,16 +46,6 @@ describe('POST /accounts', () => {
         .send(requestedData)
         .expect(422, done);
     });
-
-    // it('Require(websites):- It should return 422 error', (done) => {
-    //   let requestedData = {...userData};
-    //   requestedData.email="test@email.com"
-    //   delete requestedData.websites;
-
-    //   agent.post('/api/accounts')
-    //     .send(requestedData)
-    //     .expect(422, done);
-    // });
 
     it('Optional(status):- It should return 200 ok', (done) => {
       let requestedData = {...userData};
@@ -157,6 +147,49 @@ describe('POST /accounts', () => {
     });
   });
   // TODO: add test to make sure only users with ADMIN role can create new users
+
+ 
+
+  describe('Create new account with other role', () => {
+    before((done) => {
+
+
+      let requestedData = {...userData};
+  
+        requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
+  
+        agent.post('/api/accounts')
+          .send(requestedData)
+          .expect(200)
+          .then(function (res) {
+              res = res.body;
+              agent = request.agent(app);
+              agent.post('/login')
+            .send(`email=${res.email}&password=${requestedData.password}`).expect(204,done)
+          })
+          .catch((err) => {
+            done(err)
+          });
+  
+      
+    });
+    
+    it('It should return 401', (done) => {
+
+      let requestedData = {...userData};
+      
+      requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
+
+      agent.post('/api/accounts')
+        .send(requestedData).then((res)=>{
+          assert.strictEqual(401, res.statusCode)
+          done();
+        })
+        .catch((err) => {
+          done(err)
+        });
+    });
+  });
 });
 
 describe('PUT /accounts', () => {

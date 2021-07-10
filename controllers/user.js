@@ -121,7 +121,6 @@ async function createUser(req, res) {
 
     res.send(await response.accountViewModel(data));
   } catch (err) {
-    console.log('err', err)
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
