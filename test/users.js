@@ -16,7 +16,7 @@ describe('POST /accounts', () => {
     status: 'ACTIVE',
     role: 'EMPLOYEE',
     name: 'test data',
-    websites:[]
+    websites: []
   };
 
   before((done) => {
@@ -118,7 +118,7 @@ describe('POST /accounts', () => {
   });
 
   describe('Create new account', () => {
-    it('It should return 200', (done) => {
+    it('It should return 200 without websites', (done) => {
       let requestedData = {...userData};
 
       requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
@@ -137,7 +137,8 @@ describe('POST /accounts', () => {
           assert.strictEqual(res.websites.length, requestedData.websites.length);
           for (const site of res.websites) {
             chai.expect(site.uid).to.be.not.undefined;
-            assert.ok(requestedData.websites.includes(site.uuid));
+            chai.expect(site.domainname).to.be.not.undefined;
+            assert.ok(requestedData.websites.includes(site.uid));
           }
           done();
         })
@@ -145,44 +146,63 @@ describe('POST /accounts', () => {
           done(err)
         });
     });
+    it('It should return 200 with websites', (done) => {
+      let requestedData = {...userData};
+
+      requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
+      requestedData.websites = ['9fcdac40-e253-11eb-a4fd-57cab8701eb7']
+
+      agent.post('/api/accounts')
+        .send(requestedData)
+        .expect(200)
+        .then(function (res) {
+          res = res.body;
+          assert.strictEqual(res.email, requestedData.email)
+          assert.strictEqual(res.role, requestedData.role)
+          assert.strictEqual(res.status, requestedData.status)
+          assert.strictEqual(res.name, requestedData.name)
+          chai.expect(res.uid).to.be.not.undefined;
+          assert.strictEqual(res.websites.length, 1);
+          chai.expect(res.websites[0].uid).to.equal(requestedData.websites[0]);
+          chai.expect(res.websites[0].domainname).to.equal('omni.cloud'); // defined in websites seed
+          assert.ok(requestedData.websites.includes(res.websites[0].uid));
+          done();
+        })
+        .catch((err) => {
+          done(err)
+        });
+    });
   });
- 
 
   describe('Create new account with other role', () => {
+    let unprivilegedAgent = request.agent(app);
     before((done) => {
-
-
       let requestedData = {...userData};
-  
-        requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
-  
-        agent.post('/api/accounts')
-          .send(requestedData)
-          .expect(200)
-          .then(function (res) {
-              res = res.body;
-              agent = request.agent(app);
-              agent.post('/login')
-            .send(`email=${res.email}&password=${requestedData.password}`).expect(204,done)
-          })
-          .catch((err) => {
-            done(err)
-          });
-  
-      
-    });
-    
-    it('It should return 401', (done) => {
 
-      let requestedData = {...userData};
-      
       requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
 
       agent.post('/api/accounts')
-        .send(requestedData).then((res)=>{
-          assert.strictEqual(401, res.statusCode)
-          done();
+        .send(requestedData)
+        .expect(200)
+        .then(function (res) {
+          res = res.body;
+          unprivilegedAgent.post('/login')
+            .send(`email=${res.email}&password=${requestedData.password}`)
+            .expect(204, done)
         })
+        .catch(done);
+    });
+
+    it('It should return 401', (done) => {
+      let requestedData = {...userData};
+
+      requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
+
+      unprivilegedAgent.post('/api/accounts')
+        .send(requestedData).then((res) => {
+        assert.strictEqual(401, res.statusCode)
+        done();
+      })
         .catch((err) => {
           done(err)
         });
@@ -193,14 +213,13 @@ describe('POST /accounts', () => {
 describe('PUT /accounts', () => {
   let agent;
   let userData = {
-
-    "email":`test.${new Date().getTime()}@yopmail.com`,
-    "password":111111,
-    "status":"ACTIVE",
-    "role":"ADMIN",
-    "name":"john10",
-    "websites":[]
-}
+    "email": `test.${new Date().getTime()}@yopmail.com`,
+    "password": 111111,
+    "status": "ACTIVE",
+    "role": "ADMIN",
+    "name": "john10",
+    "websites": []
+  }
 
   before((done) => {
     // Login

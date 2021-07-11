@@ -91,35 +91,20 @@ async function createUser(req, res) {
     }
 
     user.external_id = 0;
+    await validateAndSetUserRole(user);
 
-    let getRole = (await db.role.findOne({ where: { role: user.role } }));
-
-    if (getRole && getRole.id) {
-      user.roleId = getRole.id;
-    } else {
-      throw { status: 422, errors: { message: 'Invalid role' } }
+    let savedUser = await db.user.create(user);
+    if (user.websites) {
+      let validSites = await db.website.findAll({
+        where: {external_id: user.websites},
+        attributes: ['id', 'domainname', 'external_id']
+      });
+      let siteIds = validSites.map((o) => o.id);
+      await savedUser.setWebsites(siteIds);
+      savedUser.websites = validSites;
     }
 
-    let data = await db.user.create(user);
-    let checkWebsites = [];
-    if (user.websites && user.websites.length > 0) {
-
-      checkWebsites = await db.website.findAll({ where: { external_id: user.websites }, attributes: ['id',['external_id','uid']] });
-      let getWebsitesID = checkWebsites.map((o) => o.id);
-
-      await data.setWebsites(getWebsitesID);
-
-
-      const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
-        await await delay(10);
-        return {uid:obj.dataValues.uid};
-      }));
-        data.websites = getWebsitesUid;
-    }  else {
-      data.websites = [];
-    }
-
-    res.send(await response.accountViewModel(data));
+    res.send(await response.accountViewModel(savedUser));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -178,7 +163,7 @@ async function updateUser(req, res) {
       } else {
         resdata.websites = [];
       }
-     
+
       if (resdata) {
         res.send(await response.accountViewModel(resdata));
       } else {
@@ -198,4 +183,14 @@ function getValidPageSize(value) {
     return value;
   }
   return 10;
+}
+
+async function validateAndSetUserRole(user) {
+  let role = await db.role.findOne({ where: { role: user.role } });
+
+  if (role && role.id) {
+    user.roleId = role.id;
+  } else {
+    throw { status: 422, errors: { message: 'Invalid role' } }
+  }
 }

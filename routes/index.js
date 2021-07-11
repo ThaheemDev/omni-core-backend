@@ -12,19 +12,14 @@ async function isAuthenticated(req, res, next) {
   }
 }
 
-
 async function isAdmin(req, res, next) {
-
   if (req && req.user) {
-    let getUser = await req.user.getRole();
+    let userRole = await req.user.getRole();
 
-    if(getUser.dataValues.role == 'ADMIN'){
+    if (userRole.role == 'ADMIN') {
       next();
-    } else {
-      res.status(401).send();
+      return;
     }
-
-  } else {
     res.status(401).send();
   }
 }
