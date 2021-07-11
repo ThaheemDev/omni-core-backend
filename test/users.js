@@ -282,9 +282,8 @@ describe('PUT /accounts', () => {
     });
   });
 
-
   describe('Update Account', () => {
-    it('It should return 200', (done) => {
+    it('It should return 200 without websites', (done) => {
       let requestedData = {...userData};
 
       delete requestedData.email;
@@ -307,7 +306,43 @@ describe('PUT /accounts', () => {
             assert.ok(userData.websites.includes(site.uid));
           }
           done()
-        });
+        }).catch(done);
+    });
+
+    it('It should return 200 with websites', (done) => {
+      let requestedData = {...userData};
+
+      delete requestedData.email;
+      requestedData.role = 'MAINTAINER';
+      requestedData.name = 'new name';
+      requestedData.status = 'BLOCKED';
+      requestedData.websites = ['9fcdac40-e253-11eb-a4fd-57cab8701eb7']
+
+      agent.put(`/api/accounts/${userData.uid}`)
+        .send(requestedData)
+        .expect(200)
+        .then(function (res) {
+          res = res.body;
+          assert.strictEqual(res.role, requestedData.role)
+          assert.strictEqual(res.status, requestedData.status)
+          assert.strictEqual(res.name, requestedData.name)
+          chai.expect(res.uid).to.be.not.undefined;
+          assert.strictEqual(res.websites.length, 1);
+          chai.expect(res.websites[0].uid).to.equal(requestedData.websites[0]);
+          chai.expect(res.websites[0].domainname).to.equal('omni.cloud'); // defined in websites seed
+          assert.ok(requestedData.websites.includes(res.websites[0].uid));
+        }).then((res) => {
+          // clear websites
+          requestedData.websites = [];
+          agent.put(`/api/accounts/${userData.uid}`)
+            .send(requestedData)
+            .expect(200)
+            .then(function (res) {
+              assert.strictEqual(res.body.websites.length, 0);
+            }).catch(done)
+          done()
+        }
+      ).catch(done);
     });
   });
 

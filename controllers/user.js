@@ -2,7 +2,6 @@ const db = require("../models"); // models path depend on your structure
 const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 module.exports = {
   getUsers,
@@ -94,16 +93,7 @@ async function createUser(req, res) {
     await validateAndSetUserRole(user);
 
     let savedUser = await db.user.create(user);
-    if (user.websites) {
-      let validSites = await db.website.findAll({
-        where: {external_id: user.websites},
-        attributes: ['id', 'domainname', 'external_id']
-      });
-      let siteIds = validSites.map((o) => o.id);
-      await savedUser.setWebsites(siteIds);
-      savedUser.websites = validSites;
-    }
-
+    await setUserWebsites(user.websites, savedUser);
     res.send(await response.accountViewModel(savedUser));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
@@ -111,68 +101,43 @@ async function createUser(req, res) {
 }
 
 async function updateUser(req, res) {
-
   try {
-    const userDetail = req.body;
-    const { userId } = req.params;
-
+    const {userId} = req.params;
     if (!userId) {
-      throw { status: 422, errors: { message: 'Id is required' } }
+      throw {status: 422, errors: {message: 'Id is required'}}
     }
 
+    const user = await db.user.findOne({where: {external_id: userId}})
+    if (!user) {
+      throw {status: 422, errors: {message: 'User is not found'}}
+    }
 
-    const user = await db.user.findOne({ where: { external_id: userId } })
+    const userDetail = req.body;
+    /* Check user role */
+    if (req.user.external_id == userId && userDetail.roleId != user.roleId) {
+      throw {status: 422, message: 'You cannot change role'}
+    }
 
-    if (user) {
+    /* Check user email */
+    if (userDetail.email && userDetail.email != user.email) {
+      throw {status: 422, message: 'You cannot change email'}
+    }
 
-      /* Check user role */
-      if (req && req.user && req.user.dataValues.external_id == userId) {
-        if (userDetail.roleId != user.roleId) {
-          throw { status: 422, message: 'You cannot change role' }
-        }
-      }
-
-      /* Check user email */
-      if (userDetail.email && userDetail.email != user.email) {
-        throw { status: 422, message: 'You cannot change email' }
-      }
-
-      if (userDetail.password) {
-        const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
-        const hash = bcrypt.hashSync(String(userDetail.password), salt);
-        userDetail.password = hash;
-      } else {
-        userDetail.password = user.password
-      }
-      userDetail.roleId = (await db.role.findOne({ where: { role: userDetail.role } })).id;
-      const resdata = await user.update(userDetail, { where: { id: user.id } })
-      let checkWebsites;
-      if (userDetail.websites && typeof userDetail.websites == 'object') {
-
-        checkWebsites = await db.website.findAll({ where: { external_id: userDetail.websites }, attributes: ['id',['external_id','uid']] });
-        let getWebsitesID = checkWebsites.map((o) => o.id);
-
-        await resdata.setWebsites(getWebsitesID);
-
-        const getWebsitesUid = await Promise.all(checkWebsites.map(async (obj) => {
-          await await delay(10);
-          return {uid:obj.dataValues.uid};
-        }));
-        resdata.websites = getWebsitesUid;
-
-      } else {
-        resdata.websites = [];
-      }
-
-      if (resdata) {
-        res.send(await response.accountViewModel(resdata));
-      } else {
-        throw { status: 422, errors: { message: 'Some error occurred while updating the user.' } }
-      }
+    if (userDetail.password) {
+      const salt = bcrypt.genSaltSync(config.bcrypt.saltRounds);
+      const hash = bcrypt.hashSync(String(userDetail.password), salt);
+      userDetail.password = hash;
     } else {
-      throw { status: 422, errors: { message: 'User is not found' } }
-
+      userDetail.password = user.password
     }
+    userDetail.roleId = (await db.role.findOne({where: {role: userDetail.role}})).id;
+    const savedUser = await user.update(userDetail, {where: {id: user.id}})
+    if (!savedUser) {
+      throw {status: 422, errors: {message: 'Some error occurred while updating the user.'}}
+    }
+
+    await setUserWebsites(userDetail.websites, savedUser);
+    res.send(await response.accountViewModel(savedUser));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -193,4 +158,24 @@ async function validateAndSetUserRole(user) {
   } else {
     throw { status: 422, errors: { message: 'Invalid role' } }
   }
+}
+
+async function setUserWebsites(websiteExternalIds, user) {
+  if (typeof websiteExternalIds == 'array') {
+    return;
+  }
+
+  if (websiteExternalIds.length == 0) {
+    await user.removeWebsites()
+    user.websites = [];
+    return;
+  }
+
+  let validSites = await db.website.findAll({
+    where: {external_id: websiteExternalIds},
+    attributes: ['id', 'domainname', 'external_id']
+  });
+  let siteIds = validSites.map((o) => o.id);
+  await user.setWebsites(siteIds);
+  user.websites = validSites;
 }
