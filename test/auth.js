@@ -1,6 +1,9 @@
 const request = require('supertest'),
   app = require('../app');
-
+/*
+ * TODO: add following tests
+ *  - blocked users should not be able to log in
+ */
 describe('Authentication', () => {
   describe('Validations check', () => {
     it('Require(email):- It should return 401 error', (done) => {
