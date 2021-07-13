@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const userController = require('../controllers/user');
 const websiteController = require('../controllers/website');
+const productController = require('../controllers/product');
 
 async function isAuthenticated(req, res, next) {
 
@@ -521,4 +522,258 @@ router.put('/websites/:websiteId', isAuthenticated, isAdmin, websiteController.u
 router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteController.deletes);
 
 
+/**
+ * @swagger
+ * tags:
+ *  name: Product
+ *  description: Product management API
+ */
+
+/* POST create website. */
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: Create Product
+ *     description:  It can be use to create website.
+ *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *                  - name
+ *                  - buy_price
+ *                  - recommended_retail_price
+ *                  - product_group
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                  short_description:
+ *                      type: string
+ *                  description:
+ *                      type: string
+ *                  product_group:
+ *                      type: string
+ *                  buy_price:
+ *                      type: number
+ *                  recommended_retail_price:
+ *                      type: number
+ *                  active:
+ *                      type: boolean
+ *                      default: false      
+ *                  category:
+ *                      type: string
+ *                  sub_category:
+ *                      type: string
+ *                  supplier:
+ *                      type: string  
+ *                  url:
+ *                      type: string
+ *                  brand:
+ *                      type: string
+ *                  images:
+ *                      type: array
+ *                      items:
+ *                       type: string         
+ *
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+ router.post('/products', isAuthenticated, isAdmin, productController.create);
+
+ /* GET website listing. */
+ /**
+  * @swagger
+  * /products:
+  *   get:
+  *     summary: List Product
+  *     description:  It can be use to list website.
+  *     tags: [Product]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - deprecated: false
+  *         name: page
+  *         description: next page of results to display
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: '10'
+  *         name: page_size
+  *         description: Number of items per page
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: false
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 result:
+  *                   type: array
+  *                   items:
+  *                      $ref: '#/components/schemas/Product'
+  *                 total:
+  *                   type: integer
+  *                 next:
+  *                   type: string
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.get('/products', isAuthenticated,  productController.getAll);
+ 
+ /* update website. */
+ /**
+  * @swagger
+  * /products/{external_id}:
+  *   put:
+  *     summary: Product Update
+  *     description:  Update existing website using {external_id}
+  *     tags: [Product]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: external_id
+  *     requestBody:
+  *       required: true
+  *       content:
+  *         application/json:
+  *           schema:
+  *              type: object
+  *              required:
+  *                  - name
+  *                  - buy_price
+  *                  - recommended_retail_price
+  *                  - product_group
+  *              properties:
+  *                  name:
+  *                      type: string
+  *                  short_description:
+  *                      type: string
+  *                  description:
+  *                      type: string
+  *                  product_group:
+  *                      type: string
+  *                  buy_price:
+  *                      type: number
+  *                  recommended_retail_price:
+  *                      type: number
+  *                  active:
+  *                      type: boolean
+  *                      default: false      
+  *                  category:
+  *                      type: string
+  *                  sub_category:
+  *                      type: string
+  *                  supplier:
+  *                      type: string  
+  *                  url:
+  *                      type: string
+  *                  brand:
+  *                      type: string
+  *                  images:
+  *                      type: array
+  *                      items:
+  *                       type: string
+  *
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                 status:
+  *                   type: integer
+  *                   default: 1
+  *                 data:
+  *                   $ref: '#/components/schemas/EmptyResponse'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.put('/products/:productId', isAuthenticated, isAdmin, productController.update);
+ 
+ /* delete website listing. */
+ /**
+  * @swagger
+  * /products/{external_id}:
+  *   delete:
+  *     summary: Product Remove
+  *     description:   Remove a website with `{external_id}`
+  *     tags: [Product]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: external_id
+  *
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                 status:
+  *                   type: integer
+  *                   default: 1
+  *                 data:
+  *                   $ref: '#/components/schemas/EmptyResponse'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.delete('/products/:productId', isAuthenticated, isAdmin, productController.deletes);
 module.exports = router;
