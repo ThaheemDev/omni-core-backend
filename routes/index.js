@@ -90,6 +90,76 @@ async function isAdmin(req, res, next) {
  *           type: string
  *          name:
  *           type: string
+*       ProductViewModel:
+ *       type: object
+ *       properties:
+ *          uid:
+ *           type: string
+ *          name:
+ *           type: string
+ *          short_description:
+ *           type: string
+ *          description:
+ *           type: string
+ *          product_group:
+ *           type: object
+ *           items:
+ *            type:string
+ *          buy_price:
+ *           type: number
+ *          recommended_retail_price:
+ *           type: number
+ *          active:
+ *           type: boolean
+ *           default: false      
+ *          category:
+ *           type: string
+ *          sub_category:
+ *           type: string
+ *          supplier:
+ *           type: string  
+ *          url:
+ *           type: string
+ *          brand:
+ *           type: string
+ *          images:
+ *           type: array
+ *           items:
+ *            type: string
+ *      ProductModel:
+ *       type: object
+ *       properties:
+ *          uid:
+ *           type: string
+ *          name:
+ *           type: string
+ *          short_description:
+ *           type: string
+ *          description:
+ *           type: string
+ *          product_group:
+ *           type: string
+ *          buy_price:
+ *           type: number
+ *          recommended_retail_price:
+ *           type: number
+ *          active:
+ *           type: boolean
+ *           default: false      
+ *          category:
+ *           type: string
+ *          sub_category:
+ *           type: string
+ *          supplier:
+ *           type: string  
+ *          url:
+ *           type: string
+ *          brand:
+ *           type: string
+ *          images:
+ *           type: array
+ *           items:
+ *            type: string
  *      ProductGroupViewModel:
  *       type: object
  *       properties:
@@ -609,7 +679,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *                   type: integer
  *                   default: 1
  *                 data:
- *                   $ref: '#/components/schemas/Product'
+ *                   $ref: '#/components/schemas/ProductModel'
  *       422:
  *         description: Error.
  *         content:
@@ -654,7 +724,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *                 result:
   *                   type: array
   *                   items:
-  *                      $ref: '#/components/schemas/Product'
+  *                      $ref: '#/components/schemas/ProductModel'
   *                 total:
   *                   type: integer
   *                 next:
@@ -667,6 +737,42 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *               $ref: '#/components/schemas/Error'
   */
  router.get('/products', isAuthenticated,  productController.getAll);
+
+  /* GET products listing. */
+ /**
+  * @swagger
+  * /products/{external_id}:
+  *   get:
+  *     summary: Fetch a Product
+  *     description:  It can be use to fetch the product.
+  *     tags: [Product]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: external_id
+  * 
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 data:
+  *                   $ref: '#/components/schemas/ProductModel'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+  router.get('/products/:productId', isAuthenticated,  productController.getDetails);
  
  /* update products */
  /**
@@ -740,7 +846,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *                   type: integer
   *                   default: 1
   *                 data:
-  *                   $ref: '#/components/schemas/EmptyResponse'
+  *                   $ref: '#/components/schemas/ProductModel'
   *       422:
   *         description: Error.
   *         content:
