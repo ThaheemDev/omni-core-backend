@@ -5,7 +5,8 @@ module.exports = {
   create,
   getAll,
   update,
-  deletes
+  deletes,
+  getDetails
 }
 
 // create Product detail
@@ -42,7 +43,7 @@ async function update(req, res, next) {
   }
 }
 
-// get all website details
+// get all product details
 async function getAll(req, res, next) {
   let {page, page_size} = req.query;
   page = Number(page) || 1;
@@ -66,7 +67,19 @@ async function getAll(req, res, next) {
   }
 }
 
-// delete website details
+// get single product details
+async function getDetails(req, res, next) {
+    const {productId} = req.params;
+    try {
+    
+        let product = await db.product.findOne({where: {external_id: productId}});
+      res.send(response.prouctViewModel());
+    } catch (err) {
+      res.status(response.getStatusCode(err)).send(response.error(err));
+    }
+  }
+
+// delete product details
 async function deletes(req, res, next) {
   try {
     const {productId} = req.params;
