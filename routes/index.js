@@ -83,6 +83,20 @@ async function isAdmin(req, res, next) {
  *          status:
  *           type: string
  *           enum: ['ACTIVE', 'BLOCKED']
+ *      ProductGroupModel:
+ *       type: object
+ *       properties:
+ *          uid:
+ *           type: string
+ *          name:
+ *           type: string
+ *      ProductGroupViewModel:
+ *       type: object
+ *       properties:
+ *          uid:
+ *           type: string
+ *          name:
+ *           type: string
  */
 
 
@@ -529,13 +543,13 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *  description: Product management API
  */
 
-/* POST create website. */
+/* POST create products. */
 /**
  * @swagger
  * /products:
  *   post:
  *     summary: Create Product
- *     description:  It can be use to create website.
+ *     description:  It can be use to create product.
  *     tags: [Product]
  *     security:
  *       - BearerAuth: []
@@ -605,13 +619,13 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  */
  router.post('/products', isAuthenticated, isAdmin, productController.create);
 
- /* GET website listing. */
+ /* GET products listing. */
  /**
   * @swagger
   * /products:
   *   get:
   *     summary: List Product
-  *     description:  It can be use to list website.
+  *     description:  It can be use to list product.
   *     tags: [Product]
   *     security:
   *       - BearerAuth: []
@@ -654,13 +668,13 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   */
  router.get('/products', isAuthenticated,  productController.getAll);
  
- /* update website. */
+ /* update products */
  /**
   * @swagger
   * /products/{external_id}:
   *   put:
   *     summary: Product Update
-  *     description:  Update existing website using {external_id}
+  *     description:  Update existing product using {external_id}
   *     tags: [Product]
   *     security:
   *       - BearerAuth: []
@@ -736,13 +750,13 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   */
  router.put('/products/:productId', isAuthenticated, isAdmin, productController.update);
  
- /* delete website listing. */
+ /* delete products. */
  /**
   * @swagger
   * /products/{external_id}:
   *   delete:
   *     summary: Product Remove
-  *     description:   Remove a website with `{external_id}`
+  *     description:   Remove a product with `{external_id}`
   *     tags: [Product]
   *     security:
   *       - BearerAuth: []
@@ -776,4 +790,203 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *               $ref: '#/components/schemas/Error'
   */
  router.delete('/products/:productId', isAuthenticated, isAdmin, productController.deletes);
+
+
+/**
+ * @swagger
+ * tags:
+ *  name: ProductGroup
+ *  description: Product group management API
+ */
+
+/* POST create product group */
+/**
+ * @swagger
+ * /productgroups:
+ *   post:
+ *     summary: Create Product Group
+ *     description:  It can be use to create product group.
+ *     tags: [ProductGroup]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *                  - name
+ *              properties:
+ *                  name:
+ *                      type: string       
+ *
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data:
+ *                   $ref: '#/components/schemas/ProductGroupModel'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+ router.post('/productgroups', isAuthenticated, isAdmin, productController.create);
+
+ /* GET product groups listing. */
+ /**
+  * @swagger
+  * /productgroups:
+  *   get:
+  *     summary: List Product Group
+  *     description:  It can be use to list product group.
+  *     tags: [ProductGroup]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - deprecated: false
+  *         name: page
+  *         description: next page of results to display
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: '10'
+  *         name: page_size
+  *         description: Number of items per page
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: false
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 result:
+  *                   type: array
+  *                   items:
+  *                      $ref: '#/components/schemas/ProductGroupModel'
+  *                 total:
+  *                   type: integer
+  *                 next:
+  *                   type: string
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.get('/productgroups', isAuthenticated,  productController.getAll);
+ 
+ /* update product group */
+ /**
+  * @swagger
+  * /productgroups/{external_id}:
+  *   put:
+  *     summary: Product Group Update
+  *     description:  Update existing product group using {external_id}
+  *     tags: [ProductGroup]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: external_id
+  *     requestBody:
+  *       required: true
+  *       content:
+  *         application/json:
+  *           schema:
+  *              type: object
+  *              required:
+  *                  - name
+  *                  - buy_price
+  *                  - recommended_retail_price
+  *                  - product_group
+  *              properties:
+  *                  name:
+  *                      type: string
+  *
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                 status:
+  *                   type: integer
+  *                   default: 1
+  *                 data:
+  *                   $ref: '#/components/schemas/ProductGroupViewModel'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.put('/productgroups/:productGroupId', isAuthenticated, isAdmin, productController.update);
+ 
+ /* delete product groups */
+ /**
+  * @swagger
+  * /productgroups/{external_id}:
+  *   delete:
+  *     summary: Product Group Remove
+  *     description:   Remove a product group with `{external_id}`
+  *     tags: [ProductGroup]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: external_id
+  *
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                 status:
+  *                   type: integer
+  *                   default: 1
+  *                 data:
+  *                   $ref: '#/components/schemas/EmptyResponse'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.delete('/productgroups/:productGroupId', isAuthenticated, isAdmin, productController.deletes);
 module.exports = router;
