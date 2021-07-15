@@ -55,7 +55,7 @@ async function isAdmin(req, res, next) {
  *           enum: ['ACTIVE', 'BLOCKED']
  *          websites:
  *           type: array
- *           items:
+ *          items:
  *            type: string
  *          status:
  *           type: string
@@ -90,42 +90,6 @@ async function isAdmin(req, res, next) {
  *           type: string
  *          name:
  *           type: string
-*       ProductViewModel:
- *       type: object
- *       properties:
- *          uid:
- *           type: string
- *          name:
- *           type: string
- *          short_description:
- *           type: string
- *          description:
- *           type: string
- *          product_group:
- *           type: object
- *           items:
- *            type:string
- *          buy_price:
- *           type: number
- *          recommended_retail_price:
- *           type: number
- *          active:
- *           type: boolean
- *           default: false      
- *          category:
- *           type: string
- *          sub_category:
- *           type: string
- *          supplier:
- *           type: string  
- *          url:
- *           type: string
- *          brand:
- *           type: string
- *          images:
- *           type: array
- *           items:
- *            type: string
  *      ProductModel:
  *       type: object
  *       properties:
@@ -138,6 +102,8 @@ async function isAdmin(req, res, next) {
  *          description:
  *           type: string
  *          product_group:
+ *           format: uuid
+ *           x-faker: datatype.uuid
  *           type: string
  *          buy_price:
  *           type: number
