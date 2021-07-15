@@ -1,9 +1,6 @@
 const request = require('supertest'),
   app = require('../app');
-/*
- * TODO: add following tests
- *  - blocked users should not be able to log in
- */
+
 describe('Authentication', () => {
   describe('Validations check', () => {
     it('Require(email):- It should return 401 error', (done) => {
@@ -47,7 +44,7 @@ describe('Authentication', () => {
   describe('Blocked /login',()=>{
     let agent;
     let userData = {
-      "email": `test-del.${new Date().getTime()}@yopmail.com`,
+      "email": `test-login.${new Date().getTime()}@yopmail.com`,
       "websites": ["https://google.com"],
       "status": "BLOCKED",
       "role": 'EMPLOYEE',
@@ -75,7 +72,7 @@ describe('Authentication', () => {
     });
 
     describe('Blocked Account', () => {
-      it('It should not loggedin with blocked user', (done) => {
+      it('It should not login with blocked user', (done) => {
         request(app)
           .post('/login')
           .send(`email=${userData.email}.com&password=111111`)
