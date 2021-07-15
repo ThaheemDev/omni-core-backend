@@ -1102,6 +1102,10 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *  description: Product website management API
  */
 
+// TODO: this a duplicate of product endpoints. Please fix this:
+// - paths should be /websites/{uid}/products/...
+// - controller should be websites_products (or as you call it product_websites)
+
 /* POST create products website. */
 /**
  * @swagger
