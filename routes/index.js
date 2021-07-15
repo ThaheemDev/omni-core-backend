@@ -36,10 +36,6 @@ async function isAdmin(req, res, next) {
 /**
  * @swagger
  *  components:
- *   securitySchemes:
- *    BearerAuth:
- *     type: http
- *     scheme: bearer
  *   schemas:
  *      User:
  *       type: object
