@@ -28,6 +28,47 @@ async function isAdmin(req, res, next) {
 /**
  * @swagger
  * tags:
+ *  name: Login
+ *  description: Account Login API
+ */
+
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Login
+ *     description:  It Can be used to login into website.
+ *     tags: [Login]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *                  - email
+ *                  - password
+ *              properties:
+ *                  email:
+ *                      type: string
+ *                  password:
+ *                      type: string
+ *
+ *     responses:
+ *       204:
+ *         description: Success.
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+/**
+ * @swagger
+ * tags:
  *  name: Account
  *  description: Account management API
  */
@@ -36,6 +77,10 @@ async function isAdmin(req, res, next) {
 /**
  * @swagger
  *  components:
+ *   securitySchemes:
+ *    BearerAuth:
+ *     type: http
+ *     scheme: bearer
  *   schemas:
  *      User:
  *       type: object
@@ -163,7 +208,7 @@ async function isAdmin(req, res, next) {
 /* POST create user. */
 /**
  * @swagger
- * /accounts:
+ * /api/accounts:
  *   post:
  *     summary: Signup
  *     description:  It Can be used to register into website.
@@ -224,7 +269,7 @@ router.post('/accounts', isAuthenticated, isAdmin, userController.createUser);
 /* GET users listing. */
 /**
  * @swagger
- * /accounts:
+ * /api/accounts:
  *   get:
  *     summary: Users Listing
  *     description:  It can be use to get the active users listing.
@@ -273,7 +318,7 @@ router.get('/accounts', isAuthenticated, userController.getUsers);
 /* update users . */
 /**
  * @swagger
- * /accounts/{external_id}:
+ * /api/accounts/{external_id}:
  *   put:
  *     summary: Update User
  *     description:  Update user account using {external_id}
@@ -342,7 +387,7 @@ router.put('/accounts/:userId', isAuthenticated, isAdmin, userController.updateU
 /* POST create user. */
 /**
  * @swagger
- * /accounts/{external_id}:
+ * /api/accounts/{external_id}:
  *   delete:
  *     summary: Account Remove
  *     description:  Remove account with {external_id}
@@ -391,7 +436,7 @@ router.delete('/accounts/:userId', isAuthenticated, isAdmin, userController.dele
 /* POST create website. */
 /**
  * @swagger
- * /websites:
+ * /api/websites:
  *   post:
  *     summary: Create Website
  *     description:  It can be use to create website.
@@ -448,7 +493,7 @@ router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
 /* GET website listing. */
 /**
  * @swagger
- * /websites:
+ * /api/websites:
  *   get:
  *     summary: List Website
  *     description:  It can be use to list website.
@@ -497,7 +542,7 @@ router.get('/websites', isAuthenticated,  websiteController.getAll);
 /* update website. */
 /**
  * @swagger
- * /websites/{external_id}:
+ * /api/websites/{external_id}:
  *   put:
  *     summary: Website Update
  *     description:  Update existing website using {external_id}
@@ -557,7 +602,7 @@ router.put('/websites/:websiteId', isAuthenticated, isAdmin, websiteController.u
 /* delete website listing. */
 /**
  * @swagger
- * /websites/{external_id}:
+ * /api/websites/{external_id}:
  *   delete:
  *     summary: Website Remove
  *     description:   Remove a website with `{external_id}`
@@ -606,7 +651,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
 /* POST create products. */
 /**
  * @swagger
- * /products:
+ * /api/products:
  *   post:
  *     summary: Create Product
  *     description:  It can be use to create product.
@@ -682,7 +727,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* GET products listing. */
  /**
   * @swagger
-  * /products:
+  * /api/products:
   *   get:
   *     summary: List Product
   *     description:  It can be use to list product.
@@ -731,7 +776,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   /* GET products listing. */
  /**
   * @swagger
-  * /products/{external_id}:
+  * /api/products/{external_id}:
   *   get:
   *     summary: Fetch a Product
   *     description:  It can be use to fetch the product.
@@ -767,7 +812,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* update products */
  /**
   * @swagger
-  * /products/{external_id}:
+  * /api/products/{external_id}:
   *   put:
   *     summary: Product Update
   *     description:  Update existing product using {external_id}
@@ -849,7 +894,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* delete products. */
  /**
   * @swagger
-  * /products/{external_id}:
+  * /api/products/{external_id}:
   *   delete:
   *     summary: Product Remove
   *     description:   Remove a product with `{external_id}`
@@ -898,7 +943,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
 /* POST create product group */
 /**
  * @swagger
- * /productgroups:
+ * /api/productgroups:
  *   post:
  *     summary: Create Product Group
  *     description:  It can be use to create product group.
@@ -944,7 +989,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* GET product groups listing. */
  /**
   * @swagger
-  * /productgroups:
+  * /api/productgroups:
   *   get:
   *     summary: List Product Group
   *     description:  It can be use to list product group.
@@ -993,7 +1038,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* update product group */
  /**
   * @swagger
-  * /productgroups/{external_id}:
+  * /api/productgroups/{external_id}:
   *   put:
   *     summary: Product Group Update
   *     description:  Update existing product group using {external_id}
@@ -1048,7 +1093,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* delete product groups */
  /**
   * @swagger
-  * /productgroups/{external_id}:
+  * /api/productgroups/{external_id}:
   *   delete:
   *     summary: Product Group Remove
   *     description:   Remove a product group with `{external_id}`
@@ -1096,7 +1141,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
 /* POST create products website. */
 /**
  * @swagger
- * /websites/{websiteId}/products:
+ * /api/websites/{websiteId}/products:
  *   post:
  *     summary: Create Product
  *     description:  It can be use to create product website.
@@ -1168,7 +1213,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* GET products website listing. */
  /**
   * @swagger
-  * /websites/{websiteId}/products:
+  * /api/websites/{websiteId}/products:
   *   get:
   *     summary: List Product
   *     description:  It can be use to list product website.
@@ -1217,7 +1262,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   /* GET products website by external_id. */
  /**
   * @swagger
-  * /websites/{websiteId}/products/{productId}:
+  * /api/websites/{websiteId}/products/{productId}:
   *   get:
   *     summary: Fetch a Product
   *     description:  It can be use to fetch the product website.
@@ -1253,7 +1298,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* update products */
  /**
   * @swagger
-  * /websites/{websiteId}/products/{productId}:
+  * /api/websites/{websiteId}/products/{productId}:
   *   put:
   *     summary: Product Update
   *     description:  Update existing product website using {external_id}
@@ -1331,7 +1376,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* Delete products website */
  /**
   * @swagger
-  * /websites/{websiteId}/products/{productId}:
+  * /api/websites/{websiteId}/products/{productId}:
   *   delete:
   *     summary: Product website Remove
   *     description:   Remove a product website with `{external_id}`

@@ -38,7 +38,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:3000/api',
+      url: 'http://localhost:3000',
       description: 'Development server',
     },
   ],
@@ -74,7 +74,7 @@ middleware(app)
 
 app.use('/api', indexRouter);
 app.post('/login', authController.login);
-app.get('/logout', authController.logout);
+app.post('/logout', authController.logout);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
