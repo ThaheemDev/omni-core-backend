@@ -126,6 +126,34 @@ async function isAdmin(req, res, next) {
  *           type: array
  *           items:
  *            type: string
+ *      ProductWebsiteModel:
+ *       type: object
+ *       properties:
+ *          uid:
+ *           format: uuid
+ *           x-faker: datatype.uuid
+ *           type: string
+ *          name:
+ *           type: string
+ *          short_description:
+ *           type: string
+ *          description:
+ *           type: string
+ *          price:
+ *           type: number
+ *           format: float
+ *           x-faker: commerce.price
+ *          active:
+ *           type: boolean
+ *           default: false      
+ *          category:
+ *           type: string
+ *          sub_category:
+ *           type: string
+ *          languange:
+ *           type: string  
+ *          brand:
+ *           type: string
  *      ProductGroupViewModel:
  *       type: object
  *       properties:
@@ -1061,4 +1089,288 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *               $ref: '#/components/schemas/Error'
   */
  router.delete('/productgroups/:productGroupId', isAuthenticated, isAdmin, productController.deletes);
+
+/**
+ * @swagger
+ * tags:
+ *  name: ProductWebsite
+ *  description: Product website management API
+ */
+
+/* POST create products website. */
+/**
+ * @swagger
+ * /websites/{websiteId}/products:
+ *   post:
+ *     summary: Create Product
+ *     description:  It can be use to create product website.
+ *     tags: [ProductWebsite]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *              type: object
+ *              required:
+ *                  - website
+ *                  - product
+ *              properties:
+ *                  website:
+ *                      type: string
+ *                      format: uuid
+ *                      x-faker: datatype.uuid
+ *                  product:
+ *                      type: string
+ *                      format: uuid
+ *                      x-faker: datatype.uuid
+ *                  name:
+ *                      type: string
+ *                  short_description:
+ *                      type: string
+ *                  description:
+ *                      type: string
+ *                  price:
+ *                      type: number
+ *                  active:
+ *                      type: boolean
+ *                      default: false      
+ *                  category:
+ *                      type: string
+ *                  sub_category:
+ *                      type: string
+ *                  languange:
+ *                      type: string  
+ *                  brand:
+ *                      type: string      
+ *
+ *     responses:
+ *       200:
+ *         description: Success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 status:
+ *                   type: integer
+ *                   default: 1
+ *                 data:
+ *                   $ref: '#/components/schemas/ProductWebsiteModel'
+ *       422:
+ *         description: Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+ router.post('/products', isAuthenticated, isAdmin, productController.create);
+
+ /* GET products website listing. */
+ /**
+  * @swagger
+  * /websites/{websiteId}/products:
+  *   get:
+  *     summary: List Product
+  *     description:  It can be use to list product website.
+  *     tags: [ProductWebsite]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - deprecated: false
+  *         name: page
+  *         description: next page of results to display
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: '10'
+  *         name: page_size
+  *         description: Number of items per page
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: false
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 result:
+  *                   type: array
+  *                   items:
+  *                      $ref: '#/components/schemas/ProductWebsiteModel'
+  *                 total:
+  *                   type: integer
+  *                 next:
+  *                   type: string
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.get('/products', isAuthenticated,  productController.getAll);
+
+  /* GET products website by external_id. */
+ /**
+  * @swagger
+  * /websites/{websiteId}/products/{productId}:
+  *   get:
+  *     summary: Fetch a Product
+  *     description:  It can be use to fetch the product website.
+  *     tags: [ProductWebsite]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: productId
+  * 
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 data:
+  *                   $ref: '#/components/schemas/ProductWebsiteModel'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+  router.get('/products/:productId', isAuthenticated,  productController.getDetails);
+ 
+ /* update products */
+ /**
+  * @swagger
+  * /websites/{websiteId}/products/{productId}:
+  *   put:
+  *     summary: Product Update
+  *     description:  Update existing product website using {external_id}
+  *     tags: [ProductWebsite]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: productId
+  *     requestBody:
+  *       required: true
+  *       content:
+  *         application/json:
+  *           schema:
+  *              type: object
+  *              required:
+  *                  - website
+  *                  - product
+  *              properties:
+  *                  website:
+  *                      type: string
+  *                      format: uuid
+  *                      x-faker: datatype.uuid
+  *                  product:
+  *                      type: string
+  *                      format: uuid
+  *                      x-faker: datatype.uuid
+  *                  name:
+  *                      type: string
+  *                  short_description:
+  *                      type: string
+  *                  description:
+  *                      type: string
+  *                  price:
+  *                      type: number
+  *                  active:
+  *                      type: boolean
+  *                      default: false      
+  *                  category:
+  *                      type: string
+  *                  sub_category:
+  *                      type: string
+  *                  language:
+  *                      type: string  
+  *                  brand:
+  *                      type: string
+  *
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                 status:
+  *                   type: integer
+  *                   default: 1
+  *                 data:
+  *                   $ref: '#/components/schemas/ProductWebsiteModel'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.put('/products/:productId', isAuthenticated, isAdmin, productController.update);
+ 
+ /* Delete products website */
+ /**
+  * @swagger
+  * /websites/{websiteId}/products/{productId}:
+  *   delete:
+  *     summary: Product website Remove
+  *     description:   Remove a product website with `{external_id}`
+  *     tags: [ProductWebsite]
+  *     security:
+  *       - BearerAuth: []
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: productId
+  *
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                 status:
+  *                   type: integer
+  *                   default: 1
+  *                 data:
+  *                   $ref: '#/components/schemas/EmptyResponse'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+ router.delete('/products/:productId', isAuthenticated, isAdmin, productController.deletes);
+
 module.exports = router;
