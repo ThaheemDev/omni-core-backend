@@ -317,8 +317,6 @@ router.get('/accounts', isAuthenticated, userController.getUsers);
  *     summary: Update User
  *     description:  Update user account using {external_id}
  *     tags: [Account]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         required: true
@@ -386,8 +384,6 @@ router.put('/accounts/:userId', isAuthenticated, isAdmin, userController.updateU
  *     summary: Account Remove
  *     description:  Remove account with {external_id}
  *     tags: [Account]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         required: true
@@ -435,8 +431,6 @@ router.delete('/accounts/:userId', isAuthenticated, isAdmin, userController.dele
  *     summary: Create Website
  *     description:  It can be use to create website.
  *     tags: [Website]
- *     security:
- *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -492,8 +486,6 @@ router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
  *     summary: List Website
  *     description:  It can be use to list website.
  *     tags: [Website]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - deprecated: false
  *         name: page
@@ -541,8 +533,6 @@ router.get('/websites', isAuthenticated,  websiteController.getAll);
  *     summary: Website Update
  *     description:  Update existing website using {external_id}
  *     tags: [Website]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         required: true
@@ -601,8 +591,6 @@ router.put('/websites/:websiteId', isAuthenticated, isAdmin, websiteController.u
  *     summary: Website Remove
  *     description:   Remove a website with `{external_id}`
  *     tags: [Website]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         required: true
@@ -650,8 +638,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *     summary: Create Product
  *     description:  It can be use to create product.
  *     tags: [Product]
- *     security:
- *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -726,8 +712,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: List Product
   *     description:  It can be use to list product.
   *     tags: [Product]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - deprecated: false
   *         name: page
@@ -775,8 +759,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Fetch a Product
   *     description:  It can be use to fetch the product.
   *     tags: [Product]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
@@ -811,8 +793,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Product Update
   *     description:  Update existing product using {external_id}
   *     tags: [Product]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
@@ -893,8 +873,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Product Remove
   *     description:   Remove a product with `{external_id}`
   *     tags: [Product]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
@@ -942,8 +920,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *     summary: Create Product Group
  *     description:  It can be use to create product group.
  *     tags: [ProductGroup]
- *     security:
- *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -988,8 +964,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: List Product Group
   *     description:  It can be use to list product group.
   *     tags: [ProductGroup]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - deprecated: false
   *         name: page
@@ -1037,8 +1011,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Product Group Update
   *     description:  Update existing product group using {external_id}
   *     tags: [ProductGroup]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
@@ -1092,8 +1064,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Product Group Remove
   *     description:   Remove a product group with `{external_id}`
   *     tags: [ProductGroup]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
@@ -1140,8 +1110,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *     summary: Create Product
  *     description:  It can be use to create product website.
  *     tags: [ProductWebsite]
- *     security:
- *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -1212,8 +1180,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: List Product
   *     description:  It can be use to list product website.
   *     tags: [ProductWebsite]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - deprecated: false
   *         name: page
@@ -1261,8 +1227,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Fetch a Product
   *     description:  It can be use to fetch the product website.
   *     tags: [ProductWebsite]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
@@ -1297,8 +1261,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Product Update
   *     description:  Update existing product website using {external_id}
   *     tags: [ProductWebsite]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
@@ -1375,8 +1337,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *     summary: Product website Remove
   *     description:   Remove a product website with `{external_id}`
   *     tags: [ProductWebsite]
-  *     security:
-  *       - BearerAuth: []
   *     parameters:
   *       - in: path
   *         required: true
