@@ -2,8 +2,7 @@ const request = require('supertest'),
   app = require('../app'),
   assert = require('assert'),
   chai = require('chai');
-// TODO: please keep the number of new lines (white space) to a minimum
-// TODO: using more than 1 empty line to separate code, makes files bigger and code harder to read :(
+
 /*
  * TODO: add following tests:
  *  - non-admin users should only be able to access sites they belong to
@@ -31,9 +30,7 @@ describe('POST /websites', () => {
   describe('Validations check', () => {
     it('Require(domainname):- It should return 422 error', (done) => {
       let requestedData = {...websiteData};
-
       delete requestedData.domainname;
-
       agent.post('/api/websites')
         .send(requestedData)
         .expect(422, done);
@@ -41,7 +38,6 @@ describe('POST /websites', () => {
 
     it('Maxlength(domainname):- It should return 422 error', (done) => {
       let requestedData = {...websiteData};
-
       requestedData.domainname = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
 
       agent.post('/api/websites')
@@ -51,9 +47,7 @@ describe('POST /websites', () => {
 
     it('Type Validation(status):- It should return 422 error', (done) => {
       let requestedData = {...websiteData};
-
       requestedData.status = '1000';
-
       agent.post('/api/websites')
         .send(requestedData)
         .expect(422, done);
@@ -61,9 +55,7 @@ describe('POST /websites', () => {
 
     it('Type Validation(size):- It should return 422 error', (done) => {
       let requestedData = {...websiteData};
-
       requestedData.size = "Test Data";
-
       agent.post('/api/websites')
         .send(requestedData)
         .expect(422, done);
@@ -74,9 +66,7 @@ describe('POST /websites', () => {
   describe('Create new website', () => {
     it('It should return 200', (done) => {
       let requestedData = {...websiteData};
-
       requestedData.domainname = `http://${Date.now()}.google.com`;
-
       agent.post('/api/websites')
         .send(requestedData)
         .expect(200)
@@ -124,7 +114,6 @@ describe('PUT /websites', () => {
   describe('Validations check', () => {
     it('Maxlength(domainname):- It should return 422 error', (done) => {
       let requestedData = {...websiteData};
-
       requestedData.domainname = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
 
       agent.put(`/api/websites/${requestedData.uid}`)
@@ -134,9 +123,7 @@ describe('PUT /websites', () => {
 
     it('Type Validation(status):- It should return 422 error', (done) => {
       let requestedData = {...websiteData};
-
       requestedData.status = '1000';
-
       agent.put(`/api/websites/${requestedData.uid}`)
         .send(requestedData)
         .expect(422, done);
@@ -144,9 +131,7 @@ describe('PUT /websites', () => {
 
     it('Type Validation(size):- It should return 422 error', (done) => {
       let requestedData = {...websiteData};
-
       requestedData.size = "Test Data";
-
       agent.put(`/api/websites/${requestedData.uid}`)
         .send(requestedData)
         .expect(422, done);
@@ -155,8 +140,8 @@ describe('PUT /websites', () => {
 
   describe('Update Website', () => {
     it('It should return 200', (done) => {
+      
       let requestedData = {...websiteData};
-
       requestedData.size = 'LARGE';
       requestedData.status = 'BLOCKED';
       delete requestedData.domainname;

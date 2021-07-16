@@ -1,8 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('.');
 
-// TODO: this is not a product, but that an override of the original product.
-// TODO: see https://gitlab.com/hadiethshop/product-api-mock/-/blob/master/openapi.yaml
 module.exports = (sequelize, Sequelize) => {
     const productGroup = require('./product_group')(sequelize, Sequelize);
 
@@ -41,7 +39,6 @@ module.exports = (sequelize, Sequelize) => {
         description: {
             type: Sequelize.TEXT
         },
-
         buy_price: {
             type: Sequelize.FLOAT,
             allowNull: false,
@@ -60,7 +57,6 @@ module.exports = (sequelize, Sequelize) => {
                 }
             }
         },
-
         active: {
             type: Sequelize.BOOLEAN,
             defaultValue: false,
