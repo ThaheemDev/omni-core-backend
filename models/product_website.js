@@ -1,10 +1,12 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('.');
 
+// TODO: this is not a product, but that an override of the original product.
+// TODO: see https://gitlab.com/hadiethshop/product-api-mock/-/blob/master/openapi.yaml
 module.exports = (sequelize, Sequelize) => {
     const websiteModel = require('./website')(sequelize, Sequelize);
     const productModel = require('./product')(sequelize, Sequelize);
-    // TODO: typo in table name.
+
     const ProductWebsite = sequelize.define("product_webiste", {
         external_id: {
             type: Sequelize.STRING,
@@ -25,23 +27,10 @@ module.exports = (sequelize, Sequelize) => {
             }
         },
         short_description: {
-            type: Sequelize.STRING,
-            validate: {
-                len: {
-                    args: [1, 255],
-                    msg: "Short description can not be greater than 255"
-                }
-            }
+            type: Sequelize.TEXT('tiny') 
         },
         description: {
-            type: Sequelize.STRING,
-            validate: {
-                len: {
-                    // TODO: make this larger.
-                    args: [1, 255],
-                    msg: "Description can not be greater than 255"
-                }
-            }
+            type: Sequelize.TEXT
         },
         language: {
             type: Sequelize.STRING
