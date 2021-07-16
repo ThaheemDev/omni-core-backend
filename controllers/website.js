@@ -55,12 +55,14 @@ async function getAll(req, res, next) {
       offset = ((page - 1) * page_size);
     }
 
-    const {count, rows} = await db.website.findAndCountAll({
-        attributes: ['external_id', 'status', 'size', 'domainname'],
-        offset: offset,
-        limit: page_size
-      }
-    );
+    let options = {
+      attributes: ['external_id', 'status', 'size', 'domainname'],
+      where: ['external_id', 'status', 'size', 'domainname'],
+      offset: offset,
+      limit: page_size
+    };
+     
+    const {count, rows} = await db.website.findAndCountAll(options);
     res.send(response.pagination(count, rows, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));

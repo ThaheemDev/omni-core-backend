@@ -40,7 +40,7 @@ async function update(req, res, next) {
     }
 
     let result = await product.update(productData, {where: {external_id: productGroupId}});
-    res.send(response.prouctGroupViewModel());
+    res.send(response.productGroupViewModel());
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
