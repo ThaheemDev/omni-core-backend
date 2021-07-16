@@ -1,5 +1,6 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
+const Sequelize = require("sequelize");
 
 module.exports = {
   create,
@@ -47,7 +48,8 @@ async function update(req, res, next) {
 async function getAll(req, res, next) {
   let {page, page_size} = req.query;
   page = Number(page) || 1;
-  page_size = getValidPageSize(page_size);
+  page_size = Number(page_size);
+  // page_size = getValidPageSize(page_size);
   try {
   
     let offset = 0;
@@ -55,15 +57,35 @@ async function getAll(req, res, next) {
       offset = ((page - 1) * page_size);
     }
 
+
     let options = {
       attributes: ['external_id', 'status', 'size', 'domainname'],
-      where: ['external_id', 'status', 'size', 'domainname'],
       offset: offset,
       limit: page_size
     };
      
+    if (req && req.user) {
+      let userRole = await req.user.getRole();
+      if(userRole.role  != 'ADMIN'){
+
+        let getAll = await req.user.getWebsites();
+        let mapData = getAll.map(function(obj){ return obj.toJSON() });
+        let count = mapData.length;
+
+        let currentUserWebsites = await req.user.getWebsites(options);
+        let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
+          return  {external_id,status,size,domainname}
+        });
+
+        res.send(response.pagination(count, row, page));
+        return false;
+         
+      }
+    } 
+
     const {count, rows} = await db.website.findAndCountAll(options);
     res.send(response.pagination(count, rows, page))
+
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
