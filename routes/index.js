@@ -25,6 +25,19 @@ async function isAdmin(req, res, next) {
   }
 }
 
+async function isMaintainer(req, res, next) {
+  if (req && req.user) {
+    let userRole = await req.user.getRole();
+
+    if (userRole.role == 'MAINTAINER') {
+      next();
+      return;
+    }
+    res.status(401).send();
+  }
+}
+
+
 /**
  * @swagger
  * tags:
@@ -260,7 +273,7 @@ async function isAdmin(req, res, next) {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/accounts', isAuthenticated, isAdmin, userController.createUser);
+router.post('/accounts', isAuthenticated, userController.createUser);
 
 /* GET users listing. */
 /**
@@ -702,7 +715,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
- router.post('/products', isAuthenticated, isAdmin, productController.create);
+ router.post('/products', isAuthenticated, isAdmin,isMaintainer, productController.create);
 
  /* GET products listing. */
  /**
@@ -863,7 +876,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.put('/products/:productId', isAuthenticated, isAdmin, productController.update);
+ router.put('/products/:productId', isAuthenticated, isAdmin,isMaintainer, productController.update);
  
  /* delete products. */
  /**
@@ -954,7 +967,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
- router.post('/productgroups', isAuthenticated, isAdmin, productController.create);
+ router.post('/productgroups', isAuthenticated, isAdmin,isMaintainer, productController.create);
 
  /* GET product groups listing. */
  /**
@@ -1054,7 +1067,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.put('/productgroups/:productGroupId', isAuthenticated, isAdmin, productController.update);
+ router.put('/productgroups/:productGroupId', isAuthenticated, isAdmin,isMaintainer, productController.update);
  
  /* delete product groups */
  /**
