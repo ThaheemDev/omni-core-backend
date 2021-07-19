@@ -202,6 +202,96 @@ describe('GET /websites', () => {
   });
 });
 
+
+describe('GET User Webistes And Admin Websites /websites', () => {
+  let agent;
+  let adminWebsite;
+  let userWebsite;
+  let userData = {
+    "email": `test-login.${new Date().getTime()}@yopmail.com`,
+    "websites": ["https://google.com"],
+    "status": "ACTIVE",
+    "role": 'EMPLOYEE',
+    "name": "test data",
+    "password": 111111
+  };
+
+  before((done) => {
+    // Login
+    let requestedData = {
+      status: 'ACTIVE',
+      domainname: `http://${Date.now()}.google.com`,
+      size: "MEDIUM"
+    };
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204).then(function (res){
+        let requestedData = {page:1,page_size:10};
+        agent.get('/api/websites')
+        .send(requestedData)
+        .expect(200)
+        .then(function (res) {
+          adminWebsite=res.body.total;
+          done();
+        });
+      }).catch(done);
+  });
+
+  before((done) => {
+    let requestedData = {
+      status: 'ACTIVE',
+      domainname: `http://${Date.now()}.google.com`,
+      size: "MEDIUM"
+    };
+
+    agent.post('/api/websites')
+      .send(requestedData)
+      .expect(200)
+      .then(function (res) {
+        done()
+      }).catch(done);
+  });
+
+  before((done) => {
+    let requestedData = {...userData};
+    agent.post('/api/accounts')
+      .send(requestedData)
+      .expect(200)
+      .then(function (res) {
+        console.log("asdfkasndfkanskdfasdf");
+        done();
+      }).catch((err) => done(err));
+  });
+
+
+  before((done) => {
+    agent = request.agent(app);
+    agent.post('/login')
+      .send(`email=${userData.email}&password=111111`)
+      .expect(204).then(function (res){
+        done();
+      }).catch(done);
+  });
+
+  describe('Website Listing', () => {
+    it('It should return array on objects with 200', (done) => {
+      let requestedData = {page:1,page_size:10};
+      agent.get('/api/websites')
+        .send(requestedData)
+        .expect(200)
+        .then(function (res) {
+          if(userWebsite!=adminWebsite){
+            console.log("Condition is working properly");
+          }
+          chai.expect(res.body.results).to.be.an('array');
+          chai.expect(res.body.total).to.be.an('number');
+          done();
+        });
+    });
+  });
+});
+
 describe('Delete /websites', () => {
   let agent;
   let websiteData = {

@@ -1124,7 +1124,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
 /* POST create products website. */
 /**
  * @swagger
- * /api/websites/{websiteId}/products:
+ * /api/websites/{uid}/products:
  *   post:
  *     summary: Create Product
  *     description:  It can be use to create product website.
