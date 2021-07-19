@@ -3,6 +3,8 @@ var router = express.Router();
 const userController = require('../controllers/user');
 const websiteController = require('../controllers/website');
 const productController = require('../controllers/product');
+const productGroupController = require('../controllers/product_groups');
+const productWebsiteController= require('../controllers/product_websites');
 
 async function isAuthenticated(req, res, next) {
 
@@ -25,11 +27,11 @@ async function isAdmin(req, res, next) {
   }
 }
 
-async function isMaintainer(req, res, next) {
+async function isMaintainerOrAdmin(req, res, next) {
   if (req && req.user) {
     let userRole = await req.user.getRole();
 
-    if (userRole.role == 'MAINTAINER') {
+    if (userRole.role == 'MAINTAINER' || userRole.role == 'ADMIN') {
       next();
       return;
     }
@@ -715,7 +717,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
- router.post('/products', isAuthenticated, isAdmin,isMaintainer, productController.create);
+ router.post('/products', isAuthenticated, isMaintainerOrAdmin, productController.create);
 
  /* GET products listing. */
  /**
@@ -876,7 +878,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.put('/products/:productId', isAuthenticated, isAdmin,isMaintainer, productController.update);
+ router.put('/products/:productId', isAuthenticated, isMaintainerOrAdmin, productController.update);
  
  /* delete products. */
  /**
@@ -967,7 +969,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
- router.post('/productgroups', isAuthenticated, isAdmin,isMaintainer, productController.create);
+ router.post('/productgroups', isAuthenticated, isMaintainerOrAdmin, productGroupController.create);
 
  /* GET product groups listing. */
  /**
@@ -1014,7 +1016,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.get('/productgroups', isAuthenticated,  productController.getAll);
+ router.get('/productgroups', isAuthenticated,  productGroupController.getAll);
  
  /* update product group */
  /**
@@ -1067,7 +1069,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.put('/productgroups/:productGroupId', isAuthenticated, isAdmin,isMaintainer, productController.update);
+ router.put('/productgroups/:productGroupId', isAuthenticated,isMaintainerOrAdmin, productGroupController.update);
  
  /* delete product groups */
  /**
@@ -1106,7 +1108,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.delete('/productgroups/:productGroupId', isAuthenticated, isAdmin, productController.deletes);
+ router.delete('/productgroups/:productGroupId', isAuthenticated, isAdmin, productGroupController.deletes);
 
 /**
  * @swagger
@@ -1187,7 +1189,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
- router.post('/websites/:websiteId/products', isAuthenticated, isAdmin, productController.create);
+ router.post('/websites/:websiteId/products', isAuthenticated, isAdmin, productWebsiteController.create);
 
  /* GET products website listing. */
  /**
@@ -1234,7 +1236,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.get('/websites/:websiteId/products', isAuthenticated,  productController.getAll);
+ router.get('/websites/:websiteId/products', isAuthenticated,  productWebsiteController.getAll);
 
   /* GET products website by external_id. */
  /**
@@ -1268,7 +1270,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
-  router.get('/websites/:websiteId/products/:productId', isAuthenticated,  productController.getDetails);
+  router.get('/websites/:websiteId/products/:productId', isAuthenticated,  productWebsiteController.getDetails);
  
  /* update products */
  /**
@@ -1344,7 +1346,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.put('/websites/:websiteId/products/:productId', isAuthenticated, isAdmin, productController.update);
+ router.put('/websites/:websiteId/products/:productId', isAuthenticated, isAdmin, productWebsiteController.update);
  
  /* Delete products website */
  /**
@@ -1383,6 +1385,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.delete('/websites/:websiteId/products/:productId', isAuthenticated, isAdmin, productController.deletes);
+ router.delete('/websites/:websiteId/products/:productId', isAuthenticated, isAdmin, productWebsiteController.deletes);
 
 module.exports = router;

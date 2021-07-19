@@ -407,7 +407,7 @@ describe('DELETE /accounts', () => {
   });
 
   describe('Delete Account', () => {
-    it('It should return 200', (done) => {
+    it('It should return 204', (done) => {
       let requestedData = {id: userData.id};
 
       agent.delete(`/api/accounts/${userData.uid}`)

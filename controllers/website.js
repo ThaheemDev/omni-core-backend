@@ -64,24 +64,26 @@ async function getAll(req, res, next) {
       limit: page_size
     };
      
-    if (req && req.user) {
-      let userRole = await req.user.getRole();
-      if(userRole.role  != 'ADMIN'){
+    let getAll = await req.user.getWebsites();
+    console.log(getAll,"wwwwwwwwwwwwwwwww");
+    // if (req && req.user) {
+    //   let userRole = await req.user.getRole();
+    //   if(userRole.role  != 'ADMIN'){
 
-        let getAll = await req.user.getWebsites();
-        let mapData = getAll.map(function(obj){ return obj.toJSON() });
-        let count = mapData.length;
+    //     let getAll = await req.user.getWebsites();
+    //     let mapData = getAll.map(function(obj){ return obj.toJSON() });
+    //     let count = mapData.length;
 
-        let currentUserWebsites = await req.user.getWebsites(options);
-        let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
-          return  {external_id,status,size,domainname}
-        });
+    //     let currentUserWebsites = await req.user.getWebsites(options);
+    //     let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
+    //       return  {external_id,status,size,domainname}
+    //     });
 
-        res.send(response.pagination(count, row, page));
-        return false;
+    //     res.send(response.pagination(count, row, page));
+    //     return false;
          
-      }
-    } 
+    //   }
+    // } 
 
     const {count, rows} = await db.website.findAndCountAll(options);
     res.send(response.pagination(count, rows, page))

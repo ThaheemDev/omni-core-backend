@@ -7,8 +7,8 @@ module.exports = (sequelize, Sequelize) => {
             unique: true,
             allowNull: false,
             set(val) {
-                let uuid = uuidv4();
-                this.setDataValue('external_id', uuid);
+                let uid = uuidv4();
+                this.setDataValue('external_id', uid);
             }
         },
         name: {
@@ -17,7 +17,11 @@ module.exports = (sequelize, Sequelize) => {
             validate: {
                 notNull: {
                     msg: 'Name is required'
-                }
+                },
+                len: {
+                    args: [1, 255],
+                    msg: "Domain name can not be greater than 255"
+                },
             }
         }
     });

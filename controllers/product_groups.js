@@ -12,12 +12,13 @@ module.exports = {
 async function create(req, res, next) {
   try {
     const productData = req.body;
-
+    productData.external_id = 0;
     if(!productData.name){
       throw {status: 422, errors: {message: 'Name is required'}}
     }
 
     let data = await db.product_group.create(productData);
+    console.log("data",data);
     res.send(response.productGroupData());
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
