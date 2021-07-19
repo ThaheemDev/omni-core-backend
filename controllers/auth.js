@@ -3,7 +3,6 @@ const response = require('../lib/response');
 
 // login to user
 const login = async (req, res, next) => {
-
   passport.authenticate('local', (error, auser) => {
 
 
@@ -21,7 +20,6 @@ const login = async (req, res, next) => {
       return res.status(204).send();
     });
   }, (err) => {
-    console.log('err', err)
     res.status(500).send(response.error(err));
   })(req, res, next)
 }

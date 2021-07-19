@@ -17,7 +17,6 @@ async function create(req, res, next) {
     let data = await db.website.create(websiteData);
     res.send(response.websiteViewModel(data));
   } catch (err) {
-    console.log('err', err)
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
@@ -46,10 +45,10 @@ async function update(req, res, next) {
 
 // get all website details
 async function getAll(req, res, next) {
+
   let {page, page_size} = req.query;
   page = Number(page) || 1;
-  page_size = Number(page_size);
-  // page_size = getValidPageSize(page_size);
+  page_size = getValidPageSize(page_size);
   try {
   
     let offset = 0;
@@ -57,33 +56,32 @@ async function getAll(req, res, next) {
       offset = ((page - 1) * page_size);
     }
 
-
     let options = {
       attributes: ['external_id', 'status', 'size', 'domainname'],
       offset: offset,
       limit: page_size
     };
      
-    let getAll = await req.user.getWebsites();
-    console.log(getAll,"wwwwwwwwwwwwwwwww");
-    // if (req && req.user) {
-    //   let userRole = await req.user.getRole();
-    //   if(userRole.role  != 'ADMIN'){
+    // let getAll = await req.user.getWebsites();
+    if (req && req.user) {
 
-    //     let getAll = await req.user.getWebsites();
-    //     let mapData = getAll.map(function(obj){ return obj.toJSON() });
-    //     let count = mapData.length;
+      let userRole = await req.user.getRole();
+      if(userRole.role  != 'ADMIN'){
 
-    //     let currentUserWebsites = await req.user.getWebsites(options);
-    //     let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
-    //       return  {external_id,status,size,domainname}
-    //     });
+        let getAll = await req.user.getWebsites();
+        let mapData = getAll.map(function(obj){ return obj.toJSON() });
+        let count = mapData.length;
 
-    //     res.send(response.pagination(count, row, page));
-    //     return false;
+        let currentUserWebsites = await req.user.getWebsites(options);
+        let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
+          return  {external_id,status,size,domainname}
+        });
+
+        res.send(response.pagination(count, row, page));
+        return false;
          
-    //   }
-    // } 
+      }
+    } 
 
     const {count, rows} = await db.website.findAndCountAll(options);
     res.send(response.pagination(count, rows, page))

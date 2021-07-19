@@ -148,8 +148,7 @@ describe('POST /accounts', () => {
     });
     it('It should return 200 with websites', (done) => {
       let requestedData = {...userData};
-
-      requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
+       requestedData.email = `test.${new Date().getTime()}@yopmail.com`;
       requestedData.websites = ['9fcdac40-e253-11eb-a4fd-57cab8701eb7']
 
       agent.post('/api/accounts')
@@ -157,6 +156,8 @@ describe('POST /accounts', () => {
         .expect(200)
         .then(function (res) {
           res = res.body;
+
+          console.log('res', res)
           assert.strictEqual(res.email, requestedData.email)
           assert.strictEqual(res.role, requestedData.role)
           assert.strictEqual(res.status, requestedData.status)

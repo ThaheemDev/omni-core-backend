@@ -18,8 +18,7 @@ async function create(req, res, next) {
     }
 
     let data = await db.product_group.create(productData);
-    console.log("data",data);
-    res.send(response.productGroupData());
+    res.send(response.productGroupData(data));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -41,7 +40,7 @@ async function update(req, res, next) {
     }
 
     let result = await product.update(productData, {where: {external_id: productGroupId}});
-    res.send(response.productGroupViewModel());
+    res.send(response.productGroupViewModel(result));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -86,12 +85,9 @@ async function deletes(req, res, next) {
     } else {
       throw {status: 422, errors: {message: 'Product group is not found'}}
     }
-
-
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
-
 }
 
 function getValidPageSize(value) {

@@ -12,10 +12,11 @@ const request = require('supertest'),
     "password": "111111"
   };
 
-describe('POST /productgroups', () => {
   let productGroupData = {
-    name: `Testing123`,
+    name: `Testing${new Date().getTime()}`,
   };
+describe('POST /productgroups', () => {
+ 
   let agent;
 
   before((done) => {
@@ -60,41 +61,41 @@ describe('POST /productgroups', () => {
   });
 });
 
-describe('AdminORMaintainer /productgroups', () => {
-    let productGroupData = {
-      name: `testingPRoductGroup`,
-    };
+// describe('AdminORMaintainer /productgroups', () => {
+//     let productGroupData = {
+//       name: `testingPRoductGroup`,
+//     };
     
-    let agent;
+//     let agent;
     
   
-    // before((done) => {
-    //   // Login
-    //   agent = request.agent(app);
-    //   agent.post('/login')
-    //     .send('email=superadmin@local&password=supertest')
-    //     .expect(204, done);
-    // });
+//     before((done) => {
+//       // Login
+//       agent = request.agent(app);
+//       agent.post('/login')
+//         .send('email=superadmin@local&password=supertest')
+//         .expect(204, done);
+//     });
     
-      before((done) => {
-          // Login
-          agent = request.agent(app);
-          agent.post('/login')
-          .send(`email=${userData.email}.com&password=111111`)
-            .expect(204, done);
-        });
+//       before((done) => {
+//           // Login
+//           agent = request.agent(app);
+//           agent.post('/login')
+//           .send(`email=${userData.email}.com&password=111111`)
+//             .expect(204, done);
+//         });
   
-    describe('Validations check', () => {
-      it('Admin and Maintainer (name):- It should return 401 error', (done) => {
-          let requestedData = {...productGroupData};
-          delete requestedData.name;
-          agent.post('/api/productgroups')
-            .send(requestedData)
-            .expect(401, done);
-        });
+//     describe('Validations check', () => {
+//       it('Admin and Maintainer (name):- It should return 401 error', (done) => {
+//           let requestedData = {...productGroupData};
+//           delete requestedData.name;
+//           agent.post('/api/productgroups')
+//             .send(requestedData)
+//             .expect(401, done);
+//         });
   
-    });
-  });
+//     });
+//   });
 
 describe('PUT /productgroups', () => {
   let productGroupData = {

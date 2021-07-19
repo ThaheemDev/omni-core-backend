@@ -275,7 +275,7 @@ async function isMaintainerOrAdmin(req, res, next) {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/accounts', isAuthenticated, userController.createUser);
+router.post('/accounts', isAuthenticated, isAdmin, userController.createUser);
 
 /* GET users listing. */
 /**

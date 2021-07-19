@@ -188,7 +188,7 @@ describe('GET /websites', () => {
 
   describe('Website Listing', () => {
     it('It should return array on objects with 200', (done) => {
-      let requestedData = {};
+      let requestedData = {page:1,page_size:10};
 
       agent.get('/api/websites')
         .send(requestedData)

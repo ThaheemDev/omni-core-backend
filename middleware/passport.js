@@ -13,7 +13,6 @@ module.exports = (app) => {
     passwordField: 'password'
   }, async (email, password, done) => {
     let user = await db.user.findOne({where: {email: email, status: 'ACTIVE'}})
-    console.log("user",user);
     if (user && user.dataValues) {
       user = user.dataValues;
       const isSame = await bcrypt.compare(String(password), String(user.password))
