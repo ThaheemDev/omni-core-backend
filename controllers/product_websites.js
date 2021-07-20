@@ -13,7 +13,7 @@ module.exports = {
 async function create(req, res, next) {
   try {
     const productRequestedData = req.body;
-
+   
     /* Validate product id */
     const checkProduct = await db.product.findOne({where: {external_id: productRequestedData.product}})
     if (!checkProduct) {
@@ -26,8 +26,11 @@ async function create(req, res, next) {
       throw {status: 422, errors: {message: 'Website id is not valid.'}}
     }
 
-    let data = await db.product_website.create(productData);
-    res.send(response.productWebsiteData());
+    productRequestedData.productId = checkProduct.id;
+    productRequestedData.websiteId = checkWebsite.id;
+    productRequestedData.external_id = 0;
+    let data = await db.product_website.create(productRequestedData);
+    res.send(response.productWebsiteData(data));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -62,7 +65,7 @@ async function update(req, res, next) {
      }
 
     let result = await db.product_website.update(productData, {where: {external_id: productId}});
-    res.send(response.productWebsiteData());
+    res.send(response.productWebsiteData(result));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -98,7 +101,7 @@ async function getDetails(req, res, next) {
     try {
     
     let product = await db.product_website.findOne({where: {external_id: productId}});
-      res.send(response.productWebsiteData());
+      res.send(response.productWebsiteData(product));
     } catch (err) {
       res.status(response.getStatusCode(err)).send(response.error(err));
     }

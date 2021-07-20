@@ -15,6 +15,7 @@ async function create(req, res, next) {
     const websiteData = req.body;
     websiteData.external_id = 0;
     let data = await db.website.create(websiteData);
+    data.products = 0;
     res.send(response.websiteViewModel(data));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
@@ -37,6 +38,12 @@ async function update(req, res, next) {
     }
 
     let result = await website.update(websiteData, {where: {external_id: websiteId}});
+
+    const productWebsiteCount = await db.product_website.count({
+      where: {websiteId:website.id}     
+      }
+    );
+    result.products = productWebsiteCount;
     res.send(response.websiteViewModel(result));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));

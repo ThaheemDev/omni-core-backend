@@ -5,7 +5,7 @@ module.exports = (sequelize, Sequelize) => {
     const websiteModel = require('./website')(sequelize, Sequelize);
     const productModel = require('./product')(sequelize, Sequelize);
 
-    const ProductWebsite = sequelize.define("product_webiste", {
+    const ProductWebsite = sequelize.define("product_website", {
         external_id: {
             type: Sequelize.STRING,
             unique: true,
@@ -62,7 +62,7 @@ module.exports = (sequelize, Sequelize) => {
  
     ProductWebsite.belongsTo(productModel, {
         foreignKey: {
-          field: 'product',
+          field: 'productId',
           allowNull: false,
           validate: {
             notNull: {
@@ -74,7 +74,7 @@ module.exports = (sequelize, Sequelize) => {
 
       ProductWebsite.belongsTo(websiteModel, {
         foreignKey: {
-          field: 'website',
+          field: 'websiteId',
           allowNull: false,
           validate: {
             notNull: {
