@@ -20,6 +20,7 @@ module.exports = (sequelize, Sequelize) => {
                 },
                 len: {
                     args: [1, 255],
+                    // TODO: this is not a domain name
                     msg: "Domain name can not be greater than 255"
                 },
             }

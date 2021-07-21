@@ -28,6 +28,7 @@ const logout = async (req, res) => {
   req.logout();
   return res.send();
 }
+
 module.exports = {
   login,
   logout

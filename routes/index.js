@@ -7,7 +7,6 @@ const productGroupController = require('../controllers/product_groups');
 const productWebsiteController= require('../controllers/product_websites');
 
 async function isAuthenticated(req, res, next) {
-
   if (req.isAuthenticated()) {
     next();
   } else {
@@ -1117,7 +1116,6 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *  description: Product website management API
  */
 
-// TODO: this a duplicate of product endpoints. Please fix this:
 // - paths should be /websites/{uid}/products/...
 // - controller should be websites_products (or as you call it product_websites)
 

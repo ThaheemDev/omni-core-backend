@@ -41,8 +41,7 @@ async function update(req, res, next) {
 
     const productWebsiteCount = await db.product_website.count({
       where: {websiteId:website.id}     
-      }
-    );
+    });
     result.products = productWebsiteCount;
     res.send(response.websiteViewModel(result));
   } catch (err) {
@@ -52,7 +51,6 @@ async function update(req, res, next) {
 
 // get all website details
 async function getAll(req, res, next) {
-
   let {page, page_size} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
@@ -75,6 +73,7 @@ async function getAll(req, res, next) {
       let userRole = await req.user.getRole();
       if(userRole.role  != 'ADMIN'){
 
+        // TODO: why this inefficiency? You could have just done: `await req.user.countWebsites()`
         let getAll = await req.user.getWebsites();
         let mapData = getAll.map(function(obj){ return obj.toJSON() });
         let count = mapData.length;
@@ -92,7 +91,6 @@ async function getAll(req, res, next) {
 
     const {count, rows} = await db.website.findAndCountAll(options);
     res.send(response.pagination(count, rows, page))
-
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }

@@ -9,6 +9,8 @@ module.exports = {
   getDetails
 }
 
+// TODO: add tests.
+
 // create Product website detail
 async function create(req, res, next) {
   try {
@@ -37,6 +39,7 @@ async function create(req, res, next) {
 }
 
 // update Product website detail
+// TODO: productId & productId you added above should be read-only after creation. This method should not override them.
 async function update(req, res, next) {
   try {
     const productData = req.body;
@@ -77,7 +80,6 @@ async function getAll(req, res, next) {
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
   try {
-  
     let offset = 0;
     if (page > 1) {
       offset = ((page - 1) * page_size);

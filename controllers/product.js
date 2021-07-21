@@ -12,13 +12,11 @@ module.exports = {
 // create Product detail
 async function create(req, res, next) {
   try {
-    console.log("sdfasdfasfa");
     const productData = req.body;
     productData.external_id = 0;
     let data = await db.product.create(productData);
     res.send(response.productData());
   } catch (err) {
-    console.log("12345342354234532");
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
@@ -96,8 +94,6 @@ async function deletes(req, res, next) {
     } else {
       throw {status: 422, errors: {message: 'Product is not found'}}
     }
-
-
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
