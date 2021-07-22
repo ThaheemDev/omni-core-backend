@@ -2,6 +2,7 @@ const db = require("../models"); // models path depend on your structure
 const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
+const {getValidPageSize} = require("../lib/utility");
 
 module.exports = {
   getUsers,
@@ -141,13 +142,6 @@ async function updateUser(req, res) {
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
-}
-
-function getValidPageSize(value) {
-  if ([10, 20, 50].includes(value)) {
-    return value;
-  }
-  return 10;
 }
 
 async function validateAndSetUserRole(user) {

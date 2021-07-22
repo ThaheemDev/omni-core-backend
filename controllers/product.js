@@ -1,5 +1,6 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
+const {getValidPageSize} = require("../lib/utility");
 
 module.exports = {
   create,
@@ -50,7 +51,7 @@ async function update(req, res, next) {
       productData.productGroupId = checkProductGroup.id;
     }
     let result = await product.update(productData, {where: {external_id: productId}});
-    res.send(response.prouctViewModel(result));
+    res.send(response.productViewModel(result));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -85,7 +86,7 @@ async function getDetails(req, res, next) {
     const {productId} = req.params;
     try {    
       let product = await db.product.findOne({where: {external_id: productId}});
-      res.send(response.prouctViewModel(product));
+      res.send(response.productViewModel(product));
     } catch (err) {
       res.status(response.getStatusCode(err)).send(response.error(err));
     }
@@ -109,12 +110,4 @@ async function deletes(req, res, next) {
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
-
-}
-
-function getValidPageSize(value) {
-  if ([10, 20, 50].includes(value)) {
-    return value;
-  }
-  return 10;
 }

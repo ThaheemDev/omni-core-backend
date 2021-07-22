@@ -1,6 +1,6 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
-const Sequelize = require("sequelize");
+const {getValidPageSize} = require("../lib/utility");
 
 module.exports = {
   create,
@@ -117,11 +117,4 @@ async function deletes(req, res, next) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 
-}
-
-function getValidPageSize(value) {
-  if ([10, 20, 50].includes(value)) {
-    return value;
-  }
-  return 10;
 }
