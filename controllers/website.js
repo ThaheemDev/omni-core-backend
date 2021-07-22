@@ -50,6 +50,8 @@ async function update(req, res, next) {
 }
 
 // get all website details
+// TODO: the signature match https://gitlab.com/hadiethshop/website-api-mock/-/blob/master/openapi.yaml.
+// TODO: products field is missing.
 async function getAll(req, res, next) {
   let {page, page_size} = req.query;
   page = Number(page) || 1;
@@ -79,6 +81,8 @@ async function getAll(req, res, next) {
         let count = mapData.length;
 
         let currentUserWebsites = await req.user.getWebsites(options);
+        // TODO: please do not do this any more. Use the functions defined in lib/response.js to do this kind of transformations.
+        // TODO: this goes for all endpoints. The controller's job should be limited to mapping a request to some data in DB. Then hand over that data to view code to create a response.
         let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
           return  {external_id,status,size,domainname}
         });
