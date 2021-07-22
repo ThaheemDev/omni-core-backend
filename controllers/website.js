@@ -50,7 +50,7 @@ async function update(req, res, next) {
 }
 
 // get all website details
-// TODO: the signature match https://gitlab.com/hadiethshop/website-api-mock/-/blob/master/openapi.yaml.
+// TODO: the signature does NOT match https://gitlab.com/hadiethshop/website-api-mock/-/blob/master/openapi.yaml.
 // TODO: products field is missing.
 async function getAll(req, res, next) {
   let {page, page_size} = req.query;
