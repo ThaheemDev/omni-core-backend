@@ -70,6 +70,9 @@ module.exports = (sequelize, Sequelize) => {
         supplier: {
             type: Sequelize.STRING
         },
+        sku: {
+            type: Sequelize.STRING
+        },
         url: {
             type: Sequelize.STRING
         },

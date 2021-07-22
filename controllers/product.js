@@ -14,8 +14,15 @@ async function create(req, res, next) {
   try {
     const productData = req.body;
     productData.external_id = 0;
+    if(productData.product_group){
+      let checkProductGroup = await db.product_group.findOne({where: {external_id: productData.product_group}});
+      if(!checkProductGroup){
+        throw {status: 422, errors: {message: 'Invalid product group'}}
+      }
+      productData.productGroupId = checkProductGroup.id;
+    }
     let data = await db.product.create(productData);
-    res.send(response.productData());
+    res.send(response.productData(data));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -34,10 +41,16 @@ async function update(req, res, next) {
     let product = await db.product.findOne({where: {external_id: productId}});
     if (!product) {
       return res.status(404).send();
+    }    
+    if(productData.product_group){
+      let checkProductGroup = await db.product_group.findOne({where: {external_id: productData.product_group}});
+      if(!checkProductGroup){
+        throw {status: 422, errors: {message: 'Invalid product group'}}
+      }
+      productData.productGroupId = checkProductGroup.id;
     }
-
     let result = await product.update(productData, {where: {external_id: productId}});
-    res.send(response.prouctViewModel());
+    res.send(response.prouctViewModel(result));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
@@ -56,7 +69,7 @@ async function getAll(req, res, next) {
     }
 
     const {count, rows} = await db.product.findAndCountAll({
-        attributes: ['external_id', 'name', 'sku', 'recommended_retail_price'],
+        attributes: [['external_id','uid'], 'sku', 'name', 'recommended_retail_price'],
         offset: offset,
         limit: page_size
       }
@@ -70,10 +83,9 @@ async function getAll(req, res, next) {
 // get single product details
 async function getDetails(req, res, next) {
     const {productId} = req.params;
-    try {
-    
-        let product = await db.product.findOne({where: {external_id: productId}});
-      res.send(response.prouctViewModel());
+    try {    
+      let product = await db.product.findOne({where: {external_id: productId}});
+      res.send(response.prouctViewModel(product));
     } catch (err) {
       res.status(response.getStatusCode(err)).send(response.error(err));
     }
