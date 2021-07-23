@@ -1,4 +1,14 @@
+{{- if .Values.ingress.enabled }}
+{{- $fullName := include "account-management-api.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: account-management-api
@@ -9,23 +19,37 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- if .Values.ingress.tls.enabled }}
   tls:
+    {{- range .Values.ingress.tls }}
     - hosts:
-        - backoffice.hadiethshop.nl
-      secretName: backofficehadiethshop
+        {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+  {{- end }}
   rules:
-    - host: backoffice.hadiethshop.nl
+    {{ range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: /accounts
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: {{ .pathType | default "ImplementationSpecific" }}
+            {{- end }}
             backend:
-              serviceName: account-management-api
-              servicePort: 80
-          - path: /login
-            backend:
-              serviceName: account-management-api
-              servicePort: 80
-          - path: /websites
-            backend:
-              serviceName: account-management-api
-              servicePort: 80
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+          {{- end }}
+    {{- end }}
+
+  {{- end }}
+{{- end }}
