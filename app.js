@@ -74,7 +74,7 @@ middleware(app)
 
 app.use('/api', indexRouter);
 app.post('/login', authController.login);
-app.post('/logout', authController.logout);
+app.get('/logout', authController.logout);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
