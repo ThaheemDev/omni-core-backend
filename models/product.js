@@ -71,6 +71,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         sku: {
+            // TODO: this should be unique
             type: Sequelize.STRING
         },
         url: {
@@ -80,6 +81,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         images: {
+            // TODO: this a list of images, so please splits this into a separate table
             type: Sequelize.STRING
         }
     });
