@@ -11,6 +11,7 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             type: Sequelize.INTEGER
           },
+        // TODO: remove this. As discussed today during our meeting, sku will be used as a unique id to manage products.
         external_id: {
             type: Sequelize.STRING,
             unique: true,

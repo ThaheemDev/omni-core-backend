@@ -6,6 +6,7 @@ module.exports = (sequelize, Sequelize) => {
   const productModel = require('./product')(sequelize, Sequelize);
 
   const ProductWebsite = sequelize.define("product_website", {
+    // TODO: same as with products, sku will replace this. See the updated openapi
     external_id: {
       type: Sequelize.STRING,
       unique: true,
