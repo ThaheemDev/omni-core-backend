@@ -755,6 +755,20 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         in: query
   *         required: true
   *         allowEmptyValue: false
+  *       - deprecated: false
+  *         name: sku
+  *         example : '123c44n' 
+  *         description: product sku to filter on
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'Pen'
+  *         name: name
+  *         description: product name to filter on
+  *         in: query
+  *         required: true
+  *         allowEmptyValue: true
   *     responses:
   *       200:
   *         description: Success.
