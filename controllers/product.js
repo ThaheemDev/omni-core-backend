@@ -25,6 +25,7 @@ async function create(req, res, next) {
     let data = await db.product.create(productData);
     res.send(response.productData(data));
   } catch (err) {
+    console.log("");
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }

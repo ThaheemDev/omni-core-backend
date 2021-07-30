@@ -17,15 +17,19 @@ async function create(req, res, next) {
   try {
     const productRequestedData = req.body;
    
+    console.log("productRequestedData",productRequestedData);
     /* Validate product id */
     const checkProduct = await db.product.findOne({where: {external_id: productRequestedData.product}})
     if (!checkProduct) {
+      console.log("0000000000000000000000000000000000");
       throw {status: 422, errors: {message: 'Product id is not valid.'}}
     }
 
     /* Validate website id */
     const checkWebsite = await db.website.findOne({where: {external_id: productRequestedData.website}})
     if (!checkWebsite) {
+      // console.log("8888888888888888888888888888");
+
       throw {status: 422, errors: {message: 'Website id is not valid.'}}
     }
 
@@ -33,8 +37,11 @@ async function create(req, res, next) {
     productRequestedData.websiteId = checkWebsite.id;
     productRequestedData.external_id = 0;
     let data = await db.product_website.create(productRequestedData);
+    // console.log("data is",data);
     res.send(response.productWebsiteData(data));
   } catch (err) {
+    // console.log(" req.body", req.body);
+    console.log("333333333333333333333333333333333333",err);
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
@@ -45,7 +52,7 @@ async function update(req, res, next) {
   try {
     const productData = req.body;
     const {productId} = req.params;
-
+    console.log("we are herer bro to check");
     if (!productId) {
       throw {status: 422, errors: {message: 'Id is required'}}
     }
@@ -57,13 +64,13 @@ async function update(req, res, next) {
 
 
      /* Validate product id */
-     const checkProduct = await db.product.findOne({where: {external_id: productRequestedData.product}})
+     const checkProduct = await db.product.findOne({where: {external_id: productData.product}})
      if (!checkProduct) {
        throw {status: 422, errors: {message: 'Product id is not valid.'}}
      }
  
      /* Validate website id */
-     const checkWebsite = await db.website.findOne({where: {external_id: productRequestedData.website}})
+     const checkWebsite = await db.website.findOne({where: {external_id: productData.website}})
      if (!checkWebsite) {
        throw {status: 422, errors: {message: 'Website id is not valid.'}}
      }

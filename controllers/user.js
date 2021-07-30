@@ -14,7 +14,7 @@ module.exports = {
 // get all user details
 async function getUsers(req, res) {
   try {
-    let { page, page_size } = req.query;
+  let { page, page_size,name,email,status,role } = req.query;
     page = Number(page) || 1;
     page_size = getValidPageSize(page_size);
 
@@ -27,6 +27,7 @@ async function getUsers(req, res) {
       rows
     } = await db.user.findAndCountAll({
       attributes: ['external_id', 'name', 'email', 'status'],
+      
       offset: offset,
       limit: page_size,
       include: [

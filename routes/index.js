@@ -29,7 +29,6 @@ async function isAdmin(req, res, next) {
 async function isMaintainerOrAdmin(req, res, next) {
   if (req && req.user) {
     let userRole = await req.user.getRole();
-
     if (userRole.role == 'MAINTAINER' || userRole.role == 'ADMIN') {
       next();
       return;
@@ -297,6 +296,22 @@ router.post('/accounts', isAuthenticated, isAdmin, userController.createUser);
  *        description: Number of items per page
  *        in: query
  *        required: true
+ *      - deprecated: false
+ *        name: name
+ *        description:  Name to filter on
+ *        in: query
+ *      - deprecated: false
+ *        name: email
+ *        description:  Email to filter on
+ *        in: query
+ *      - deprecated: false
+ *        name: status
+ *        description: user status to filter on (i.e. active or blocked)
+ *        in: query
+ *      - deprecated: false
+ *        name: role
+ *        description: user role to filter on
+ *        in: query
  *        allowEmptyValue: false
  *     responses:
  *       200:
