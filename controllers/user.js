@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const config = require('../config/config')
 const response = require('../lib/response');
 const {getValidPageSize} = require("../lib/utility");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 module.exports = {
   getUsers,
@@ -13,6 +15,7 @@ module.exports = {
 
 // get all user details
 async function getUsers(req, res) {
+
   try {
   let { page, page_size,name,email,status,role } = req.query;
     page = Number(page) || 1;
@@ -22,17 +25,12 @@ async function getUsers(req, res) {
     if (page > 1) {
       offset = ((page - 1) * page_size);
     }
-    const {
-      count,
-      rows
-    } = await db.user.findAndCountAll({
-      attributes: ['external_id', 'name', 'email', 'status'],
-      
+
+    let options = {
+      attributes: ['external_id', 'name', 'email', 'status'],      
       offset: offset,
       limit: page_size,
-      include: [
-
-        db.role,
+      include: [ 
         {
           model: db.website,
           required: false,
@@ -42,15 +40,61 @@ async function getUsers(req, res) {
             attributes: []
           }
         }
-
       ]
+    };
+
+    if(role){
+      options['include'].push({
+        model: db.role,
+        where: {role: {[Op.like]:role}}
+      })
+    } else {
+      options['include'].push({
+        model: db.role
+      })
     }
-    );
+
+    let query = { };
+
+    if(name){
+      query = {...query, ...{
+        name: {
+          [Op.like]: `%${name}%`
+        }
+      }}
+    }
+
+    if(email){
+
+      query = {...query, ...{
+        email: {
+          [Op.like]: `%${email}%`
+        }
+      }}
+    }
+
+    if(status){
+      query = {...query, ...{
+        status: {
+          [Op.like]: `${status}`
+        }
+      }}   
+    }
+
+    if(Object.keys(query).length>0){
+      options =  {...options,...{where:query}};
+    }
+    
+    const {
+      count,
+      rows
+    } = await db.user.findAndCountAll(options);
 
     let promises = rows.map(response.listAccountViewModel);
     const results = await Promise.all(promises)
     res.send(await response.pagination(count, results, page))
   } catch (err) {
+    console.log('err', err)
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 

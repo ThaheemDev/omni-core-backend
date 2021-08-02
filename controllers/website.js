@@ -1,6 +1,8 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
 const {getValidPageSize} = require("../lib/utility");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 module.exports = {
   create,
@@ -53,7 +55,7 @@ async function update(req, res, next) {
 // TODO: the signature does NOT match https://gitlab.com/hadiethshop/website-api-mock/-/blob/master/openapi.yaml.
 // TODO: products field is missing.
 async function getAll(req, res, next) {
-  let {page, page_size} = req.query;
+  let {page, page_size, name, status,product} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
   try {
@@ -63,13 +65,52 @@ async function getAll(req, res, next) {
       offset = ((page - 1) * page_size);
     }
 
+    // const productQuery = await sequelize.query('SELECT * FROM projects', {
+    //   type: QueryTypes.SELECT
+    // });
+
+
+
     let options = {
       attributes: ['external_id', 'status', 'size', 'domainname'],
       offset: offset,
       limit: page_size
     };
-     
-    // let getAll = await req.user.getWebsites();
+
+    let query = { };
+
+    if(name){
+
+      query = {...query, ...{
+        domainname: {
+          [Op.like]: `%${name}%`
+        }
+      }}
+    }
+
+    if(status){
+
+      query = {...query, ...{
+        status: {
+          [Op.like]: `${status}`
+        }
+      }}    
+    }
+
+    if(product){
+     let productQuery = "SELECT `websiteId` from `product_websites` WHERE `name` LIKE '%"+product+"%'";
+      query = {...query, ...{
+        ID: {
+          [Op.in]: Sequelize.literal(`(${productQuery})`)
+        }
+      }} 
+    }
+
+    if(Object.keys(query).length>0){
+      options =  {...options,...{where:query}};
+    }
+   
+
     if (req && req.user) {
 
       let userRole = await req.user.getRole();

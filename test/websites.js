@@ -3,14 +3,6 @@ const request = require('supertest'),
   assert = require('assert'),
   chai = require('chai');
 
-/*
- * TODO: add following tests:
- *  - non-admin users should only be able to access sites they belong to
- *  - only admin & maintainer can create products groups
- *  - only admin & maintainer can create products
- *  - employee can only override existing products, i.e. create/edit a website-product.
- */
-
 describe('POST /websites', () => {
   let websiteData = {
     status: 'ACTIVE',

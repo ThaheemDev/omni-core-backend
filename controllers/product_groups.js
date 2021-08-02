@@ -1,6 +1,8 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
 const {getValidPageSize} = require("../lib/utility");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 module.exports = {
   create,
@@ -49,7 +51,7 @@ async function update(req, res, next) {
 
 // get all product groups
 async function getAll(req, res, next) {
-  let {page, page_size} = req.query;
+  let {page, page_size, name} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
   try {
@@ -58,13 +60,28 @@ async function getAll(req, res, next) {
     if (page > 1) {
       offset = ((page - 1) * page_size);
     }
+    let options = {
+      attributes: [['external_id','uid'], 'name'],
+      offset: offset,
+      limit: page_size
+    };
 
-    const {count, rows} = await db.product_group.findAndCountAll({
-        attributes: [['external_id','uid'], 'name'],
-        offset: offset,
-        limit: page_size
-      }
-    );
+    let query = { };
+
+    if(name){
+      query = {...query, ...{
+        name: {
+          [Op.like]: `%${name}%`
+        }
+      }}
+    }
+
+    if(Object.keys(query).length>0){
+      options =  {...options,...{where:query}};
+    }
+
+    const {count, rows} = await db.product_group.findAndCountAll(options);
+
     res.send(response.pagination(count, rows, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));

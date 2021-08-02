@@ -528,7 +528,28 @@ router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
  *         description: Number of items per page
  *         in: query
  *         required: true
- *         allowEmptyValue: false
+ *         allowEmptyValue: true
+ *       - deprecated: false
+ *         example: 'demo'
+ *         name: name
+ *         description: name of website to filter results on
+ *         in: query
+ *         required: false
+ *         allowEmptyValue: true
+ *       - deprecated: false
+ *         example: 'active'
+ *         name: status
+ *         description: status to filter results on
+ *         in: query
+ *         required: false
+ *         allowEmptyValue: true
+ *       - deprecated: false
+ *         example: 'my product'
+ *         name: product
+ *         description: Product name to filter results on
+ *         in: query
+ *         required: false
+ *         allowEmptyValue: true
  *     responses:
  *       200:
  *         description: Success.
@@ -760,14 +781,49 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         example : '123c44n' 
   *         description: product sku to filter on
   *         in: query
-  *         required: true
+  *         required: false
   *         allowEmptyValue: true
   *       - deprecated: false
   *         example: 'Pen'
   *         name: name
   *         description: product name to filter on
   *         in: query
-  *         required: true
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'supplier1'
+  *         name: supplier
+  *         description: Supplier name to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false 
+  *         example: 'subCategory1'
+  *         name: sub_category
+  *         description: Sub Category to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'Category1'
+  *         name: category
+  *         description: Category name to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'group1'
+  *         name: product_group
+  *         description: product group name to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'recommended_retail_price'
+  *         name: sort
+  *         description: Field name to sort
+  *         in: query
+  *         required: false
   *         allowEmptyValue: true
   *     responses:
   *       200:
@@ -1021,6 +1077,13 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         in: query
   *         required: true
   *         allowEmptyValue: false
+  *       - deprecated: false
+  *         example: 'Electronics'
+  *         name: name
+  *         description: Product group name
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: false
   *     responses:
   *       200:
   *         description: Success.
@@ -1240,6 +1303,55 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         in: query
   *         required: true
   *         allowEmptyValue: false
+  *       - deprecated: false
+  *         name: sku
+  *         example : '123c44n' 
+  *         description: product sku to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'Pen'
+  *         name: name
+  *         description: product name to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'Pen'
+  *         name: description
+  *         description: Description to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'supplier1'
+  *         name: supplier
+  *         description: Supplier name to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false 
+  *         example: 'YOKO'
+  *         name: brand
+  *         description: Brand name to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'Category1'
+  *         name: category
+  *         description: Category name to filter on
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
+  *       - deprecated: false
+  *         example: 'name'
+  *         name: sort
+  *         description: Field name to sort
+  *         in: query
+  *         required: false
+  *         allowEmptyValue: true
   *     responses:
   *       200:
   *         description: Success.

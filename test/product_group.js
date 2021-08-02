@@ -3,10 +3,13 @@ const request = require('supertest'),
   assert = require('assert'),
   chai = require('chai');
 
+
+
+let productGroupData = {
+  name: `Testing${new Date().getTime()}`,
+};
 describe('POST /productgroups', () => {
-  let productGroupData = {
-    name: `Testing${new Date().getTime()}`,
-  };
+
   let agent;
 
   before((done) => {
@@ -18,7 +21,7 @@ describe('POST /productgroups', () => {
 
   describe('Validations check', () => {
     it('Require(name):- It should return 422 error', (done) => {
-      let requestedData = {...productGroupData};
+      let requestedData = { ...productGroupData };
       delete requestedData.name;
       agent.post('/api/productgroups')
         .send(requestedData)
@@ -26,7 +29,7 @@ describe('POST /productgroups', () => {
     });
 
     it('Maxlength(name):- It should return 422 error', (done) => {
-      let requestedData = {...productGroupData};
+      let requestedData = { ...productGroupData };
       requestedData.name = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
       agent.post('/api/productgroups')
         .send(requestedData)
@@ -36,7 +39,7 @@ describe('POST /productgroups', () => {
 
   describe('Create new product group', () => {
     it('It should return 200', (done) => {
-      let requestedData = {...productGroupData};
+      let requestedData = { ...productGroupData };
       requestedData.name = `Testing12364464`;
       agent.post('/api/productgroups')
         .send(requestedData)
@@ -51,48 +54,56 @@ describe('POST /productgroups', () => {
   });
 });
 
-// describe('AdminORMaintainer /productgroups', () => {
-//     let productGroupData = {
-//       name: `testingPRoductGroup`,
-//     };
-// let userData = {
-//   email: `test-login.${new Date().getTime()}@yopmail.com`,
-//   websites: ["https://google.com"],
-//   status: "ACTIVE",
-//   role: 'EMPLOYEE',
-//   name: "test data",
-//   password: "111111"
-// };
-//     let agent;
+describe('AdminORMaintainer /productgroups', () => {
+  let productGroupData = {
+    name: `testingPRoductGroup`,
+  };
+  let userData = {
+    email: `test-post.${new Date().getTime()}@yopmail.com`,
+    "password":111111,
+    "status":"ACTIVE",
+    "role":"EMPLOYEE",
+    "name":"xxew",
+    "websites":["7cf23817-f507-4b7b-aa87-ce764ba0cf5d","918b07e0-ea16-49dc-93a4-8bd34e6af449"]
+ 
+}
+  let agent;
 
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send('email=superadmin@local&password=supertest')
+      .expect(204, done);
+  });
 
-//     before((done) => {
-//       // Login
-//       agent = request.agent(app);
-//       agent.post('/login')
-//         .send('email=superadmin@local&password=supertest')
-//         .expect(204, done);
-//     });
+  before((done) => {
+    let requestedData = {...userData};
+    agent.post('/api/accounts')
+      .send(requestedData)
+      .expect(200)
+      .then(function (res) {
+        done();
+      }).catch((err) => done(err));
+  });
 
-//       before((done) => {
-//           // Login
-//           agent = request.agent(app);
-//           agent.post('/login')
-//           .send(`email=${userData.email}.com&password=111111`)
-//             .expect(204, done);
-//         });
+  before((done) => {
+    // Login
+    agent = request.agent(app);
+    agent.post('/login')
+      .send(`email=${userData.email}&password=111111`)
+      .expect(204, done);
+  });
 
-//     describe('Validations check', () => {
-//       it('Admin and Maintainer (name):- It should return 401 error', (done) => {
-//           let requestedData = {...productGroupData};
-//           delete requestedData.name;
-//           agent.post('/api/productgroups')
-//             .send(requestedData)
-//             .expect(401, done);
-//         });
-
-//     });
-//   });
+  describe('Validations check', () => {
+    it('Admin and Maintainer (name):- It should return 401 error', (done) => {
+      let requestedData = { ...productGroupData };
+      agent.post('/api/productgroups')
+        .send(requestedData)
+        .expect(401, done);
+    });
+  });
+});
 
 describe('PUT /productgroups', () => {
   let productGroupData = {
@@ -109,7 +120,7 @@ describe('PUT /productgroups', () => {
   });
 
   before((done) => {
-    let requestedData = {...productGroupData};
+    let requestedData = { ...productGroupData };
     agent.post('/api/productgroups')
       .send(requestedData)
       .expect(200)
@@ -121,7 +132,7 @@ describe('PUT /productgroups', () => {
 
   describe('Validations check', () => {
     it('Maxlength(name):- It should return 422 error', (done) => {
-      let requestedData = {...productGroupData};
+      let requestedData = { ...productGroupData };
       requestedData.name = 'Lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name lorem ipsum dummy text name';
       agent.put(`/api/productgroups/${requestedData.uid}`)
         .send(requestedData)
@@ -131,7 +142,7 @@ describe('PUT /productgroups', () => {
 
   describe('Update productgroups', () => {
     it('It should return 200', (done) => {
-      let requestedData = {...productGroupData};
+      let requestedData = { ...productGroupData };
       delete requestedData.name;
       agent.put(`/api/productgroups/${requestedData.uid}`)
         .send(requestedData)
@@ -173,17 +184,14 @@ describe('GET /productgropus', () => {
 
   describe('Product Group Listing', () => {
     it('It should return array on objects with 200', (done) => {
+      let requestedData = {};
+
       agent.get('/api/productgroups')
-        .send()
+        .send(requestedData)
         .expect(200)
         .then(function (res) {
-          let pgResult = res.body;
-          chai.expect(pgResult.results).to.be.an('array');
-          chai.expect(pgResult.total).to.be.an('number');
-          for (const pg of pgResult.results) {
-            chai.expect(pg).to.have.property('uid');
-            chai.expect(pg).to.have.property('name');
-          }
+          chai.expect(res.body.results).to.be.an('array');
+          chai.expect(res.body.total).to.be.an('number');
           done();
         });
     });

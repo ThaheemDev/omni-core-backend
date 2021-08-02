@@ -1,6 +1,8 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
 const {getValidPageSize} = require("../lib/utility");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 module.exports = {
   create,
@@ -21,15 +23,12 @@ async function create(req, res, next) {
     /* Validate product id */
     const checkProduct = await db.product.findOne({where: {external_id: productRequestedData.product}})
     if (!checkProduct) {
-      console.log("0000000000000000000000000000000000");
       throw {status: 422, errors: {message: 'Product id is not valid.'}}
     }
 
     /* Validate website id */
     const checkWebsite = await db.website.findOne({where: {external_id: productRequestedData.website}})
     if (!checkWebsite) {
-      // console.log("8888888888888888888888888888");
-
       throw {status: 422, errors: {message: 'Website id is not valid.'}}
     }
 
@@ -52,7 +51,7 @@ async function update(req, res, next) {
   try {
     const productData = req.body;
     const {productId} = req.params;
-    console.log("we are herer bro to check");
+
     if (!productId) {
       throw {status: 422, errors: {message: 'Id is required'}}
     }
@@ -84,7 +83,7 @@ async function update(req, res, next) {
 
 // get all product website details
 async function getAll(req, res, next) {
-  let {page, page_size} = req.query;
+  let {page, page_size, sku, name,supplier, brand, description, category, sort} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
   try {
@@ -93,12 +92,74 @@ async function getAll(req, res, next) {
       offset = ((page - 1) * page_size);
     }
 
-    const {count, rows} = await db.product_website.findAndCountAll({
-        attributes: [['external_id','uid'], 'name', 'price'],
-        offset: offset,
-        limit: page_size
-      }
-    );
+    let options = {
+      attributes: [['external_id','uid'], 'name', 'price'],
+      offset: offset,
+      limit: page_size
+    };
+
+    if(sort){  
+      options['order'] =  [
+          [sort, 'ASC'],
+      ]
+    }    
+
+    let query = { };
+
+    if(name){
+      query = {...query, ...{
+        name: {
+          [Op.like]: `%${name}%`
+        }
+      }}
+    }
+
+    if(sku){
+      query = {...query, ...{
+        sku: {
+          [Op.like]: `%${sku}%`
+        }
+      }}
+    }
+
+    if(supplier){
+      query = {...query, ...{
+        supplier: {
+          [Op.like]: `%${supplier}%`
+        }
+      }}   
+    }
+
+    if(brand){
+      query = {...query, ...{
+        brand: {
+          [Op.like]: `%${brand}%`
+        }
+      }}   
+    }
+
+    if(description){
+      query = {...query, ...{
+        description: {
+          [Op.like]: `%${description}%`
+        }
+      }}   
+    }
+
+    if(category){
+      query = {...query, ...{
+        category: {
+          [Op.like]: `%${category}%`
+        }
+      }}   
+    }
+
+
+    if(Object.keys(query).length>0){
+      options =  {...options,...{where:query}};
+    }
+
+    const {count, rows} = await db.product_website.findAndCountAll(options);
     res.send(response.pagination(count, rows, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));

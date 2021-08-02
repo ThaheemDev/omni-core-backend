@@ -1,6 +1,8 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
 const {getValidPageSize} = require("../lib/utility");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 module.exports = {
   create,
@@ -60,7 +62,7 @@ async function update(req, res, next) {
 
 // get all product details
 async function getAll(req, res, next) {
-  let {page, page_size} = req.query;
+  let {page, page_size, sku, name, supplier, sub_category, product_group, category, sort} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
   try {
@@ -70,12 +72,80 @@ async function getAll(req, res, next) {
       offset = ((page - 1) * page_size);
     }
 
-    const {count, rows} = await db.product.findAndCountAll({
-        attributes: [['external_id','uid'], 'sku', 'name', 'recommended_retail_price'],
-        offset: offset,
-        limit: page_size
-      }
-    );
+    let options = {
+      attributes: [['external_id','uid'], 'sku', 'name', 'recommended_retail_price'],
+      offset: offset,
+      limit: page_size
+    };
+
+
+    
+    if(sort){  
+      options['order'] =  [
+          [sort, 'ASC'],
+      ]
+    }    
+
+    let query = { };
+
+    if(name){
+      query = {...query, ...{
+        name: {
+          [Op.like]: `%${name}%`
+        }
+      }}
+    }
+
+    if(sku){
+      query = {...query, ...{
+        sku: {
+          [Op.like]: `%${sku}%`
+        }
+      }}
+    }
+
+    if(supplier){
+      query = {...query, ...{
+        supplier: {
+          [Op.like]: `%${supplier}%`
+        }
+      }}   
+    }
+
+    if(sub_category){
+      query = {...query, ...{
+        sub_category: {
+          [Op.like]: `%${sub_category}%`
+        }
+      }}   
+    }
+
+    if(category){
+      query = {...query, ...{
+        category: {
+          [Op.like]: `%${category}%`
+        }
+      }}   
+    }
+
+    if(product_group){   
+
+      let productQuery = "SELECT `id` from `product_groups` WHERE `name` LIKE '%"+product_group+"%'";
+      query = {...query, ...{
+        productGroupId: {
+          [Op.in]: Sequelize.literal(`(${productQuery})`)
+        }
+      }} 
+    }
+
+
+
+    if(Object.keys(query).length>0){
+      options =  {...options,...{where:query}};
+    }
+
+    const {count, rows} = await db.product.findAndCountAll(options);
+    
     res.send(response.pagination(count, rows, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
