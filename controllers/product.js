@@ -128,14 +128,16 @@ async function getAll(req, res, next) {
       }}   
     }
 
-    if(product_group){   
-
-      let productQuery = "SELECT `id` from `product_groups` WHERE `name` LIKE '%"+product_group+"%'";
-      query = {...query, ...{
-        productGroupId: {
-          [Op.in]: Sequelize.literal(`(${productQuery})`)
+    if(product_group){
+      options.include = [{
+        model: db.product_group,
+        required: true,
+        where: {
+          name: {
+            [Op.like]: `%{product_group}%`
+          }
         }
-      }} 
+      }];
     }
 
 
