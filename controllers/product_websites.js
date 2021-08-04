@@ -12,8 +12,6 @@ module.exports = {
   getDetails
 }
 
-// TODO: add tests.
-
 // create Product website detail
 async function create(req, res, next) {
   try {
@@ -83,6 +81,7 @@ async function update(req, res, next) {
 
 // get all product website details
 async function getAll(req, res, next) {
+  // TODO: where is :websiteId. You need to user that path parameter. Same applies to the other endpoints.
   let {page, page_size, sku, name,supplier, brand, description, category, sort} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
