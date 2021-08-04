@@ -69,11 +69,7 @@ async function getAll(req, res, next) {
     let query = { };
 
     if(name){
-      query = {...query, ...{
-        name: {
-          [Op.like]: `%${name}%`
-        }
-      }}
+      query.name={[Op.like]: `%${name}%`}
     }
 
     if(Object.keys(query).length>0){

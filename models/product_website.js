@@ -7,14 +7,10 @@ module.exports = (sequelize, Sequelize) => {
 
   const ProductWebsite = sequelize.define("product_website", {
     // TODO: same as with products, sku will replace this. See the updated openapi
-    external_id: {
+    sku: {
       type: Sequelize.STRING,
       unique: true,
       allowNull: false,
-      set(val) {
-        let uuid = uuidv4();
-        this.setDataValue('external_id', uuid);
-      }
     },
     name: {
       type: Sequelize.STRING,

@@ -78,32 +78,17 @@ async function getAll(req, res, next) {
     };
 
     let query = { };
-
     if(name){
-
-      query = {...query, ...{
-        domainname: {
-          [Op.like]: `%${name}%`
-        }
-      }}
+      query.name={[Op.like]: `%${name}%`}  ;
     }
 
     if(status){
-
-      query = {...query, ...{
-        status: {
-          [Op.like]: `${status}`
-        }
-      }}    
+      query.status={[Op.like]: `%${status}%`}     
     }
 
     if(product){
      let productQuery = "SELECT `websiteId` from `product_websites` WHERE `name` LIKE '%"+product+"%'";
-      query = {...query, ...{
-        ID: {
-          [Op.in]: Sequelize.literal(`(${productQuery})`)
-        }
-      }} 
+     query.ID={ [Op.in]: Sequelize.literal(`(${productQuery})`)}   
     }
 
     if(Object.keys(query).length>0){
@@ -112,7 +97,6 @@ async function getAll(req, res, next) {
    
 
     if (req && req.user) {
-
       let userRole = await req.user.getRole();
       if(userRole.role  != 'ADMIN'){
 

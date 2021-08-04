@@ -12,6 +12,8 @@ module.exports = {
   getDetails
 }
 
+// TODO: add tests.
+
 // create Product website detail
 async function create(req, res, next) {
   try {
@@ -34,11 +36,8 @@ async function create(req, res, next) {
     productRequestedData.websiteId = checkWebsite.id;
     productRequestedData.external_id = 0;
     let data = await db.product_website.create(productRequestedData);
-    // console.log("data is",data);
     res.send(response.productWebsiteData(data));
   } catch (err) {
-    // console.log(" req.body", req.body);
-    console.log("333333333333333333333333333333333333",err);
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
@@ -81,7 +80,6 @@ async function update(req, res, next) {
 
 // get all product website details
 async function getAll(req, res, next) {
-  // TODO: where is :websiteId. You need to user that path parameter. Same applies to the other endpoints.
   let {page, page_size, sku, name,supplier, brand, description, category, sort} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
@@ -106,51 +104,27 @@ async function getAll(req, res, next) {
     let query = { };
 
     if(name){
-      query = {...query, ...{
-        name: {
-          [Op.like]: `%${name}%`
-        }
-      }}
+      query.name={[Op.like]: `%${name}%`}
     }
 
     if(sku){
-      query = {...query, ...{
-        sku: {
-          [Op.like]: `%${sku}%`
-        }
-      }}
+      query.sku={[Op.like]: `%${sku}%`}
     }
 
     if(supplier){
-      query = {...query, ...{
-        supplier: {
-          [Op.like]: `%${supplier}%`
-        }
-      }}   
+      query.supplier={[Op.like]: `%${supplier}%`}   
     }
 
     if(brand){
-      query = {...query, ...{
-        brand: {
-          [Op.like]: `%${brand}%`
-        }
-      }}   
+      query.brand={[Op.like]: `%${brand}%`}   
     }
 
     if(description){
-      query = {...query, ...{
-        description: {
-          [Op.like]: `%${description}%`
-        }
-      }}   
+      query.description={[Op.like]: `%${description}%`}   
     }
 
     if(category){
-      query = {...query, ...{
-        category: {
-          [Op.like]: `%${category}%`
-        }
-      }}   
+      query.category={[Op.like]: `%${category}%`} 
     }
 
 

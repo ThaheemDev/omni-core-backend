@@ -57,28 +57,16 @@ async function getUsers(req, res) {
     let query = { };
 
     if(name){
-      query = {...query, ...{
-        name: {
-          [Op.like]: `%${name}%`
-        }
-      }}
+      query.name={[Op.like]: `%${name}%`}
+      
     }
 
     if(email){
-
-      query = {...query, ...{
-        email: {
-          [Op.like]: `%${email}%`
-        }
-      }}
+      query.email={[Op.like]: `%${email}%`}
     }
 
     if(status){
-      query = {...query, ...{
-        status: {
-          [Op.like]: `${status}`
-        }
-      }}   
+      query.status={[Op.like]: `%${status}%`}  
     }
 
     if(Object.keys(query).length>0){

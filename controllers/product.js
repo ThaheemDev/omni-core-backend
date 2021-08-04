@@ -89,46 +89,26 @@ async function getAll(req, res, next) {
     let query = { };
 
     if(name){
-      query = {...query, ...{
-        name: {
-          [Op.like]: `%${name}%`
-        }
-      }}
+      query.name={[Op.like]: `%${name}%`}
     }
 
     if(sku){
-      query = {...query, ...{
-        sku: {
-          [Op.like]: `%${sku}%`
-        }
-      }}
+      query.sku={[Op.like]: `%${sku}%`}
     }
 
     if(supplier){
-      query = {...query, ...{
-        supplier: {
-          [Op.like]: `%${supplier}%`
-        }
-      }}   
+      query.supplier={[Op.like]: `%${supplier}%`}   
     }
 
     if(sub_category){
-      query = {...query, ...{
-        sub_category: {
-          [Op.like]: `%${sub_category}%`
-        }
-      }}   
+      query.sub_category={[Op.like]: `%${sub_category}%`}  
     }
 
     if(category){
-      query = {...query, ...{
-        category: {
-          [Op.like]: `%${category}%`
-        }
-      }}   
+      query.category={[Op.like]: `%${category}%`} 
     }
 
-    if(product_group){
+  if(product_group){
       options.include = [{
         model: db.product_group,
         required: true,
