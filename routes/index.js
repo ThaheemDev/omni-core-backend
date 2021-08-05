@@ -133,6 +133,21 @@ async function isMaintainerOrAdmin(req, res, next) {
  *          status:
  *           type: string
  *           enum: ['ACTIVE', 'BLOCKED']
+ *      WebsiteList:
+ *       type: object
+ *       properties:
+ *          external_id:
+ *           type: string
+ *          domainname:
+ *           type: string
+ *          size:
+ *           type: string
+ *           enum: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE']
+ *          status:
+ *           type: string
+ *           enum: ['ACTIVE', 'BLOCKED']
+ *          products:
+ *           type: number
  *      ProductGroupModel:
  *       type: object
  *       properties:
@@ -561,7 +576,7 @@ router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
  *                 result:
  *                   type: array
  *                   items:
- *                      $ref: '#/components/schemas/Website'
+ *                      $ref: '#/components/schemas/WebsiteList'
  *                 total:
  *                   type: integer
  *                 next:

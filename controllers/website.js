@@ -52,8 +52,6 @@ async function update(req, res, next) {
 }
 
 // get all website details
-// TODO: the signature does NOT match https://gitlab.com/hadiethshop/website-api-mock/-/blob/master/openapi.yaml.
-// TODO: products field is missing.
 async function getAll(req, res, next) {
   let {page, page_size, name, status,product} = req.query;
   page = Number(page) || 1;
@@ -100,13 +98,9 @@ async function getAll(req, res, next) {
       let userRole = await req.user.getRole();
       if(userRole.role  != 'ADMIN'){
 
-        // TODO: why this inefficiency? You could have just done: `await req.user.countWebsites()`
-        let getAll = await req.user.getWebsites();
-        let mapData = getAll.map(function(obj){ return obj.toJSON() });
-        let count = mapData.length;
-
+        let count = await req.user.countWebsites();
         let currentUserWebsites = await req.user.getWebsites(options);
-        // TODO: please do not do this any more. Use the functions defined in lib/response.js to do this kind of transformations.
+
         // TODO: this goes for all endpoints. The controller's job should be limited to mapping a request to some data in DB. Then hand over that data to view code to create a response.
         let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
           return  {external_id,status,size,domainname}

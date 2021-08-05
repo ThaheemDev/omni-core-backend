@@ -21,7 +21,7 @@ async function create(req, res, next) {
     }
 
     let data = await db.product_group.create(productData);
-    res.send(response.productGroupData(data));
+    res.send(response.productGroupViewModel(data));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
