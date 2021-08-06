@@ -63,21 +63,16 @@ async function getAll(req, res, next) {
       offset = ((page - 1) * page_size);
     }
 
-    // const productQuery = await sequelize.query('SELECT * FROM projects', {
-    //   type: QueryTypes.SELECT
-    // });
-
-
 
     let options = {
-      attributes: ['external_id', 'status', 'size', 'domainname'],
+      attributes: [['external_id','uid'], 'status', 'size', 'domainname','id'],
       offset: offset,
       limit: page_size
     };
 
     let query = { };
     if(name){
-      query.name={[Op.like]: `%${name}%`}  ;
+      query.domainname={[Op.like]: `%${name}%`}  ;
     }
 
     if(status){
@@ -101,19 +96,28 @@ async function getAll(req, res, next) {
         let count = await req.user.countWebsites();
         let currentUserWebsites = await req.user.getWebsites(options);
 
-        // TODO: this goes for all endpoints. The controller's job should be limited to mapping a request to some data in DB. Then hand over that data to view code to create a response.
-        let row = currentUserWebsites.map(function({external_id,status,size,domainname}) {
-          return  {external_id,status,size,domainname}
-        });
+        let rowsMapping  = await Promise.all(currentUserWebsites.map(async (item) => {
+          const productWebsiteCount = await db.product_website.count({
+            where: {websiteId:item.id}     
+          });
+          return  {uid:item.external_id,status:item.status,size:item.size,domainname:item.domainname,products:productWebsiteCount}
+        }));
 
-        res.send(response.pagination(count, row, page));
+        res.send(response.pagination(count, rowsMapping, page));
         return false;
          
       }
     } 
 
-    const {count, rows} = await db.website.findAndCountAll(options);
-    res.send(response.pagination(count, rows, page))
+    let {count, rows} = await db.website.findAndCountAll(options);
+
+    let rowsMapping  = await Promise.all(rows.map(async (item) => {
+      const productWebsiteCount = await db.product_website.count({
+        where: {websiteId:item.id}     
+      });
+      return  {uid:item.external_id,status:item.status,size:item.size,domainname:item.domainname,products:productWebsiteCount}
+    }));
+    res.send(response.pagination(count, rowsMapping, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
   }

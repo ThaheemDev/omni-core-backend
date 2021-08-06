@@ -11,7 +11,6 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             type: Sequelize.INTEGER
           },
-        // TODO: remove this. As discussed today during our meeting, sku will be used as a unique id to manage products
         name: {
             type: Sequelize.STRING,
             allowNull: false,
@@ -63,7 +62,6 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         sku: {
-            // TODO: this should be unique
             type: Sequelize.STRING,
             unique: true,
             allowNull: false,
@@ -75,11 +73,9 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         images: {
-            // TODO: this a list of images, so please splits this into a separate table
             type: Sequelize.STRING
         }
     });
-
     Product.belongsTo(productGroup);
     return Product;
 };
