@@ -136,7 +136,7 @@ async function isMaintainerOrAdmin(req, res, next) {
  *      WebsiteList:
  *       type: object
  *       properties:
- *          external_id:
+ *          sku:
  *           type: string
  *          domainname:
  *           type: string
