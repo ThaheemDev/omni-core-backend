@@ -12,8 +12,6 @@ module.exports = {
   getDetails
 }
 
-// TODO: add tests.
-
 // create Product website detail
 async function create(req, res, next) {
   try {
@@ -43,7 +41,6 @@ async function create(req, res, next) {
 }
 
 // update Product website detail
-// TODO: productId & productId you added above should be read-only after creation. This method should not override them.
 async function update(req, res, next) {
   try {
     const productData = req.body;
@@ -71,6 +68,7 @@ async function update(req, res, next) {
        throw {status: 422, errors: {message: 'Website id is not valid.'}}
      }
 
+     delete productData.productId;
     let result = await db.product_website.update(productData, {where: {external_id: productId}});
     res.send(response.productWebsiteData(result));
   } catch (err) {
@@ -80,6 +78,7 @@ async function update(req, res, next) {
 
 // get all product website details
 async function getAll(req, res, next) {
+  // TODO: where is :websiteId. You need to user that path parameter. Same applies to the other endpoints.
   let {page, page_size, sku, name,supplier, brand, description, category, sort} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
