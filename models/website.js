@@ -10,14 +10,10 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             type: Sequelize.INTEGER
           },
-        external_id: {
+        sku: {
             type: Sequelize.STRING,
             unique: true,
-            allowNull: false,
-            set(val) {
-                let uuid = uuidv4();
-                this.setDataValue('external_id', uuid);
-            }
+            allowNull: false
         },
         status: {
             type: Sequelize.ENUM,

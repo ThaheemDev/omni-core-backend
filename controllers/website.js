@@ -65,7 +65,7 @@ async function getAll(req, res, next) {
 
 
     let options = {
-      attributes: [['external_id','uid'], 'status', 'size', 'domainname','id'],
+      attributes: ['sku', 'status', 'size', 'domainname','id'],
       offset: offset,
       limit: page_size
     };
