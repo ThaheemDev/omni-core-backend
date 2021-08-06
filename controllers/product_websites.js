@@ -78,7 +78,6 @@ async function update(req, res, next) {
 
 // get all product website details
 async function getAll(req, res, next) {
-  // TODO: where is :websiteId. You need to user that path parameter. Same applies to the other endpoints.
   let {page, page_size, sku, name,supplier, brand, description, category, sort} = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
@@ -91,7 +90,8 @@ async function getAll(req, res, next) {
     let options = {
       attributes: [['external_id','uid'], 'name', 'price'],
       offset: offset,
-      limit: page_size
+      limit: page_size,
+      where:{websiteId:websiteId}
     };
 
     if(sort){  
