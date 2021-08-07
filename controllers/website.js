@@ -1,6 +1,6 @@
 const db = require("../models"); // models path depend on your structure
 const response = require('../lib/response');
-const {getValidPageSize} = require("../lib/utility");
+const { getValidPageSize } = require("../lib/utility");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -28,21 +28,21 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   try {
     const websiteData = req.body;
-    const {websiteId} = req.params;
+    const { websiteId } = req.params;
 
     if (!websiteId) {
-      throw {status: 422, errors: {message: 'Id is required'}}
+      throw { status: 422, errors: { message: 'Id is required' } }
     }
 
-    let website = await db.website.findOne({where: {external_id: websiteId}});
+    let website = await db.website.findOne({ where: { external_id: websiteId } });
     if (!website) {
       return res.status(404).send();
     }
 
-    let result = await website.update(websiteData, {where: {external_id: websiteId}});
+    let result = await website.update(websiteData, { where: { external_id: websiteId } });
 
     const productWebsiteCount = await db.product_website.count({
-      where: {websiteId:website.id}     
+      where: { websiteId: website.id }
     });
     result.products = productWebsiteCount;
     res.send(response.websiteViewModel(result));
@@ -53,11 +53,11 @@ async function update(req, res, next) {
 
 // get all website details
 async function getAll(req, res, next) {
-  let {page, page_size, name, status,product} = req.query;
+  let { page, page_size, name, status, product } = req.query;
   page = Number(page) || 1;
   page_size = getValidPageSize(page_size);
   try {
-  
+
     let offset = 0;
     if (page > 1) {
       offset = ((page - 1) * page_size);
@@ -65,57 +65,57 @@ async function getAll(req, res, next) {
 
 
     let options = {
-      attributes: ['sku', 'status', 'size', 'domainname','id'],
+      attributes: ['external_id', 'status', 'size', 'domainname', 'id'],
       offset: offset,
       limit: page_size
     };
 
-    let query = { };
-    if(name){
-      query.domainname={[Op.like]: `%${name}%`}  ;
+    let query = {};
+    if (name) {
+      query.domainname = { [Op.like]: `%${name}%` };
     }
 
-    if(status){
-      query.status={[Op.like]: `%${status}%`}     
+    if (status) {
+      query.status = { [Op.like]: `%${status}%` }
     }
 
-    if(product){
-     let productQuery = "SELECT `websiteId` from `product_websites` WHERE `name` LIKE '%"+product+"%'";
-     query.ID={ [Op.in]: Sequelize.literal(`(${productQuery})`)}   
+    if (product) {
+      let productQuery = "SELECT `websiteId` from `product_websites` WHERE `name` LIKE '%" + product + "%'";
+      query.ID = { [Op.in]: Sequelize.literal(`(${productQuery})`) }
     }
 
-    if(Object.keys(query).length>0){
-      options =  {...options,...{where:query}};
+    if (Object.keys(query).length > 0) {
+      options = { ...options, ...{ where: query } };
     }
-   
+
 
     if (req && req.user) {
       let userRole = await req.user.getRole();
-      if(userRole.role  != 'ADMIN'){
+      if (userRole.role != 'ADMIN') {
 
         let count = await req.user.countWebsites();
         let currentUserWebsites = await req.user.getWebsites(options);
 
-        let rowsMapping  = await Promise.all(currentUserWebsites.map(async (item) => {
+        let rowsMapping = await Promise.all(currentUserWebsites.map(async (item) => {
           const productWebsiteCount = await db.product_website.count({
-            where: {websiteId:item.id}     
+            where: { websiteId: item.id }
           });
-          return  {uid:item.external_id,status:item.status,size:item.size,domainname:item.domainname,products:productWebsiteCount}
+          return { uid: item.external_id, status: item.status, size: item.size, domainname: item.domainname, products: productWebsiteCount }
         }));
 
         res.send(response.pagination(count, rowsMapping, page));
         return false;
-         
+
       }
-    } 
+    }
 
-    let {count, rows} = await db.website.findAndCountAll(options);
+    let { count, rows } = await db.website.findAndCountAll(options);
 
-    let rowsMapping  = await Promise.all(rows.map(async (item) => {
+    let rowsMapping = await Promise.all(rows.map(async (item) => {
       const productWebsiteCount = await db.product_website.count({
-        where: {websiteId:item.id}     
+        where: { websiteId: item.id }
       });
-      return  {uid:item.external_id,status:item.status,size:item.size,domainname:item.domainname,products:productWebsiteCount}
+      return { uid: item.external_id, status: item.status, size: item.size, domainname: item.domainname, products: productWebsiteCount }
     }));
     res.send(response.pagination(count, rowsMapping, page))
   } catch (err) {
@@ -126,17 +126,17 @@ async function getAll(req, res, next) {
 // delete website details
 async function deletes(req, res, next) {
   try {
-    const {websiteId} = req.params;
+    const { websiteId } = req.params;
     if (!websiteId) {
-      throw {status: 422, errors: {message: 'Id is required'}}
+      throw { status: 422, errors: { message: 'Id is required' } }
     }
 
-    const website = await db.website.destroy({where: {external_id: websiteId}})
+    const website = await db.website.destroy({ where: { external_id: websiteId } })
 
     if (website) {
       res.send(response.success('Website has been deleted successfully', {}))
     } else {
-      throw {status: 422, errors: {message: 'Website is not found'}}
+      throw { status: 422, errors: { message: 'Website is not found' } }
     }
 
 
