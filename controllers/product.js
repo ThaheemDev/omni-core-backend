@@ -76,7 +76,7 @@ async function getAll(req, res, next) {
     }
 
     let options = {
-      attributes: ['sku', 'name', 'recommended_retail_price','category','sub_category','supplier'],
+      attributes: ['sku', 'name', 'recommended_retail_price','category','sub_category','supplier','supplier','brand','url','active','images','short_description','description'],
       offset: offset,
       limit: page_size,
       include:[{
@@ -129,15 +129,10 @@ async function getAll(req, res, next) {
       }];
     }
 
-
-
-
     if(Object.keys(query).length>0){
       options =  {...options,...{where:query}};
     }
-
-    const {count, rows} = await db.product.findAndCountAll(options);
-    
+    const {count, rows} = await db.product.findAndCountAll(options);    
     res.send(response.pagination(count, rows, page))
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
@@ -145,10 +140,22 @@ async function getAll(req, res, next) {
 }
 
 // get single product details
-async function getDetails(req, res, next) {
-    const {productId} = req.params;
+async function getDetails(req, res, next) {   
+    
     try {    
-      let product = await db.product.findOne({where: {external_id: productId}});
+      const {sku} = req.params;
+      if (!sku) {
+        throw {status: 422, errors: {message: 'Sku is required'}}
+      }
+      let product = await db.product.findOne({ 
+        attributes: ['sku', 'name', 'recommended_retail_price','category','sub_category','supplier','brand','url','active','images','short_description','description'],
+        where: {sku: sku},
+        include:[{
+          model: db.product_group,
+          attributes: [['external_id','uid'], 'name'],
+          required: true
+        }]
+      });
       res.send(response.productViewModel(product));
     } catch (err) {
       res.status(response.getStatusCode(err)).send(response.error(err));

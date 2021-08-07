@@ -868,7 +868,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   /* GET products listing. */
  /**
   * @swagger
-  * /api/products/{external_id}:
+  * /api/products/{sku}:
   *   get:
   *     summary: Fetch a Product
   *     description:  It can be use to fetch the product.
@@ -878,7 +878,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         required: true
   *         deprecated: false
   *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
-  *         name: external_id
+  *         name: sku
   * 
   *     responses:
   *       200:
@@ -897,7 +897,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
-  router.get('/products/:productId', isAuthenticated,  productController.getDetails);
+  router.get('/products/:sku', isAuthenticated,  productController.getDetails);
  
  /* update products */
  /**
