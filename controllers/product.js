@@ -165,14 +165,13 @@ async function getDetails(req, res, next) {
 // delete product details
 async function deletes(req, res, next) {
   try {
-    const {productId} = req.params;
-    if (!productId) {
-      throw {status: 422, errors: {message: 'Id is required'}}
+    const {sku} = req.params;
+    if (!sku) {
+      throw {status: 422, errors: {message: 'Sku is required'}}
     }
 
-    const website = await db.product.destroy({where: {external_id: productId}})
-
-    if (website) {
+    const productResp = await db.product.destroy({where: {sku: sku}});
+    if (productResp) {
       res.send(response.success('Product has been deleted successfully', {}))
     } else {
       throw {status: 422, errors: {message: 'Product is not found'}}

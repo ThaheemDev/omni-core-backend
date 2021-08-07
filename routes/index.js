@@ -986,17 +986,17 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* delete products. */
  /**
   * @swagger
-  * /api/products/{external_id}:
+  * /api/products/{sku}:
   *   delete:
   *     summary: Product Remove
-  *     description:   Remove a product with `{external_id}`
+  *     description:   Remove a product with `{sku}`
   *     tags: [Product]
   *     parameters:
   *       - in: path
   *         required: true
   *         deprecated: false
   *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
-  *         name: external_id
+  *         name: sku
   *
   *     responses:
   *       200:
@@ -1020,7 +1020,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.delete('/products/:productId', isAuthenticated, isAdmin, productController.deletes);
+ router.delete('/products/:sku', isAuthenticated, isAdmin, productController.deletes);
 
 
 /**
