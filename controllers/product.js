@@ -76,9 +76,14 @@ async function getAll(req, res, next) {
     }
 
     let options = {
-      attributes: [['external_id','uid'], 'sku', 'name', 'recommended_retail_price'],
+      attributes: ['sku', 'name', 'recommended_retail_price','category','sub_category','supplier'],
       offset: offset,
-      limit: page_size
+      limit: page_size,
+      include:[{
+        model: db.product_group,
+        attributes: [['external_id','uid'], 'name'],
+        required: true
+      }]
     };
 
 
@@ -115,6 +120,7 @@ async function getAll(req, res, next) {
       options.include = [{
         model: db.product_group,
         required: true,
+        attributes: [['external_id','uid'], 'name'],
         where: {
           name: {
             [Op.like]: `%{product_group}%`
