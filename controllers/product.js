@@ -16,7 +16,6 @@ module.exports = {
 async function create(req, res, next) {
   try {
     const productData = req.body;
-    productData.external_id = 0;
     if(productData.product_group){
       let checkProductGroup = await db.product_group.findOne({where: {external_id: productData.product_group}});
       if(!checkProductGroup){
@@ -36,24 +35,28 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   try {
     const productData = req.body;
-    const {productId} = req.params;
+    const {sku} = req.params;
 
-    if (!productId) {
-      throw {status: 422, errors: {message: 'Id is required'}}
+    if (!sku) {
+      throw {status: 422, errors: {message: 'Sku is required'}}
     }
 
-    let product = await db.product.findOne({where: {external_id: productId}});
+    let product = await db.product.findOne({where: {sku: sku}});
     if (!product) {
       return res.status(404).send();
     }    
+    let productGroup={}; 
     if(productData.product_group){
-      let checkProductGroup = await db.product_group.findOne({where: {external_id: productData.product_group}});
+     let checkProductGroup = await db.product_group.findOne({where: {external_id: productData.product_group}});
       if(!checkProductGroup){
         throw {status: 422, errors: {message: 'Invalid product group'}}
       }
       productData.productGroupId = checkProductGroup.id;
+      productGroup['name'] = checkProductGroup.name;
+      productGroup['uid'] = checkProductGroup.external_id;
     }
-    let result = await product.update(productData, {where: {external_id: productId}});
+    let result = await product.update(productData,  {where: {external_id: sku}});
+    result.product_group = productGroup;
     res.send(response.productViewModel(result));
   } catch (err) {
     res.status(response.getStatusCode(err)).send(response.error(err));
@@ -108,7 +111,7 @@ async function getAll(req, res, next) {
       query.category={[Op.like]: `%${category}%`} 
     }
 
-  if(product_group){
+    if(product_group){
       options.include = [{
         model: db.product_group,
         required: true,
@@ -119,6 +122,7 @@ async function getAll(req, res, next) {
         }
       }];
     }
+
 
 
 

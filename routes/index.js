@@ -167,9 +167,7 @@ async function isMaintainerOrAdmin(req, res, next) {
  *          description:
  *           type: string
  *          product_group:
- *           format: uuid
- *           x-faker: datatype.uuid
- *           type: string
+ *            $ref: '#/components/schemas/ProductGroupViewModel'
  *          buy_price:
  *           type: number
  *          recommended_retail_price:
@@ -224,6 +222,8 @@ async function isMaintainerOrAdmin(req, res, next) {
  *       properties:
  *          uid:
  *           type: string
+ *           format: uuid
+ *           x-faker: datatype.uuid
  *          name:
  *           type: string
  */
@@ -902,17 +902,17 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  /* update products */
  /**
   * @swagger
-  * /api/products/{external_id}:
+  * /api/products/{sku}:
   *   put:
   *     summary: Product Update
-  *     description:  Update existing product using {external_id}
+  *     description:  Update existing product using {sku}
   *     tags: [Product]
   *     parameters:
   *       - in: path
   *         required: true
   *         deprecated: false
-  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
-  *         name: external_id
+  *         example: '"9c153c6e"'
+  *         name: sku
   *     requestBody:
   *       required: true
   *       content:
@@ -925,6 +925,8 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *                  - recommended_retail_price
   *                  - product_group
   *              properties:
+  *                  sku:
+  *                      type: string
   *                  name:
   *                      type: string
   *                  short_description:
@@ -933,6 +935,8 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *                      type: string
   *                  product_group:
   *                      type: string
+  *                      format: uuid
+  *                      x-faker: datatype.uuid
   *                  buy_price:
   *                      type: number
   *                  recommended_retail_price:
@@ -977,7 +981,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *             schema:
   *               $ref: '#/components/schemas/Error'
   */
- router.put('/products/:productId', isAuthenticated, isMaintainerOrAdmin, productController.update);
+ router.put('/products/:sku', isAuthenticated, isMaintainerOrAdmin, productController.update);
  
  /* delete products. */
  /**
