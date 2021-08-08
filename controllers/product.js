@@ -21,12 +21,11 @@ async function create(req, res, next) {
       if(!checkProductGroup){
         throw {status: 422, errors: {message: 'Invalid product group'}}
       }
-      productData.productGroupId = checkProductGroup.id;
+      productData.productGroup = checkProductGroup;
     }
     let data = await db.product.create(productData);
     res.send(response.productData(data));
   } catch (err) {
-    console.log("");
     res.status(response.getStatusCode(err)).send(response.error(err));
   }
 }
@@ -172,7 +171,7 @@ async function deletes(req, res, next) {
 
     const productResp = await db.product.destroy({where: {sku: sku}});
     if (productResp) {
-      res.send(response.success('Product has been deleted successfully', {}))
+      res.status(204).send(response.success('The product was deleted successfully.', {}))
     } else {
       throw {status: 422, errors: {message: 'Product is not found'}}
     }

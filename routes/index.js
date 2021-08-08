@@ -91,27 +91,36 @@ async function isMaintainerOrAdmin(req, res, next) {
  * @swagger
  *  components:
  *   schemas:
- *      User:
+ *      UserModel:
  *       type: object
  *       properties:
- *          external_id:
+ *          uid:
  *           type: string
+ *           default: 43ea1542-88e3-42d9-8aad-653d0578c817 
  *          name:
- *           type: string
- *          email:
  *           type: string
  *          role:
  *           type: string
- *           enum: ['ACTIVE', 'BLOCKED']
- *          websites:
- *           type: array
- *          items:
- *            type: string
  *          status:
  *           type: string
- *           enum: ['ACTIVE', 'BLOCKED']
+ *          email:
+ *           type: string
+ *          website:
+ *           type: array
+ *           items:
+ *            type: object
+ *            properties:
+ *               uid:
+ *                type: string
+ *                default: 43ea1542-88e3-42d9-8aad-653d0578c817
+ *               domainame:
+ *                type: string
+ *                default: https://gerson.us
  *      EmptyResponse:
  *       type: object
+ *      EmptyStringResponse:
+ *       type: string
+ *       default: "The sites is successfully deleted" 
  *      Error:
  *       type: object
  *       properties:
@@ -123,10 +132,12 @@ async function isMaintainerOrAdmin(req, res, next) {
  *      Website:
  *       type: object
  *       properties:
- *          external_id:
+ *          uid:
  *           type: string
  *          domainname:
  *           type: string
+ *          product:
+ *           type: number
  *          size:
  *           type: string
  *           enum: ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE']
@@ -136,7 +147,7 @@ async function isMaintainerOrAdmin(req, res, next) {
  *      WebsiteList:
  *       type: object
  *       properties:
- *          sku:
+ *          uid:
  *           type: string
  *          domainname:
  *           type: string
@@ -158,7 +169,7 @@ async function isMaintainerOrAdmin(req, res, next) {
  *      ProductModel:
  *       type: object
  *       properties:
- *          uid:
+ *          sku:
  *           type: string
  *          name:
  *           type: string
@@ -268,19 +279,11 @@ async function isMaintainerOrAdmin(req, res, next) {
  *
  *     responses:
  *       200:
- *         description: Success.
+ *         description: Success
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data:
- *                   $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/UserModel'
  *       422:
  *         description: Error.
  *         content:
@@ -504,15 +507,7 @@ router.delete('/accounts/:userId', isAuthenticated, isAdmin, userController.dele
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data:
- *                   $ref: '#/components/schemas/Website'
+ *               $ref: '#/components/schemas/Website'
  *       422:
  *         description: Error.
  *         content:
@@ -579,8 +574,8 @@ router.post('/websites', isAuthenticated, isAdmin, websiteController.create);
  *                      $ref: '#/components/schemas/WebsiteList'
  *                 total:
  *                   type: integer
- *                 next:
- *                   type: string
+ *                 page:
+ *                   type: integer
  *       422:
  *         description: Error.
  *         content:
@@ -630,15 +625,7 @@ router.get('/websites', isAuthenticated,  websiteController.getAll);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data:
- *                   $ref: '#/components/schemas/EmptyResponse'
+ *               $ref: '#/components/schemas/Website'
  *       422:
  *         description: Error.
  *         content:
@@ -664,20 +651,8 @@ router.put('/websites/:websiteId', isAuthenticated, isAdmin, websiteController.u
  *         name: external_id
  *
  *     responses:
- *       200:
- *         description: Success.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data:
- *                   $ref: '#/components/schemas/EmptyResponse'
+ *       204:
+ *         description: The sites is successfully deleted.
  *       422:
  *         description: Error.
  *         content:
@@ -751,15 +726,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data:
- *                   $ref: '#/components/schemas/ProductModel'
+ *               $ref: '#/components/schemas/ProductModel'
  *       422:
  *         description: Error.
  *         content:
@@ -854,8 +821,8 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *                      $ref: '#/components/schemas/ProductModel'
   *                 total:
   *                   type: integer
-  *                 next:
-  *                   type: string
+  *                 page:
+  *                   type: integer
   *       422:
   *         description: Error.
   *         content:
@@ -999,20 +966,8 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         name: sku
   *
   *     responses:
-  *       200:
-  *         description: Success.
-  *         content:
-  *           application/json:
-  *             schema:
-  *               type: object
-  *               properties:
-  *                 message:
-  *                   type: string
-  *                 status:
-  *                   type: integer
-  *                   default: 1
-  *                 data:
-  *                   $ref: '#/components/schemas/EmptyResponse'
+  *       204:
+  *         description: The product was deleted successfully.
   *       422:
   *         description: Error.
   *         content:
@@ -1056,15 +1011,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 status:
- *                   type: integer
- *                   default: 1
- *                 data:
- *                   $ref: '#/components/schemas/ProductGroupModel'
+ *               $ref: '#/components/schemas/ProductGroupModel'
  *       422:
  *         description: Error.
  *         content:
@@ -1117,8 +1064,8 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *                      $ref: '#/components/schemas/ProductGroupModel'
   *                 total:
   *                   type: integer
-  *                 next:
-  *                   type: string
+  *                 page:
+  *                   type: integer
   *       422:
   *         description: Error.
   *         content:
@@ -1127,6 +1074,39 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *               $ref: '#/components/schemas/Error'
   */
  router.get('/productgroups', isAuthenticated,  productGroupController.getAll);
+
+
+ 
+  /* GET products listing. */
+ /**
+  * @swagger
+  * /api/productgroups/{external_id}:
+  *   get:
+  *     summary: Fetch a Product Group 
+  *     description:  It can be use to fetch the productgroup.
+  *     tags: [ProductGroup]
+  *     parameters:
+  *       - in: path
+  *         required: true
+  *         deprecated: false
+  *         example: '"9c153c6e-c631-11eb-9ea4-6beea7caa795"'
+  *         name: external_id
+  * 
+  *     responses:
+  *       200:
+  *         description: Success.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/ProductGroupModel'
+  *       422:
+  *         description: Error.
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/Error'
+  */
+  router.get('/productgroups/:uid', isAuthenticated,  productGroupController.getDetails);
  
  /* update product group */
  /**
@@ -1163,15 +1143,7 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         content:
   *           application/json:
   *             schema:
-  *               type: object
-  *               properties:
-  *                 message:
-  *                   type: string
-  *                 status:
-  *                   type: integer
-  *                   default: 1
-  *                 data:
-  *                   $ref: '#/components/schemas/ProductGroupViewModel'
+  *               $ref: '#/components/schemas/ProductGroupViewModel'
   *       422:
   *         description: Error.
   *         content:
@@ -1197,20 +1169,8 @@ router.delete('/websites/:websiteId', isAuthenticated, isAdmin, websiteControlle
   *         name: external_id
   *
   *     responses:
-  *       200:
-  *         description: Success.
-  *         content:
-  *           application/json:
-  *             schema:
-  *               type: object
-  *               properties:
-  *                 message:
-  *                   type: string
-  *                 status:
-  *                   type: integer
-  *                   default: 1
-  *                 data:
-  *                   $ref: '#/components/schemas/EmptyResponse'
+  *       204:
+  *         description: The product group was deleted successfully.
   *       422:
   *         description: Error.
   *         content:

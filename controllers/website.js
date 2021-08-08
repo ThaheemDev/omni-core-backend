@@ -134,7 +134,7 @@ async function deletes(req, res, next) {
     const website = await db.website.destroy({ where: { external_id: websiteId } })
 
     if (website) {
-      res.send(response.success('Website has been deleted successfully', {}))
+      res.status(204).send(response.success('The sites is successfully deleted', {}))
     } else {
       throw { status: 422, errors: { message: 'Website is not found' } }
     }

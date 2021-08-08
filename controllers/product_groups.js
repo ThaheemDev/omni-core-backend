@@ -8,7 +8,8 @@ module.exports = {
   create,
   getAll,
   update,
-  deletes
+  deletes,
+  getDetails
 }
 
 // create product groups
@@ -84,6 +85,24 @@ async function getAll(req, res, next) {
   }
 }
 
+
+async function getDetails(req, res, next) {   
+    
+  try {    
+    const {uid} = req.params;
+    if (!uid) {
+      throw {status: 422, errors: {message: 'Id is required'}}
+    }
+    let productGroup = await db.product_group.findOne({ 
+      attributes: [ 'name', ['external_id','uid'],'id'],
+      where: {external_id: uid},
+    });
+    res.send(response.productGroupViewModel(productGroup));
+  } catch (err) {
+    res.status(response.getStatusCode(err)).send(response.error(err));
+  }
+}
+
 // delete product group
 async function deletes(req, res, next) {
   try {
@@ -95,7 +114,7 @@ async function deletes(req, res, next) {
     const website = await db.product_group.destroy({where: {external_id: productGroupId}})
 
     if (website) {
-      res.send(response.success('Product group has been deleted successfully', {}))
+      res.status(204).send(response.success('The product group was deleted successfully.', {}))
     } else {
       throw {status: 422, errors: {message: 'Product group is not found'}}
     }
